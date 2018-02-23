@@ -3,7 +3,6 @@ import java.net.*;
 
 public class UDPClient {
 	private byte[] receiveData = new byte[1024];
-	private byte[] sendData = new byte[1024];
 	DatagramSocket unicastSocket;
 
 
@@ -20,25 +19,27 @@ public class UDPClient {
 
 	public static void main(String[] args) {
 		UDPClient client = new UDPClient();
-
-
+	
+		if(args.length < 3) {
+			System.out.println("Expected <host_name> <port_number> <operation> <op_arguments>");
+			System.exit(1);
+		}
+		
 		if(args[2].equals("register"))
 			client.transmit("REGISTER " + args[3] + " " + args[4], args[0], Integer.parseInt(args[1]));
 		else if(args[2].equals("lookup"))
 			client.transmit("LOOKUP " + args[3], args[0], Integer.parseInt(args[1]));
 		else{
 			System.out.println("Application invoked with wrong arguments");
+			System.out.println("Expected <host_name> <port_number> <oper> <opnd>*");
 			System.exit(1);
 		}
-
-		String response = null;
-		client.receive(response);
-			System.out.println(response);
-
-
+	
+		String response = client.receive();
+		System.out.println(response);
 	}
 
-	private int receive(String response) {
+	private String receive() {
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 		try {
@@ -46,11 +47,12 @@ public class UDPClient {
 		}
 		catch (IOException e) {
 			System.out.println("IOException while receive the message\n");
-			return 0;
+			return null;
 		}
 
-		response = new String(receivePacket.getData(), 0, receivePacket.getLength());
-		return response.length();
+		String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+		response.trim();
+		return response;
 	}
 
 	private int transmit(String message, String ip, int port) {

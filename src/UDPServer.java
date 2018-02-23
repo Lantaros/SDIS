@@ -1,15 +1,13 @@
 import java.io.*; 
 import java.net.*;
 import java.util.HashMap;
-import java.util.regex.*;
 
 public class UDPServer{
 	
 	private byte[] receiveData = new byte[1024];
-    private byte[] sendData = new byte[1024];
 	private DatagramSocket unicastSocket;
 
-
+	
     public UDPServer(int port) {
 		try {
 			unicastSocket = new DatagramSocket(port);
@@ -20,21 +18,24 @@ public class UDPServer{
     }
     
 	public static void main(String[] args) {
-		HashMap<String, String> hashtable = new HashMap<>();
+		if(args.length != 1) {
+			System.out.println("Wrong number of arguments!!\nExpected <port_number>");
+			System.exit(1);
+		}
+
+    	HashMap<String, String> hashtable = new HashMap<>();
 		UDPServer server =  new UDPServer(Integer.parseInt(args[0]));
 		DatagramPacket receivedPacket = null;
 		String receivedMessage;
-
+		
 		while(true) {
-
 			receivedPacket = server.receive();
-			receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
+			receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength()); //or String(receivedPacket.getData())
 
 			if(receivedMessage.contains("REGISTER")) {
-				Pattern regex = Pattern.compile("^[.]+\\s((?:[0-9A-Z]{2}-){2}[0-9A-Z]{2})\\s([A-Za-z]{1,256})$");
-				Matcher matcher = regex.matcher(receivedMessage);
+				String[] info = receivedMessage.split(" ");
 
-				if(hashtable.put(matcher.group(1), matcher.group(2)) == null) {
+				if(hashtable.put(info[1], info[2]) == null) {
 					System.out.println("License plate already in the system");
 					server.transmit("-1", receivedPacket.getAddress(), receivedPacket.getPort());
 				}
@@ -42,21 +43,18 @@ public class UDPServer{
 					server.transmit(Integer.toString(hashtable.size()), receivedPacket.getAddress(), receivedPacket.getPort());
 			}
 			else if(receivedMessage.contains("LOOKUP")) {
-				Pattern regex = Pattern.compile("^.+\b((?:[0-9A-Z]{2}-){2}[0-9A-Z]{2})$");
-				Matcher matcher = regex.matcher(receivedMessage);
-				String numberPlate = matcher.group(1), name;
+				String[] info = receivedMessage.split(" ");
+				String numberPlate = info[1], name;
 				
-				if(numberPlate == null)
-					server.transmit("-1", receivedPacket.getAddress(), receivedPacket.getPort());
 				
-				if((name = hashtable.get(matcher.toString())) != null)
-				server.transmit(Integer.toString(hashtable.size()) + "\n" + numberPlate + " " + matcher.toString(),
+				if((name = hashtable.get(numberPlate)) != null) {
+					server.transmit(Integer.toString(hashtable.size()) + "\n" + numberPlate + " " + name,
 						receivedPacket.getAddress(),
 						receivedPacket.getPort());
-
-
+					System.out.println("Received\n" + "LOOKUP " + numberPlate);	
+				}
 				else
-					server.transmit("-1", receivedPacket.getAddress(), receivedPacket.getPort());
+					server.transmit("NOT_FOUND", receivedPacket.getAddress(), receivedPacket.getPort());
 			}
 		}
 	}
