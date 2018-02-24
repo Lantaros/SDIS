@@ -25,17 +25,16 @@ public class UDPServer{
 
     	HashMap<String, String> hashtable = new HashMap<>();
 		UDPServer server =  new UDPServer(Integer.parseInt(args[0]));
-		DatagramPacket receivedPacket = null;
 		String receivedMessage;
 		
 		while(true) {
-			receivedPacket = server.receive();
+            DatagramPacket receivedPacket = server.receive();
 			receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength()); //or String(receivedPacket.getData())
-
+			System.out.println("Server Received\n\t\"" + receivedMessage + "\"");
 			if(receivedMessage.contains("REGISTER")) {
 				String[] info = receivedMessage.split(" ");
 
-				if(hashtable.put(info[1], info[2]) == null) {
+				if(hashtable.put(info[1], info[2]) != null) {
 					System.out.println("License plate already in the system");
 					server.transmit("-1", receivedPacket.getAddress(), receivedPacket.getPort());
 				}
@@ -43,7 +42,8 @@ public class UDPServer{
 					server.transmit(Integer.toString(hashtable.size()), receivedPacket.getAddress(), receivedPacket.getPort());
 			}
 			else if(receivedMessage.contains("LOOKUP")) {
-				String[] info = receivedMessage.split(" ");
+				String[] info = receivedMessage.split("" +
+						" ");
 				String numberPlate = info[1], name;
 				
 				
