@@ -1,30 +1,86 @@
 import java.io.*; 
 import java.net.*;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public class UDPServer{
+public class UDPServer implements Runnable {
 	
 	private byte[] receiveData = new byte[1024];
 	private DatagramSocket unicastSocket;
+	private MulticastSocket mcastSocket;
+	private InetAddress mcastAddress;
+	private int mcastPort;
 
 	
-    public UDPServer(int port) {
+    public UDPServer(int uniPort, String mcastAddress, int mcastPort) {
 		try {
-			unicastSocket = new DatagramSocket(port);
+			System.out.println("Unicast Port: " + uniPort);
+			unicastSocket = new DatagramSocket(uniPort);
 		}
 		catch(SocketException e){
-			System.out.println("Error creating unicast socket");
+			System.out.println("Error creating unicast socket, with port " + uniPort);
 		}
+
+		try {
+			mcastSocket = new MulticastSocket(mcastPort);
+		}
+		catch(IOException e){
+			System.out.println("Error creating multicast socket, with port " + mcastPort);
+		}
+
+		try {
+			this.mcastAddress = InetAddress.getByName(mcastAddress);
+		} catch (UnknownHostException e) {
+			System.out.println("Couldn't find " + mcastAddress + " multicast address");
+		}
+		this.mcastPort = mcastPort;
     }
+
+	@Override
+	public void run() {
+		String message = null;
+
+    	try {
+			 message = unicastSocket.getLocalAddress().getHostAddress() + " " + unicastSocket.getLocalPort();
+		}catch (Exception e){
+			System.out.println("Exception thrown");
+			e.printStackTrace();
+		}
+		//message = mcastAddress.getHostAddress() + " " + mcastPort;
+
+		System.out.println("Message: \"" + message + "\"");
+		System.out.println("Started multicast advertisement at " + mcastAddress.getHostAddress() + " " + mcastPort);
+
+		DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), mcastAddress, mcastPort);
+
+		try {
+			mcastSocket.setTimeToLive(1);
+		} catch (IOException e){}
+
+		try {
+			mcastSocket.send(packet);
+		} catch (IOException e) {
+			System.out.println("Error occured while multicasting message");
+		}
+	}
     
 	public static void main(String[] args) {
-		if(args.length != 1) {
-			System.out.println("Wrong number of arguments!!\nExpected <port_number>");
+		if(args.length != 3) {
+			System.out.println("Wrong number of arguments!!\nExpected <service_port> <mcast_addr> <mcast_port>");
 			System.exit(1);
 		}
 
     	HashMap<String, String> hashtable = new HashMap<>();
-		UDPServer server =  new UDPServer(Integer.parseInt(args[0]));
+		UDPServer server =  new UDPServer(Integer.parseInt(args[0]), args[1],Integer.parseInt(args[2]));
+
+
+		//Start multicasting  unicast address and port advertisement
+		//new Thread(server).start();
+
+		new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(server, 0, 1, TimeUnit.SECONDS);
+		System.out.println("Successfully scheduled Multicast thread");
+
 		String receivedMessage;
 		
 		while(true) {
