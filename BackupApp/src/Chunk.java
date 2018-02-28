@@ -4,7 +4,7 @@
 public class Chunk {
     private int orderNum;
     private int repDegree;
-    private int fileID;
+    private String fileID;
     private String fileName;
 
     private byte[] data;
@@ -17,7 +17,7 @@ public class Chunk {
         return repDegree;
     }
 
-    public int getFileID() {
+    public String getFileID() {
         return fileID;
     }
 

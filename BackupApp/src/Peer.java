@@ -11,11 +11,10 @@ public class Peer {
 
     int id;
     double diskSpace;
-    HashMap<Integer, Chunk> chunkTable;
+    HashMap<String, Chunk> chunkTable;
 
 
+    public static void main(String[] args){
 
-
-
-
+    }
 }
