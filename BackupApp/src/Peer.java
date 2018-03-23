@@ -1,8 +1,13 @@
 import java.net.DatagramSocket;
 import java.net.MulticastSocket;
 import java.util.HashMap;
+import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class Peer {
+
+public class Peer implements Services {
     private MulticastSocket controlSocket;
     private MulticastSocket dataBackup;
     private MulticastSocket dataRecovery;
@@ -26,5 +31,9 @@ public class Peer {
 
     void dispatcher(){
 
+    }
+
+    public String testConnection() {
+        return "Show de Bola Galera!!!";
     }
 }

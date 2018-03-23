@@ -8,8 +8,8 @@ public class TestClient {
     Socket tcpSocket;
 
     /**
-     * <peer_ap>
-     *Is the peer's access point <ip:port>. This depends on the implementation. (See the previous section)
+     * <peer_ap> ip:port
+     *Is the peer's access point <ip:port>. This depends on the implementation. (See section 4)
      *<operation>
      *Is the operation the peer of the backup servic
      *<opnd_1>
@@ -33,10 +33,20 @@ public class TestClient {
         for (int i = 1; i < m.groupCount(); i++) {
             System.out.println(m.group(i));
         }
-        System.out.println( + "d"m.groupCount());
+        System.out.println( + "d" + m.groupCount());
 
         //Port 8086 - TestClient -> Peer port
         TestClient client = new TestClient(args[0]);
+
+        /* try {
+            Registry registry = LocateRegistry.getRegistry(host);
+            Hello stub = (Hello) registry.lookup("Hello");
+            String response = stub.sayHello();
+            System.out.println("response: " + response);
+        } catch (Exception e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
+        }*/
 
     }
 

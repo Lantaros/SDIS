@@ -9,7 +9,7 @@ public enum MessageTypeEnum {
 public class MessageType {
     private MessageTypeEnum type;
 
-    public EnumTest(MessageTypeEnum type) {
+    public MessageType(MessageTypeEnum type) {
         this.type = type;
     }
 
@@ -18,26 +18,27 @@ public class MessageType {
         switch (type) {
             case BACKUP:
                 return "BACKUP";
-                break;
+            break;
 
             case RESTORE:
                 return "RESTORE";
-                break;
+            break;
 
             case DELETE:
                 return "DELETE";
-                break;
+            break;
 
             case MANAGE_STORAGE:
                 return "MANAGE_STORAGE";
-                break;
+            break;
 
             case RETRIEVE_INFO:
                 return "RETRIEVE_INFO";
-                break;
+            break;
 
             default:
                 return "FAIL";
-                break;
+            break;
         }
+    }
 }
