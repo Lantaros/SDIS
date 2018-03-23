@@ -1,6 +1,7 @@
 /**
  * File's Chunk representation class
  */
+
 public class Chunk {
     private int orderNum;
     private int repDegree;

@@ -14,7 +14,17 @@ public class Peer {
     HashMap<String, Chunk> chunkTable;
 
 
+
     public static void main(String[] args){
+        Peer p = new Peer();
+
+    }
+
+    Peer(){
+
+    }
+
+    void dispatcher(){
 
     }
 }
