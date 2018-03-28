@@ -1,10 +1,7 @@
-import java.net.DatagramSocket;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 
 public class Peer implements Services {
@@ -52,13 +49,10 @@ public class Peer implements Services {
     }
 
     public static void main(String[] args){
-        Peer p = new Peer();
+        //Peer p = new Peer();
 
     }
 
-    Peer(){
-
-    }
 
     void dispatcher(){
 
@@ -67,4 +61,5 @@ public class Peer implements Services {
     public String testConnection() {
         return "Show de Bola Galera!!!";
     }
+
 }

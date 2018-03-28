@@ -1,44 +1,45 @@
-public enum MessageTypeEnum {
-    BACKUP,
-    RESTORE,
-    DELETE,
+public enum MessageType {
+    PUTCHUNK, //BACKUP chunk request
+    STORED,   //Successfully stored chunk notification
+
+    GETCHUNK, //Restore chunk request
+    CHUNK,
+
+    DELETE,   //Delete file request
+    REMOVED,
+
     MANAGE_STORAGE,
-    RETRIEVE_INFO
-}
-
-public class MessageType {
-    private MessageTypeEnum type;
-
-    public MessageType(MessageTypeEnum type) {
-        this.type = type;
-    }
+    RETRIEVE_INFO;
 
     @Override
     public String toString() {
-        switch (type) {
-            case BACKUP:
-                return "BACKUP";
-            break;
+        switch (this) {
+            case PUTCHUNK:
+                return "PUTCHUNK";
 
-            case RESTORE:
-                return "RESTORE";
-            break;
+            case STORED:
+                return "STORED";
+
+            case GETCHUNK:
+                return "GETCHUNK";
+
+            case CHUNK:
+                return "CHUNK";
 
             case DELETE:
                 return "DELETE";
-            break;
+
+            case REMOVED:
+                return "REMOVED";
 
             case MANAGE_STORAGE:
                 return "MANAGE_STORAGE";
-            break;
 
             case RETRIEVE_INFO:
                 return "RETRIEVE_INFO";
-            break;
 
             default:
                 return "FAIL";
-            break;
         }
     }
 }

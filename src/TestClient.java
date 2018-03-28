@@ -26,18 +26,15 @@ public class TestClient {
             System.exit(1);
         }
 
-        Pattern p = Pattern.compile("([^:]*)?:?(\\d)");
+        //Splits initiator Peer's AP ( IP and Port )
+        Pattern p = Pattern.compile("(?:([^:]+)?:)?(\\d+)");
         Matcher m = p.matcher(args[0]);
         m.matches();
 
-        for (int i = 1; i < m.groupCount(); i++) {
-            System.out.println(m.group(i));
-        }
-        System.out.println( + "d" + m.groupCount());
+
 
         //Port 8086 - TestClient -> Peer port
         TestClient client = new TestClient(args[0]);
-
         /* try {
             Registry registry = LocateRegistry.getRegistry(host);
             Hello stub = (Hello) registry.lookup("Hello");
@@ -50,15 +47,8 @@ public class TestClient {
 
     }
 
-    TestClient(String peerIP){
-        try {
-            tcpSocket = new Socket(peerIP, 8086);
-        } catch (UnknownHostException e) {
-            System.out.println("Couldn't connet to specified peer IP");
-        }
-        catch (IOException e){
-            System.out.println("Failed to create the TCP Socket");
-        }
+    private TestClient(String peerIP){
+
     }
 
 
