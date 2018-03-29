@@ -1,10 +1,16 @@
 import java.io.IOException;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 
 public class Peer implements Services {
+    private static final double MAX_BACKUP_SIZE = 2048;
+
     private MulticastSocket controlSocket;
     private MulticastSocket dataBackup;
     private MulticastSocket dataRecovery;
@@ -12,6 +18,7 @@ public class Peer implements Services {
    // private DatagramSocket testCliSocket;
 
     int id;
+    String rmiID;
     double diskSpace;
     HashMap<String, Chunk> chunkTable;
 
@@ -25,7 +32,15 @@ public class Peer implements Services {
         }
         this.version = "1.0";
 
-        if(Double.parseDouble(diskSpace) > 2048)
+        this.diskSpace = Double.parseDouble(diskSpace);
+        if(this.diskSpace > MAX_BACKUP_SIZE /*|| this.diskSpace > File.getFreeSpace()  */){
+            System.out.println("Exceeded maximum peer disk backup space. Maximum allowed " + MAX_BACKUP_SIZE);
+            System.exit(3);
+        }
+
+        this.id = Integer.parseInt(peerID);
+        this.rmiID = rmiID;
+
 
         try {
             InetAddress group = InetAddress.getByName(ctrlSckIp);
@@ -68,11 +83,25 @@ public class Peer implements Services {
             System.exit(1);
         }
 
-        Peer p = new Peer(args[0], args[1], args[2],
-                args[3], args[4], args[5], args[6],
-                args[7], args[8], args[9]);
 
+        try {
+            Peer p = new Peer(args[0], args[1], args[2],
+                    args[3], args[4], args[5], args[6],
+                    args[7], args[8], args[9]);
+            Services stub = (Services) UnicastRemoteObject.exportObject(p, 0);
+
+            // Bind the remote object's stub in the registry
+            Registry registry = LocateRegistry.getRegistry();
+            registry.bind(p.rmiID, stub);
+
+            System.err.println("Peer " + p.id + " is ready");
+        } catch (Exception e) {
+            System.err.println("Peer " + args[1] + " exception: " + e.toString());
+            e.printStackTrace();
+        }
     }
+
+
 
 
     void dispatcher(){
