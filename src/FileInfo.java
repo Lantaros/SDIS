@@ -1,5 +1,5 @@
 
-public class File {
+public class FileInfo {
     private int id;
     private String name;
     private String pathname;
@@ -7,11 +7,14 @@ public class File {
 
     byte[] data;
 
+    FileInfo(String pathname){
+        //java.io.File
+    }
     /**
      * Splits the file into chunks
      * @return Chunk array, all the chunks a file is composed of
      */
-    public Chunk[] getChunks(){
+    public Chunk[] splitFile(){
         return null;
     }
 }

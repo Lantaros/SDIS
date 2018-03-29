@@ -1,11 +1,12 @@
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TestClient {
-    Socket tcpSocket;
 
     /**
      * <peer_ap> ip:port
@@ -20,7 +21,7 @@ public class TestClient {
      * @param args command line arguments
      */
     public static void main(String[] args){
-        if(args.length != 4){
+        if(args.length < 3){
             System.out.println("Wrong number of arguments.\n" +
                     "Expected:\"<peer_ap> <sub_protocol> <opnd_1> <opnd_2>\"");
             System.exit(1);
@@ -35,15 +36,15 @@ public class TestClient {
 
         //Port 8086 - TestClient -> Peer port
         TestClient client = new TestClient(args[0]);
-        /* try {
-            Registry registry = LocateRegistry.getRegistry(host);
-            Hello stub = (Hello) registry.lookup("Hello");
-            String response = stub.sayHello();
+         try {
+            Registry registry = LocateRegistry.getRegistry();
+            Services stub = (Services) registry.lookup("peer1");
+            String response = stub.testConnection();
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
-        }*/
+        }
 
     }
 

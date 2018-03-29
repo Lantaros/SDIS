@@ -1,5 +1,5 @@
 /**
- * File's Chunk representation class
+ * FileStuct's Chunk representation class
  */
 
 public class Chunk {

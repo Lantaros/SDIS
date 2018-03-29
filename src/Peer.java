@@ -1,15 +1,22 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.File;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.charset.StandardCharsets;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 
 public class Peer implements Services {
     private static final double MAX_BACKUP_SIZE = 2048;
+    private final int CHUNK_SIZE = 64000;
 
     private MulticastSocket controlSocket;
     private MulticastSocket dataBackup;
@@ -33,7 +40,7 @@ public class Peer implements Services {
         this.version = "1.0";
 
         this.diskSpace = Double.parseDouble(diskSpace);
-        if(this.diskSpace > MAX_BACKUP_SIZE /*|| this.diskSpace > File.getFreeSpace()  */){
+        if(this.diskSpace > MAX_BACKUP_SIZE /*|| this.diskSpace > FileStuct.getFreeSpace()  */){
             System.out.println("Exceeded maximum peer disk backup space. Maximum allowed " + MAX_BACKUP_SIZE);
             System.exit(3);
         }
@@ -71,7 +78,7 @@ public class Peer implements Services {
     }
 
     /**
-     * Peer
+     * Peer dispatcher thread
      * <Peer_AP> - RMI Object name
      * <MC> <MDB> <MDR> - IP and port for MCast Channels
      * @param args <VERSION> <Peer_ID> <Peer_AP> <MC> <MDB> <MDR> <DISK_SPACE>
@@ -99,17 +106,60 @@ public class Peer implements Services {
             System.err.println("Peer " + args[1] + " exception: " + e.toString());
             e.printStackTrace();
         }
+
+        //Read requests
     }
 
 
 
-
-    void dispatcher(){
-
-    }
 
     public String testConnection() {
         return "Show de Bola Galera!!!";
+    }
+
+    public void backup(String pathname, int repDegree){
+        java.io.File file = new java.io.File(pathname);
+        FileInputStream fileInput;
+        try {
+            fileInput = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            System.out.println("Peer " + this.id + "File not found " + pathname);
+            return;
+        }
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("MessageDigest Algorithm does not exist");
+        }
+
+        String nameLastModification = file.getName() + file.lastModified();
+        byte[] fileID = digest.digest(nameLastModification.getBytes(StandardCharsets.UTF_8));
+
+
+        long nChunks = file.length() / CHUNK_SIZE;
+        byte[] buff = new byte[CHUNK_SIZE];
+        long waitTime;
+
+        for (int i = 1; i <= nChunks; i++){
+            waitTime = 1000;
+            try {
+                fileInput.read(buff, i*CHUNK_SIZE, CHUNK_SIZE);
+            } catch (IOException e) {
+                System.out.println("Chunk " + i + "IOException");
+            }
+
+            Message message = new Message(MessageType.PUTCHUNK, this.version, )
+            DatagramPacket packet = new DatagramPacket(message.toString().getBytes(), )
+            dataBackup.send();
+
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e) {
+                System.out.println("Sleep Interrupted");
+            }
+        }
     }
 
 }
