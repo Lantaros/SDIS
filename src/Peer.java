@@ -13,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Peer implements Services {
@@ -27,8 +28,8 @@ public class Peer implements Services {
     int id;
     String rmiID;
     double diskSpace;
-    //HashMap<String, Chunk> chunkTable;
-    HashMap<String, ArrayList<Integer>> peersStoredChunk;
+    ConcurrentHashMap<String, Chunk> chunkTable;
+    ConcurrentHashMap<String, ArrayList<Integer>> peersStoredChunk;
 
     Peer(String version, String peerID, String rmiID,
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
@@ -77,7 +78,7 @@ public class Peer implements Services {
             System.out.println("Error creating multicast RECOVERY socket, with IP" + dtaRecIp + " and port " + dtaRecPort);
         }
 
-        peersStoredChunk = new HashMap<>();
+        peersStoredChunk = new ConcurrentHashMap<>();
     }
 
     /**
@@ -96,9 +97,10 @@ public class Peer implements Services {
 
         Peer p = null;
         try {
-            Peer p = new Peer(args[0], args[1], args[2],
+            p = new Peer(args[0], args[1], args[2],
                     args[3], args[4], args[5], args[6],
                     args[7], args[8], args[9]);
+
             Services stub = (Services) UnicastRemoteObject.exportObject(p, 0);
 
             // Bind the remote object's stub in the registry
@@ -114,13 +116,35 @@ public class Peer implements Services {
 
         //Read requests
         byte[] rcvBuffer = new byte[64512];
-
+        DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
         while(true){
-            p.controlSocket.receive();
+            try {
+                p.controlSocket.receive(receivePacket);
+            } catch (IOException e) {
+                System.out.println("Error receiving ");
+            }
+            
+            p.handleRequest(receivePacket);
         }
     }
 
+    private void handleRequest(DatagramPacket receivePacket) {
+        String response = new String(receivePacket.getData());
+        Message message = new Message(response);
 
+        if(!message.getVersion().equals(this.version))
+            return; //Ignore message
+
+        switch (message.getType()){
+            case PUTCHUNK:
+                if(message.getSenderID() != this.id){
+                    if(//ja tenho o chunk nao guarda, mas mando a msg STORED na mesma)
+                    if(this.diskSpace - message.getPayload().length >= 0)
+
+                }
+                break;
+        }
+    }
 
 
     public String testConnection() {

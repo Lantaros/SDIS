@@ -1,3 +1,5 @@
+import java.security.InvalidParameterException;
+
 public enum MessageType {
     PUTCHUNK, //BACKUP chunk request
     STORED,   //Successfully stored chunk notification
@@ -40,6 +42,37 @@ public enum MessageType {
 
             default:
                 return "FAIL";
+        }
+    }
+
+    public static MessageType fromString(String type){
+        switch (type){
+            case "PUTCHUNK":
+                return MessageType.PUTCHUNK;
+
+            case "STORED":
+                return MessageType.PUTCHUNK;
+
+            case "GETCHUNK":
+                return MessageType.GETCHUNK;
+
+            case "CHUNK":
+                return MessageType.CHUNK;
+
+            case "DELETE":
+                return MessageType.DELETE;
+
+            case "REMOVED":
+                return MessageType.REMOVED;
+
+            case "MANAGE_STORAGE":
+                return MessageType.MANAGE_STORAGE;
+
+            case "RETRIEVE_INFO":
+                return MessageType.RETRIEVE_INFO;
+
+            default:
+                throw new InvalidParameterException();
         }
     }
 }
