@@ -11,6 +11,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -22,12 +23,12 @@ public class Peer implements Services {
     private MulticastSocket dataBackup;
     private MulticastSocket dataRecovery;
     private String version;
-   // private DatagramSocket testCliSocket;
 
     int id;
     String rmiID;
     double diskSpace;
-    HashMap<String, Chunk> chunkTable;
+    //HashMap<String, Chunk> chunkTable;
+    HashMap<String, ArrayList<Integer>> peersStoredChunk;
 
     Peer(String version, String peerID, String rmiID,
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
@@ -75,6 +76,8 @@ public class Peer implements Services {
         catch(IOException e){
             System.out.println("Error creating multicast RECOVERY socket, with IP" + dtaRecIp + " and port " + dtaRecPort);
         }
+
+        peersStoredChunk = new HashMap<>();
     }
 
     /**
@@ -91,6 +94,7 @@ public class Peer implements Services {
         }
 
 
+        Peer p = null;
         try {
             Peer p = new Peer(args[0], args[1], args[2],
                     args[3], args[4], args[5], args[6],
@@ -101,13 +105,19 @@ public class Peer implements Services {
             Registry registry = LocateRegistry.getRegistry();
             registry.bind(p.rmiID, stub);
 
-            System.err.println("Peer " + p.id + " is ready");
+            System.out.println("Peer " + p.id + " is ready");
         } catch (Exception e) {
             System.err.println("Peer " + args[1] + " exception: " + e.toString());
             e.printStackTrace();
+            System.exit(1);
         }
 
         //Read requests
+        byte[] rcvBuffer = new byte[64512];
+
+        while(true){
+            p.controlSocket.receive();
+        }
     }
 
 
@@ -141,8 +151,10 @@ public class Peer implements Services {
         long nChunks = file.length() / CHUNK_SIZE;
         byte[] buff = new byte[CHUNK_SIZE];
         long waitTime;
+        int nTries = 0;
 
-        for (int i = 1; i <= nChunks; i++){
+        for (int i = 0; i < nChunks; i++){
+            nTries++;
             waitTime = 1000;
             try {
                 fileInput.read(buff, i*CHUNK_SIZE, CHUNK_SIZE);
@@ -150,9 +162,15 @@ public class Peer implements Services {
                 System.out.println("Chunk " + i + "IOException");
             }
 
-            Message message = new Message(MessageType.PUTCHUNK, this.version, )
-            DatagramPacket packet = new DatagramPacket(message.toString().getBytes(), )
-            dataBackup.send();
+            Message message = new Message(MessageType.PUTCHUNK, this.version, this.id, fileID, i, repDegree, buff);
+            byte[] messageBytes = message.toString().getBytes();
+            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackup.getLocalAddress(), dataBackup.getLocalPort());
+
+            try {
+                dataBackup.send(packet);
+            } catch (IOException e) {
+                System.out.println("Failed sending PutChunk message");
+            }
 
             try {
                 Thread.sleep(waitTime);
