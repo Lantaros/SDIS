@@ -85,4 +85,13 @@ public class Message {
                 return;
         }
     }
+
+    public String toString(){
+        String filID = new String(fileID, Charset.forName("ISO_8859_1"));
+
+        return type.toString() + ' ' + version + ' ' +
+                Integer.toString(senderID) + ' ' + filID +
+                ' ' + Integer.toString(chunkNum) + ' ' +
+                Integer.toString(desiredRepDeg) + ' ' + CRLF;
+    }
 }

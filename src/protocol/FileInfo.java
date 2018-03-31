@@ -7,7 +7,7 @@ public class FileInfo {
 
 
     public static void saveChunk(Peer peer, Chunk chunk) {
-        File file = new File("peer" + peer.id + "/" + new String(chunk.getFileID()) +"|" + chunk.getOrderNum());
+        File file = new File("peer" + peer.getId() + "/" + new String(chunk.getFileID()) +"|" + chunk.getOrderNum());
         file.getParentFile().mkdirs();
 
         try {

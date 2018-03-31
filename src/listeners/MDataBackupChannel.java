@@ -9,6 +9,7 @@ import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.Charset;
+import java.util.Random;
 
 public class MDataBackupChannel implements Runnable{
     private Peer peer;
@@ -39,34 +40,35 @@ public class MDataBackupChannel implements Runnable{
                                 peer.setDiskSpace(peer.getDiskSpace() - message.getPayload().length);
                                 chunk.setData(message.getPayload());
                                 FileInfo.saveChunk(peer, chunk);
-
                             }
                             else
                                 break;
                         }
-                        sendSTORED(message);
+                        sendStored(message);
                     }
                     break;
             }
         }
     }
 
-    public void sendSTORED(Message msg){
-        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackup.getLocalAddress(), dataBackup.getLocalPort());
+    public void sendStored(Message msg){
 
-        while(nTries <= MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {
+        byte[] messageBytes = msg.toString().getBytes(Charset.forName("ISO_8859_1"));
 
+        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, Peer.controlSocket.getLocalAddress(), Peer.controlSocket.getLocalPort());
+
+            Random r = new Random(System.currentTimeMillis());
             try {
-                dataBackup.send(packet);
-            } catch (IOException e) {
-                System.out.println("Failed sending PutChunk message");
-            }
-
-            try {
-                Thread.sleep(waitTime);
+                Thread.sleep(r.nextInt(401));
             } catch (InterruptedException e) {
                 System.out.println("Sleep Interrupted");
             }
+
+        try {
+            Peer.controlSocket.send(packet);
+        } catch (IOException e) {
+            System.out.println("Failed sending STORED");
         }
+    }
 
 }

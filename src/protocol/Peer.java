@@ -24,9 +24,9 @@ public class Peer implements Services {
     public static final int MAX_PUTCHUNK_ATTEMPTS = 5;
     public static final int CHUNK_SIZE = 64000;
 
-    private static MulticastSocket controlSocket;
-    private static MulticastSocket dataBackup;
-    private static MulticastSocket dataRecovery;
+    public static MulticastSocket controlSocket;
+    public static MulticastSocket dataBackup;
+    public static MulticastSocket dataRecovery;
     private String version;
 
     private int id;
@@ -34,7 +34,7 @@ public class Peer implements Services {
     private double diskSpace;
     private ArrayList<Chunk> storedChunks;
     private ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
-    private ExecutorService poolExecutor;
+    public static ExecutorService poolExecutor;
 
     public String getVersion() {
         return version;
