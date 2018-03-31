@@ -61,17 +61,26 @@ public class Message {
     public Message(String response) {
         String[] tokens = response.trim().split(" ");
 
-
         this.type = MessageType.fromString(tokens[0]);
 
-        if(!version.equals("1.0"))
+        if(!tokens[1].equals("1.0"))
             return;
 
-        this.senderID = Integer.parseInt(tokens[1]);
-        this.fileID = tokens[2].getBytes();
-        this.chunkNum = Integer.parseInt(tokens[3]);
-        this.desiredRepDeg = Integer.parseInt(tokens[4]);
-        this.payload = tokens[4].getBytes();
+        switch (this.type){
+            case PUTCHUNK:
+                this.senderID = Integer.parseInt(tokens[2]);
+                this.fileID = tokens[3].getBytes(Charset.forName("ISO_8859_1"));
+                this.chunkNum = Integer.parseInt(tokens[5]);
+                this.desiredRepDeg = Integer.parseInt(tokens[5]);
+                this.payload = tokens[7].getBytes(Charset.forName("ISO_8859_1"));
+            break;
 
+            case STORED:
+                this.senderID = Integer.parseInt(tokens[2]);
+                this.chunkNum = Integer.parseInt(tokens[3]);
+            break;
+            default:
+                return;
+        }
     }
 }

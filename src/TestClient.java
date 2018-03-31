@@ -38,9 +38,9 @@ public class TestClient {
         TestClient client = new TestClient(args[0]);
          try {
             Registry registry = LocateRegistry.getRegistry();
-            Services stub = (Services) registry.lookup("peer1");
-            String response = stub.testConnection();
-            System.out.println("response: " + response);
+            Services stub = (Services) registry.lookup(args[0]);
+            if (stub.backup(args[2], Integer.parseInt(args[3])))
+                System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();

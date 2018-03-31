@@ -1,10 +1,8 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,7 +10,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -28,10 +25,10 @@ public class Peer implements Services {
     int id;
     String rmiID;
     double diskSpace;
-    ConcurrentHashMap<String, Chunk> chunkTable;
-    ConcurrentHashMap<String, ArrayList<Integer>> peersStoredChunk;
+    ArrayList<Chunk> storedChunks;
+    ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
 
-    Peer(String version, String peerID, String rmiID,
+    private Peer(String version, String peerID, String rmiID,
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
          String dtaBackPort, String dtaRecIp, String dtaRecPort, String diskSpace){
 
@@ -129,7 +126,7 @@ public class Peer implements Services {
     }
 
     private void handleRequest(DatagramPacket receivePacket) {
-        String response = new String(receivePacket.getData());
+        String response = new String(receivePacket.getData(), Charset.forName("ISO_8859_1"));
         Message message = new Message(response);
 
         if(!message.getVersion().equals(this.version))
@@ -138,11 +135,17 @@ public class Peer implements Services {
         switch (message.getType()){
             case PUTCHUNK:
                 if(message.getSenderID() != this.id){
-                    if(//ja tenho o chunk nao guarda, mas mando a msg STORED na mesma)
-                    if(this.diskSpace - message.getPayload().length >= 0)
+                    Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
+                    if(!storedChunks.contains(chunk))
+                        if(this.diskSpace - message.getPayload().length >= 0){
+                            this.diskSpace -= message.getPayload().length;
+                            chunk.setData(message.getPayload());
+                            FileInfo.saveChunk(this, chunk);
 
+                        }
+                    //Protocol.sendSTORED(message)
                 }
-                break;
+            break;
         }
     }
 

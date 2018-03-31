@@ -5,10 +5,14 @@
 public class Chunk {
     private int orderNum;
     private int repDegree;
-    private String fileID;
-    private String fileName;
+    private byte[] fileID;
 
     private byte[] data;
+
+    public Chunk(byte[] fileID, int chunkNum) {
+        this.fileID = fileID;
+        this.orderNum = chunkNum;
+    }
 
     public int getOrderNum() {
         return orderNum;
@@ -18,12 +22,8 @@ public class Chunk {
         return repDegree;
     }
 
-    public String getFileID() {
+    public byte[] getFileID() {
         return fileID;
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 
     public byte[] getData() {
@@ -34,4 +34,18 @@ public class Chunk {
         return this.data.length;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Chunk) {
+            Chunk chunk = (Chunk) obj;
+            return this.fileID.equals(chunk.getFileID()) && this.orderNum == chunk.getOrderNum();
+        }
+        return false;
+    }
+
+    public void setData(byte[] payload) {
+        this.data = payload;
+    }
+
+    //public Chunk()
 }
