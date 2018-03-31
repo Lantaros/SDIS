@@ -20,21 +20,46 @@ import java.util.concurrent.Executors;
 
 
 public class Peer implements Services {
-    private static final double MAX_BACKUP_SIZE = 2048;
-    private static final int MAX_PUTCHUNK_ATTEMPTS = 5;
-    private final int CHUNK_SIZE = 64000;
+    public static final double MAX_BACKUP_SIZE = 2048;
+    public static final int MAX_PUTCHUNK_ATTEMPTS = 5;
+    public static final int CHUNK_SIZE = 64000;
 
-    private MulticastSocket controlSocket;
-    private MulticastSocket dataBackup;
-    private MulticastSocket dataRecovery;
+    private static MulticastSocket controlSocket;
+    private static MulticastSocket dataBackup;
+    private static MulticastSocket dataRecovery;
     private String version;
 
-    int id;
-    String rmiID;
-    double diskSpace;
-    ArrayList<Chunk> storedChunks;
-    ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
-    ExecutorService poolExecutor;
+    private int id;
+    private String rmiID;
+    private double diskSpace;
+    private ArrayList<Chunk> storedChunks;
+    private ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
+    private ExecutorService poolExecutor;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public double getDiskSpace() {
+        return diskSpace;
+    }
+
+    public ArrayList<Chunk> getStoredChunks() {
+        return storedChunks;
+    }
+
+    public ConcurrentHashMap<Chunk, ArrayList<Integer>> getPeersStoredChunk() {
+        return peersStoredChunk;
+    }
+
+    public void setDiskSpace(double diskSpacepace){
+        this.diskSpace = diskSpace;
+    }
+
 
     private Peer(String version, String peerID, String rmiID,
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
