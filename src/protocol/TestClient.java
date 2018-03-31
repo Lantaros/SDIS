@@ -1,3 +1,5 @@
+package protocol;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -39,8 +41,17 @@ public class TestClient {
          try {
             Registry registry = LocateRegistry.getRegistry();
             Services stub = (Services) registry.lookup(args[0]);
-            if (stub.backup(args[2], Integer.parseInt(args[3])))
-                System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
+
+            switch (args[1]){
+                case "BACKUP":
+                    if (stub.backup(args[2], Integer.parseInt(args[3])))
+                        System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
+                    else{
+
+                    }
+                    break;
+            }
+
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();

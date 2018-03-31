@@ -1,3 +1,5 @@
+package protocol;
+
 import java.security.InvalidParameterException;
 
 public enum MessageType {

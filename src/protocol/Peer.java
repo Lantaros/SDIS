@@ -1,3 +1,7 @@
+package protocol;
+
+import listeners.MDataBackupChannel;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -11,10 +15,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Peer implements Services {
     private static final double MAX_BACKUP_SIZE = 2048;
+    private static final int MAX_PUTCHUNK_ATTEMPTS = 5;
     private final int CHUNK_SIZE = 64000;
 
     private MulticastSocket controlSocket;
@@ -27,6 +34,7 @@ public class Peer implements Services {
     double diskSpace;
     ArrayList<Chunk> storedChunks;
     ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
+    ExecutorService poolExecutor;
 
     private Peer(String version, String peerID, String rmiID,
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
@@ -75,6 +83,7 @@ public class Peer implements Services {
             System.out.println("Error creating multicast RECOVERY socket, with IP" + dtaRecIp + " and port " + dtaRecPort);
         }
 
+        poolExecutor = Executors.newCachedThreadPool();
         peersStoredChunk = new ConcurrentHashMap<>();
     }
 
@@ -118,50 +127,33 @@ public class Peer implements Services {
             try {
                 p.controlSocket.receive(receivePacket);
             } catch (IOException e) {
-                System.out.println("Error receiving ");
+                System.out.println("Error receiving Control Channel Packet");
             }
-            
-            p.handleRequest(receivePacket);
+
+            //Start Backup Data
+            p.poolExecutor.execute(new MDataBackupChannel(p));
+
+            p.handleControlRequest(receivePacket);
         }
     }
 
-    private void handleRequest(DatagramPacket receivePacket) {
-        String response = new String(receivePacket.getData(), Charset.forName("ISO_8859_1"));
-        Message message = new Message(response);
+    private void handleControlRequest(DatagramPacket receivePacket) {
 
-        if(!message.getVersion().equals(this.version))
-            return; //Ignore message
-
-        switch (message.getType()){
-            case PUTCHUNK:
-                if(message.getSenderID() != this.id){
-                    Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
-                    if(!storedChunks.contains(chunk))
-                        if(this.diskSpace - message.getPayload().length >= 0){
-                            this.diskSpace -= message.getPayload().length;
-                            chunk.setData(message.getPayload());
-                            FileInfo.saveChunk(this, chunk);
-
-                        }
-                    //Protocol.sendSTORED(message)
-                }
-            break;
-        }
     }
 
 
     public String testConnection() {
-        return "Show de Bola Galera!!!";
+        return "Testing RMI Connection...";
     }
 
-    public void backup(String pathname, int repDegree){
-        java.io.File file = new java.io.File(pathname);
+    public boolean backup(String pathname, int repDegree){
+        File file = new File(pathname);
         FileInputStream fileInput;
         try {
             fileInput = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println("Peer " + this.id + "File not found " + pathname);
-            return;
+            return false;
         }
 
         MessageDigest digest = null;
@@ -178,11 +170,16 @@ public class Peer implements Services {
         long nChunks = file.length() / CHUNK_SIZE;
         byte[] buff = new byte[CHUNK_SIZE];
         long waitTime;
-        int nTries = 0;
+        int nTries;
 
+        Chunk chunk;
         for (int i = 0; i < nChunks; i++){
-            nTries++;
+            nTries = 1;
             waitTime = 1000;
+
+            chunk = new Chunk(fileID, i);
+            peersStoredChunk.put(chunk, new ArrayList<>()); //Create new chunk entry with no peers who stored it
+
             try {
                 fileInput.read(buff, i*CHUNK_SIZE, CHUNK_SIZE);
             } catch (IOException e) {
@@ -193,18 +190,22 @@ public class Peer implements Services {
             byte[] messageBytes = message.toString().getBytes();
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackup.getLocalAddress(), dataBackup.getLocalPort());
 
-            try {
-                dataBackup.send(packet);
-            } catch (IOException e) {
-                System.out.println("Failed sending PutChunk message");
-            }
+            while(nTries <= MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {
 
-            try {
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                System.out.println("Sleep Interrupted");
+                try {
+                    dataBackup.send(packet);
+                } catch (IOException e) {
+                    System.out.println("Failed sending PutChunk message");
+                }
+
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e) {
+                    System.out.println("Sleep Interrupted");
+                }
             }
         }
+        return true;
     }
 
 }

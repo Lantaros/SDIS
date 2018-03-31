@@ -1,12 +1,16 @@
+package protocol;
+
+import java.util.Arrays;
+
 /**
  * FileStuct's Chunk representation class
  */
 
 public class Chunk {
     private int orderNum;
-    private int repDegree;
-    private byte[] fileID;
+    private byte[] fileID; //fileHash
 
+    private int repDegree;
     private byte[] data;
 
     public Chunk(byte[] fileID, int chunkNum) {
@@ -38,7 +42,7 @@ public class Chunk {
     public boolean equals(Object obj) {
         if(obj instanceof Chunk) {
             Chunk chunk = (Chunk) obj;
-            return this.fileID.equals(chunk.getFileID()) && this.orderNum == chunk.getOrderNum();
+            return Arrays.equals(this.fileID, chunk.getFileID()) && this.orderNum == chunk.getOrderNum();
         }
         return false;
     }

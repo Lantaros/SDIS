@@ -1,5 +1,7 @@
+package protocol;
+
 import java.io.*;
-import java.nio.charset.Charset;
+
 
 public class FileInfo {
 
@@ -14,10 +16,20 @@ public class FileInfo {
             e.printStackTrace();
         }
 
+        FileOutputStream out = null;
         try {
-            FileOutputStream out = new FileOutputStream(file);
+            out = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println("File not found Exception");
+
+            try {
+                out.write(chunk.getData());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }catch (NullPointerException e2){
+                System.err.println("Null pointer exception ata saveChunk");
+            }
+
         }
     }
 
