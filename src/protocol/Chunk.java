@@ -8,12 +8,12 @@ import java.util.Arrays;
 
 public class Chunk {
     private int orderNum;
-    private byte[] fileID; //fileHash
+    String fileID; //fileHash
 
     private int repDegree;
     private byte[] data;
 
-    public Chunk(byte[] fileID, int chunkNum) {
+    public Chunk(String fileID, int chunkNum) {
         this.fileID = fileID;
         this.orderNum = chunkNum;
     }
@@ -26,7 +26,7 @@ public class Chunk {
         return repDegree;
     }
 
-    public byte[] getFileID() {
+    public String getFileID() {
         return fileID;
     }
 
@@ -42,7 +42,7 @@ public class Chunk {
     public boolean equals(Object obj) {
         if(obj instanceof Chunk) {
             Chunk chunk = (Chunk) obj;
-            return Arrays.equals(this.fileID, chunk.getFileID()) && this.orderNum == chunk.getOrderNum();
+            return fileID.equals(chunk.fileID) && this.orderNum == chunk.getOrderNum();
         }
         return false;
     }

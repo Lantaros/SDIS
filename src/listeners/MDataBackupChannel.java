@@ -1,11 +1,10 @@
 package listeners;
 
 import protocol.Chunk;
-import protocol.FileInfo;
+import protocol.FileUtils;
 import protocol.Message;
 import protocol.Peer;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.Charset;
@@ -25,6 +24,13 @@ public class MDataBackupChannel implements Runnable{
         DatagramPacket receivedPacket = new DatagramPacket(buff, Peer.CHUNK_SIZE);
 
         while (true) {
+
+            try {
+                Peer.dataBackup.receive(receivedPacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             String response = new String(receivedPacket.getData(), Charset.forName("ISO_8859_1"));
             Message message = new Message(response);
 
@@ -39,7 +45,8 @@ public class MDataBackupChannel implements Runnable{
                             if (peer.getDiskSpace() - message.getPayload().length >= 0) {
                                 peer.setDiskSpace(peer.getDiskSpace() - message.getPayload().length);
                                 chunk.setData(message.getPayload());
-                                FileInfo.saveChunk(peer, chunk);
+                                FileUtils.saveChunk(peer, chunk);
+                                peer.getStoredChunks().put(message.getFileID(), chunk);
                             }
                             else
                                 break;

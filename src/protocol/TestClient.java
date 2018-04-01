@@ -1,12 +1,9 @@
 package protocol;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class TestClient {
 
@@ -37,14 +34,13 @@ public class TestClient {
                 case "BACKUP":
                     if (stub.backup(args[2], Integer.parseInt(args[3])))
                         System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
-                    else{
-
-                    }
+                    else
+                        System.out.println("Error in file Backup");
                     break;
             }
 
         } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
+            System.err.println("TestClient exception: " + e.toString());
             e.printStackTrace();
         }
 

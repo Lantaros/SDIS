@@ -1,9 +1,13 @@
 package protocol;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
-public class FileInfo {
+public class FileUtils {
 
 
     public static void saveChunk(Peer peer, Chunk chunk) {
@@ -33,12 +37,18 @@ public class FileInfo {
         }
     }
 
-    /**TODO
-     * Splits the file into chunks
-     * @return Chunk array, all the chunks a file is composed of
-     */
-    public Chunk[] splitFile(){
-        return null;
+    public static String computeHash (String rawfileID){
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("MessageDigest Algorithm: SHA-256 does not exist");
+        }
+        byte[] hash = digest.digest(rawfileID.getBytes());
+        String hashHex = new BigInteger(1, hash).toString(16);
+
+
+        return hashHex;
     }
 
     //public static void saveFile();
