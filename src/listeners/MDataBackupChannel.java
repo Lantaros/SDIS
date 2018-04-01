@@ -73,8 +73,11 @@ public class MDataBackupChannel implements Runnable{
 
         try {
             Peer.controlSocket.send(packet);
+            System.out.println("\nSUCCESS sending STORED Message via <controlSocket channel> \n<senderID: " +
+                    msg.getSenderID()  + "> \n<fileID: " + new String(msg.getFileID()) + ">\n");
         } catch (IOException e) {
-            System.out.println("Failed sending STORED");
+            System.out.println("\nFAIL sending STORED Message via <controlSocket channel> \n<senderID: " +
+                    msg.getSenderID()  + "> \n<fileID: " + new String(msg.getFileID()) + ">\n");
         }
     }
 
