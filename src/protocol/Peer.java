@@ -225,7 +225,7 @@ public class Peer implements Services {
         int nTries;
         long readLength;
         Chunk chunk;
-        int sentBytes;
+        int readBytes;
         for (int i = 0; i < nChunks; i++){
             nTries = 0;
             waitTime = 500;
@@ -238,7 +238,8 @@ public class Peer implements Services {
                 readLength = CHUNK_SIZE;
 
             try {
-                sentBytes = fileInput.read(buff, i*CHUNK_SIZE, (int) readLength);
+                readBytes = fileInput.read(buff, i*CHUNK_SIZE, (int) readLength);
+                System.out.println("Read " + readBytes + " bytes from the file");
             } catch (IOException e) {
                 System.out.println("Chunk " + i + "IOException");
             }
