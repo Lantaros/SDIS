@@ -169,9 +169,12 @@ public class Peer implements Services {
         while(true){
             try {
                 Peer.controlSocket.receive(receivePacket);
-                System.out.println("Recebeu pacote pelo control channel");
-            } catch (IOException e) {
-                System.out.println("Error receiving on Control Channel Packet");
+                Message msg = new Message(new String(receivePacket.getData()));
+
+                System.out.println("\nSUCCESS RECEIVING" + msg.getType() + "PACKET via <controlSocket channel> \n<senderID: " +
+                        msg.getSenderID()  + "> \n<fileID: " + new String(msg.getFileID()) + ">\n");            } catch (IOException e) {
+            }catch (Exception e){
+                System.out.println("\nFAIL RECEIVING PACKET\n");
             }
         }
     }
@@ -194,7 +197,7 @@ public class Peer implements Services {
 
     public boolean backup(String pathname, int repDegree){
 
-        System.out.println("Peer" + this.id + ": BACKUP request " + pathname + " repDeg " + repDegree);
+        System.out.println("Beginning Peer" + this.id + ": BACKUP request " + pathname + " repDeg " + repDegree + "...");
 
         File file = new File(pathname);
         FileInputStream fileInput;
@@ -250,8 +253,13 @@ public class Peer implements Services {
 
                 try {
                     dataBackup.send(packet);
+                    System.out.println("\nTry nr." + nTries + " -> SUCCESS SENDING PUTCHUNK MESSAGE \n<Sent via: dataBackup channel> \n<Sender id: " +
+                            message.getSenderID()  + ">  \n<fileID: " +
+                            new String(message.getFileID()) + ">\n");
                 } catch (IOException e) {
-                    System.out.println("Failed sending PutChunk n " + i + " message");
+                    System.out.println("\nTry nr." + nTries + " -> FAIL SENDING PUTCHUNK MESSAGE via <Sent via: dataBackup channel> \n <Sender id: " +
+                            message.getSenderID()  + ">  \n<fileID: " +
+                            new String(message.getFileID()) + ">\n");
                 }
 
                 try {
