@@ -2,6 +2,7 @@ package protocol;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.Arrays;
 
 /**
  * <MessageType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF>
@@ -58,6 +59,8 @@ public class Message {
         this.chunkNum = chunkNum;
         this.desiredRepDeg = desiredRepDegree;
         this.payload = body;
+
+        System.out.println(payload.length);
     }
 
     public Message(String response) {
@@ -88,21 +91,37 @@ public class Message {
         }
     }
 
-    public String toString(){
+    public byte[] getBytes(){
+        String header =
+                type + " " +
+                version + " " +
+                fileID + " ";
 
-        switch (this.type){
-            case PUTCHUNK:
-                return type.toString() + ' ' + version + ' ' +
-                        Integer.toString(senderID) + ' ' + fileID +
-                        ' ' + Integer.toString(chunkNum) + ' ' +
-                        Integer.toString(desiredRepDeg) + ' ' + CRLF +
-                        CRLF + new String(payload, Charset.forName("ISO_8859_1"));
-            case STORED:
-                return type.toString() + ' ' + version + ' ' +
-                        Integer.toString(senderID) + ' ' + fileID +
-                        ' ' + Integer.toString(chunkNum) + CRLF + CRLF;
-            default:
-                return "";
+        if(type != MessageType.DELETE)
+            header += chunkNum + " ";
+
+        if(type == MessageType.PUTCHUNK)
+            header += desiredRepDeg + " ";
+
+        header += CRLF + CRLF;
+
+
+        byte[] headerBytes = header.getBytes();
+
+        //System.out.println("headerBytes: " + headerBytes.length);
+
+        if(type == MessageType.PUTCHUNK || type == MessageType.CHUNK){
+            byte[] fullMessage = new byte[headerBytes.length + payload.length];
+
+            System.arraycopy(headerBytes, 0, fullMessage, 0, headerBytes.length);
+            System.arraycopy(payload, 0, fullMessage, headerBytes.length, payload.length);
+
+            //System.out.println("Payload: " + payload.length);
+
+            //System.out.println("fullMessage: " + fullMessage.length);
+
+            return fullMessage;
         }
+        return headerBytes;
     }
 }

@@ -245,7 +245,7 @@ public class Peer implements Services {
             }
 
             Message message = new Message(MessageType.PUTCHUNK, this.version, this.id, fileHash, i, repDegree, buff);
-            byte[] messageBytes = message.toString().getBytes();
+            byte[] messageBytes = message.getBytes();
 
             System.out.println(dataBackupIP.getHostAddress() + " " + dataBackup.getLocalPort());
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackupIP, dataBackup.getLocalPort());
@@ -256,13 +256,15 @@ public class Peer implements Services {
 
                 try {
                     dataBackup.send(packet);
-                    System.out.println("\nTry nr." + nTries + " -> SUCCESS SENDING PUTCHUNK MESSAGE \n<Sent via: dataBackup channel> \n<Sender id: " +
-                            message.getSenderID()  + ">  \n<fileID: " +
-                            new String(message.getFileID()) + ">\n");
+//                    System.out.println("\nTry nr." + nTries + " -> SUCCESS SENDING PUTCHUNK MESSAGE \n<Sent via: dataBackup channel> \n<Sender id: " +
+//                            message.getSenderID()  + ">  \n<fileID: " +
+//                            message.getFileID() + ">\n");
                 } catch (IOException e) {
-                    System.out.println("\nTry nr." + nTries + " -> FAIL SENDING PUTCHUNK MESSAGE via <Sent via: dataBackup channel> \n <Sender id: " +
-                            message.getSenderID()  + ">  \n<fileID: " +
-                            new String(message.getFileID()) + ">\n");
+//                    System.out.println("\nTry nr." + nTries + " -> FAIL SENDING PUTCHUNK MESSAGE via <Sent via: dataBackup channel> \n <Sender id: " +
+//                            message.getSenderID()  + ">  \n<fileID: " +
+//                           message.getFileID() + ">\n");
+
+                    e.printStackTrace();
                 }
 
                 try {
