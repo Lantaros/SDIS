@@ -65,6 +65,8 @@ public class Peer implements Services {
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
          String dtaBackPort, String dtaRecIp, String dtaRecPort, String diskSpace){
 
+        System.setProperty("java.net.preferIPv4Stack", "true");
+
         if(!version.equals("1.0")) {
             System.out.println("Invalid Protocol version\n. The only peer version avaiable is the 1.0");
             System.exit(2);
@@ -148,15 +150,18 @@ public class Peer implements Services {
         //Read requests
         byte[] rcvBuffer = new byte[64512];
         DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
+        System.out.println("chega aqui 1");
         while(true){
             try {
                 p.controlSocket.receive(receivePacket);
+                System.out.println("não chegou a este caralho");
             } catch (IOException e) {
                 System.out.println("Error receiving Control Channel Packet");
             }
 
             //Start Backup Data
             p.poolExecutor.execute(new MDataBackupChannel(p));
+            System.out.println("não chegou a este caralho #2");
 
             p.handleControlRequest(receivePacket);
         }
@@ -191,6 +196,7 @@ public class Peer implements Services {
         String nameLastModification = file.getName() + file.lastModified();
         byte[] fileID = digest.digest(nameLastModification.getBytes(StandardCharsets.UTF_8));
 
+        System.out.println("Chegou aqui galera! VERY FUNNY");
 
         long nChunks = file.length() / CHUNK_SIZE;
         byte[] buff = new byte[CHUNK_SIZE];
