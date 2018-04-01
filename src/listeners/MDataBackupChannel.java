@@ -62,7 +62,7 @@ public class MDataBackupChannel implements Runnable{
 
         byte[] messageBytes = msg.toString().getBytes(Charset.forName("ISO_8859_1"));
 
-        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, Peer.controlSocket.getLocalAddress(), Peer.controlSocket.getLocalPort());
+        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, Peer.controlSocketIP, Peer.controlSocket.getLocalPort());
 
             Random r = new Random(System.currentTimeMillis());
             try {

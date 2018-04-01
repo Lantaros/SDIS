@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/protocol/Peer.java" line="181" />
+    <bookmark url="file://$PROJECT_DIR$/src/protocol/Peer.java" line="180" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ed596566-5748-4f3d-92ab-8d64f3566ebb" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/listeners/MDataBackupChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/listeners/MDataBackupChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/Chunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/Chunk.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/FileInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/FileUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/Message.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/protocol/Peer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/Peer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/TestClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/TestClient.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="bin/" />
@@ -28,7 +24,7 @@
         <entry file="file://$PROJECT_DIR$/src/protocol/Chunk.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+              <caret line="10" column="29" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -49,7 +45,7 @@
         <entry file="file://$PROJECT_DIR$/src/protocol/TestClient.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
-              <caret line="4" column="34" lean-forward="true" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
+              <caret line="4" column="34" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -69,8 +65,8 @@
       <file leaf-file-name="Peer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/protocol/Peer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="363">
-              <caret line="106" column="76" selection-start-line="106" selection-start-column="76" selection-end-line="106" selection-end-column="76" />
+            <state relative-caret-position="170">
+              <caret line="224" column="22" selection-start-line="224" selection-start-column="22" selection-end-line="224" selection-end-column="22" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1253#1254#0" expanded="true" />
@@ -85,8 +81,8 @@
       <file leaf-file-name="MDataBackupChannel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/listeners/MDataBackupChannel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="21" column="48" lean-forward="true" selection-start-line="21" selection-start-column="48" selection-end-line="21" selection-end-column="48" />
+            <state relative-caret-position="581">
+              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#380#381#0" expanded="true" />
@@ -121,7 +117,7 @@
         <entry file="file://$PROJECT_DIR$/src/protocol/MessageType.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1065">
-              <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+              <caret line="71" selection-start-line="71" selection-end-line="71" />
             </state>
           </provider>
         </entry>
@@ -182,9 +178,9 @@
         <option value="$PROJECT_DIR$/src/protocol/FileInfo.java" />
         <option value="$PROJECT_DIR$/src/protocol/FileUtils.java" />
         <option value="$PROJECT_DIR$/src/protocol/Message.java" />
-        <option value="$PROJECT_DIR$/src/listeners/MDataBackupChannel.java" />
         <option value="$PROJECT_DIR$/src/protocol/Chunk.java" />
         <option value="$PROJECT_DIR$/src/protocol/TestClient.java" />
+        <option value="$PROJECT_DIR$/src/listeners/MDataBackupChannel.java" />
         <option value="$PROJECT_DIR$/src/protocol/Peer.java" />
       </list>
     </option>
@@ -196,9 +192,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="30" />
-    <option name="width" value="960" />
-    <option name="height" value="1050" />
+    <option name="x" value="88" />
+    <option name="y" value="179" />
+    <option name="width" value="1353" />
+    <option name="height" value="787" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -344,7 +341,7 @@
       <workItem from="1522487099201" duration="26346000" />
       <workItem from="1522576795455" duration="4624000" />
       <workItem from="1522583027617" duration="2230000" />
-      <workItem from="1522597664203" duration="8511000" />
+      <workItem from="1522597664203" duration="12800000" />
     </task>
     <task id="LOCAL-00001" summary="Working on Message class and Putchunk">
       <created>1522423305961</created>
@@ -395,11 +392,18 @@
       <option name="project" value="LOCAL" />
       <updated>1522585220293</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Fixing backup bugs">
+      <created>1522606302973</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1522606302974</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="89265000" />
+    <option name="totallyTimeSpent" value="93554000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1920" height="1050" extended-state="6" />
@@ -407,12 +411,13 @@
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.32978722" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5005208" side_tool="true" weight="0.19148937" />
       <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3287234" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3287234" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49947917" weight="0.19148937" />
       <window_info id="Capture Tool" order="2" />
@@ -426,7 +431,6 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.32978722" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -479,7 +483,8 @@
     <MESSAGE value="Need testing Backup protocol" />
     <MESSAGE value="Fixed Message" />
     <MESSAGE value="Need to implement handleControlRequest" />
-    <option name="LAST_COMMIT_MESSAGE" value="Need to implement handleControlRequest" />
+    <MESSAGE value="Fixing backup bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing backup bugs" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -868,7 +873,7 @@
     <entry file="file://$PROJECT_DIR$/src/protocol/MessageType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1065">
-          <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
         </state>
       </provider>
     </entry>
@@ -882,22 +887,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/listeners/MDataBackupChannel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="21" column="48" lean-forward="true" selection-start-line="21" selection-start-column="48" selection-end-line="21" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#380#381#0" expanded="true" />
-            <element signature="e#404#405#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/protocol/Chunk.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+          <caret line="10" column="29" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -914,17 +907,29 @@
     <entry file="file://$PROJECT_DIR$/src/protocol/TestClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
-          <caret line="4" column="34" lean-forward="true" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
+          <caret line="4" column="34" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/listeners/MDataBackupChannel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="581">
+          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#380#381#0" expanded="true" />
+            <element signature="e#404#405#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/protocol/Peer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="363">
-          <caret line="106" column="76" selection-start-line="106" selection-start-column="76" selection-end-line="106" selection-end-column="76" />
+        <state relative-caret-position="170">
+          <caret line="224" column="22" selection-start-line="224" selection-start-column="22" selection-end-line="224" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1253#1254#0" expanded="true" />

@@ -9,8 +9,6 @@ import java.net.MulticastSocket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +23,11 @@ public class Peer implements Services {
     public static MulticastSocket controlSocket;
     public static MulticastSocket dataBackup;
     public static MulticastSocket dataRecovery;
+
+    public static InetAddress controlSocketIP;
+    public static InetAddress dataBackupIP;
+    public static InetAddress dataRecoveryIP;
+
     private String version;
 
     private int id;
@@ -63,7 +66,7 @@ public class Peer implements Services {
          String ctrlSckIp, String ctrlSckPort, String dtaBackIp,
          String dtaBackPort, String dtaRecIp, String dtaRecPort, String diskSpace){
 
-        //System.setProperty("java.net.preferIPv4Stack", "true");
+        System.setProperty("java.net.preferIPv4Stack", "true");
 
         if(!version.equals("1.0")) {
             System.out.println("Invalid Protocol version\n. The only peer version avaiable is the 1.0");
@@ -83,9 +86,10 @@ public class Peer implements Services {
 
         try {
             System.out.println("Control " + ctrlSckIp + ":" + ctrlSckPort);
-            InetAddress group = InetAddress.getByName(ctrlSckIp);
+            controlSocketIP = InetAddress.getByName(ctrlSckIp);
             this.controlSocket = new MulticastSocket(Integer.parseInt(ctrlSckPort));
-            this.controlSocket.joinGroup(group);
+            this.controlSocket.setTimeToLive(1);
+            this.controlSocket.joinGroup(controlSocketIP);
         }
         catch(IOException e){
             System.out.println("Error creating multicast CONTROL socket, with IP" + ctrlSckIp + " and port " + ctrlSckPort);
@@ -94,9 +98,10 @@ public class Peer implements Services {
 
         try {
             System.out.println("DataBckup " + dtaBackIp + ":" + dtaBackPort);
-            InetAddress group = InetAddress.getByName(dtaBackIp);
+            dataBackupIP = InetAddress.getByName(dtaBackIp);
             this.dataBackup = new MulticastSocket(Integer.parseInt(dtaBackPort));
-            this.dataBackup.joinGroup(group);
+            this.dataBackup.setTimeToLive(1);
+            this.dataBackup.joinGroup(dataBackupIP);
         }
         catch(IOException e){
             System.out.println("Error creating multicast BACKUP socket, with IP" + dtaBackIp + " and port " + dtaBackPort);
@@ -105,20 +110,14 @@ public class Peer implements Services {
 
         try {
             System.out.println("DataRecovery " + dtaRecIp + ":" + dtaRecPort);
-            InetAddress group = InetAddress.getByName(dtaRecIp);
+            dataRecoveryIP = InetAddress.getByName(dtaRecIp);
             this.dataRecovery = new MulticastSocket(Integer.parseInt(dtaRecPort));
-            this.dataRecovery.joinGroup(group);
+            this.dataRecovery.setTimeToLive(1);
+            this.dataRecovery.joinGroup(dataRecoveryIP);
         }
         catch(IOException e){
             System.out.println("Error creating multicast RECOVERY socket, with IP" + dtaRecIp + " and port " + dtaRecPort);
             System.exit(1);
-        }
-
-        String str = "test";
-        try {
-            controlSocket.send(new DatagramPacket(str.getBytes(), str.length(), controlSocket.getLocalAddress(), controlSocket.getLocalPort()));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         poolExecutor = Executors.newCachedThreadPool();
@@ -160,16 +159,16 @@ public class Peer implements Services {
 
         //Start Backup Data
         MDataBackupChannel dBckChannel = new MDataBackupChannel(p);
-        //Peer.poolExecutor.execute(dBckChannel);
+        Peer.poolExecutor.execute(dBckChannel);
 
-        //Read Control Channel requests
+        //Listen to Control Channel requests
         byte[] rcvBuffer = new byte[64512];
         DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
 
         while(true){
             try {
                 Peer.controlSocket.receive(receivePacket);
-                System.out.println("Recebeu pacote pelo control channel");
+                System.out.println("Received packet through Control Channel");
             } catch (IOException e) {
                 System.out.println("Error receiving on Control Channel Packet");
             }
@@ -223,6 +222,7 @@ public class Peer implements Services {
         int nTries;
         long readLength;
         Chunk chunk;
+        int sentBytes;
         for (int i = 0; i < nChunks; i++){
             nTries = 0;
             waitTime = 500;
@@ -235,14 +235,16 @@ public class Peer implements Services {
                 readLength = CHUNK_SIZE;
 
             try {
-                fileInput.read(buff, i*CHUNK_SIZE, (int) readLength);
+                sentBytes = fileInput.read(buff, i*CHUNK_SIZE, (int) readLength);
             } catch (IOException e) {
                 System.out.println("Chunk " + i + "IOException");
             }
 
             Message message = new Message(MessageType.PUTCHUNK, this.version, this.id, fileHash, i, repDegree, buff);
             byte[] messageBytes = message.toString().getBytes();
-            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackup.getLocalAddress(), dataBackup.getLocalPort());
+
+            System.out.println(dataBackupIP.getHostAddress() + " " + dataBackup.getLocalPort());
+            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackupIP, dataBackup.getLocalPort());
 
             while(nTries < MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {
                 nTries++;
