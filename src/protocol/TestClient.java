@@ -11,8 +11,7 @@ import java.util.regex.Pattern;
 public class TestClient {
 
     /**
-     * <peer_ap> ip:port
-     *Is the peer's access point <ip:port>. This depends on the implementation. (See section 4)
+     * <peer_ap> rmi object name
      *<operation>
      *Is the operation the peer of the backup servic
      *<opnd_1>
@@ -29,15 +28,7 @@ public class TestClient {
             System.exit(1);
         }
 
-        //Splits initiator Peer's AP ( IP and Port )
-        Pattern p = Pattern.compile("(?:([^:]+)?:)?(\\d+)");
-        Matcher m = p.matcher(args[0]);
-        m.matches();
 
-
-
-        //Port 8086 - TestClient -> Peer port
-        TestClient client = new TestClient(args[0]);
          try {
             Registry registry = LocateRegistry.getRegistry();
             Services stub = (Services) registry.lookup(args[0]);
@@ -58,10 +49,4 @@ public class TestClient {
         }
 
     }
-
-    private TestClient(String peerIP){
-
-    }
-
-
 }

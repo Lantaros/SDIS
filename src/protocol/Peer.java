@@ -74,10 +74,10 @@ public class Peer implements Services {
         this.version = "1.0";
 
         this.diskSpace = Double.parseDouble(diskSpace);
-        if(this.diskSpace > MAX_BACKUP_SIZE /*|| this.diskSpace > FileStuct.getFreeSpace()  */){
-            System.out.println("Exceeded maximum peer disk backup space. Maximum allowed " + MAX_BACKUP_SIZE);
-            System.exit(3);
-        }
+//        if(this.diskSpace > MAX_BACKUP_SIZE /*|| this.diskSpace > FileStuct.getFreeSpace()  */){
+//            System.out.println("Exceeded maximum peer disk backup space. Maximum allowed " + MAX_BACKUP_SIZE);
+//            System.exit(3);
+//        }
 
         this.id = Integer.parseInt(peerID);
         this.rmiID = rmiID;
@@ -150,25 +150,28 @@ public class Peer implements Services {
         //Read requests
         byte[] rcvBuffer = new byte[64512];
         DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
-        System.out.println("chega aqui 1");
+
         while(true){
             try {
-                p.controlSocket.receive(receivePacket);
-                System.out.println("não chegou a este caralho");
+                Peer.controlSocket.receive(receivePacket);
+                System.out.println("Recebeu pacote pelo control channel");
             } catch (IOException e) {
-                System.out.println("Error receiving Control Channel Packet");
+                System.out.println("Error receiving on Control Channel Packet");
             }
 
             //Start Backup Data
-            p.poolExecutor.execute(new MDataBackupChannel(p));
-            System.out.println("não chegou a este caralho #2");
+            Peer.poolExecutor.execute(new MDataBackupChannel(p));
+
 
             p.handleControlRequest(receivePacket);
         }
     }
 
     private void handleControlRequest(DatagramPacket receivePacket) {
-
+        case STORED:
+        Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
+        peersStoredChunk.get(chunk).add(message.getSenderID());
+        break;
     }
 
 
@@ -177,6 +180,9 @@ public class Peer implements Services {
     }
 
     public boolean backup(String pathname, int repDegree){
+
+        System.out.println("Peer" + this.id + ": BACKUP request" + pathname + "repDeg " + repDegree);
+
         File file = new File(pathname);
         FileInputStream fileInput;
         try {
@@ -196,7 +202,7 @@ public class Peer implements Services {
         String nameLastModification = file.getName() + file.lastModified();
         byte[] fileID = digest.digest(nameLastModification.getBytes(StandardCharsets.UTF_8));
 
-        System.out.println("Chegou aqui galera! VERY FUNNY");
+        System.out.println("File Hash " + new String(fileID));
 
         long nChunks = file.length() / CHUNK_SIZE;
         byte[] buff = new byte[CHUNK_SIZE];
@@ -205,8 +211,8 @@ public class Peer implements Services {
 
         Chunk chunk;
         for (int i = 0; i < nChunks; i++){
-            nTries = 1;
-            waitTime = 1000;
+            nTries = 0;
+            waitTime = 500;
 
             chunk = new Chunk(fileID, i);
             peersStoredChunk.put(chunk, new ArrayList<>()); //Create new chunk entry with no peers who stored it
@@ -222,6 +228,8 @@ public class Peer implements Services {
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackup.getLocalAddress(), dataBackup.getLocalPort());
 
             while(nTries <= MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {
+                nTries++;
+                waitTime = waitTime * 2;
 
                 try {
                     dataBackup.send(packet);
@@ -238,5 +246,4 @@ public class Peer implements Services {
         }
         return true;
     }
-
 }
