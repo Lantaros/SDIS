@@ -61,7 +61,8 @@ public class Message {
     }
 
     public Message(String response) {
-        String[] tokens = response.trim().split(" ");
+        String[] splitedMsg = response.trim().split("\r\n\r\n");
+        String[] tokens = splitedMsg[0].split(" ");
 
         this.type = MessageType.fromString(tokens[0]);
 
@@ -72,13 +73,14 @@ public class Message {
             case PUTCHUNK:
                 this.senderID = Integer.parseInt(tokens[2]);
                 this.fileID = tokens[3].getBytes(Charset.forName("ISO_8859_1"));
-                this.chunkNum = Integer.parseInt(tokens[5]);
+                this.chunkNum = Integer.parseInt(tokens[4]);
                 this.desiredRepDeg = Integer.parseInt(tokens[5]);
-                this.payload = tokens[7].getBytes(Charset.forName("ISO_8859_1"));
+                this.payload = splitedMsg[1].getBytes(Charset.forName("ISO_8859_1"));
             break;
 
             case STORED:
                 this.senderID = Integer.parseInt(tokens[2]);
+                this.fileID = tokens[3].getBytes(Charset.forName("ISO_8859_1"));
                 this.chunkNum = Integer.parseInt(tokens[3]);
             break;
             default:
@@ -87,11 +89,21 @@ public class Message {
     }
 
     public String toString(){
-        String filID = new String(fileID, Charset.forName("ISO_8859_1"));
+        String fileIDStr = new String(fileID, Charset.forName("ISO_8859_1"));
 
-        return type.toString() + ' ' + version + ' ' +
-                Integer.toString(senderID) + ' ' + filID +
-                ' ' + Integer.toString(chunkNum) + ' ' +
-                Integer.toString(desiredRepDeg) + ' ' + CRLF;
+        switch (this.type){
+            case PUTCHUNK:
+                return type.toString() + ' ' + version + ' ' +
+                        Integer.toString(senderID) + ' ' + fileIDStr +
+                        ' ' + Integer.toString(chunkNum) + ' ' +
+                        Integer.toString(desiredRepDeg) + ' ' + CRLF +
+                        CRLF + new String(payload, Charset.forName("ISO_8859_1"));
+            case STORED:
+                return type.toString() + ' ' + version + ' ' +
+                        Integer.toString(senderID) + ' ' + fileIDStr +
+                        ' ' + Integer.toString(chunkNum) + CRLF + CRLF;
+            default:
+                return "";
+        }
     }
 }
