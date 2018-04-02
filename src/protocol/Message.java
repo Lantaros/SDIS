@@ -21,7 +21,12 @@ public class Message {
     private int desiredRepDeg;
     byte[] payload;
 
-
+    public Message(MessageType type, String version, int senderID, String fileID) {
+        this.type = type;
+        this.version = version;
+        this.senderID = senderID;
+        this.fileID = fileID;
+    }
 
 
     public MessageType getType() {
@@ -124,6 +129,7 @@ public class Message {
 
             return fullMessage;
         }
+
         return headerBytes;
     }
 }

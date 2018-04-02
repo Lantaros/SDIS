@@ -59,11 +59,16 @@ public class TestClient {
                 switch (args[1]){
                     case "BACKUP":
                         if (stub.backup(args[2], Integer.parseInt(args[3])))
-                            System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
+                            System.out.println("Peer" + args[0] + ": file " + args[3] + " BACKUP RMI Message sent successfully");
                         else
-                            System.out.println("Error in file Backup");
+                            System.out.println("Error sending BACKUP message via RMI");
                         break;
                     case "DELETE":
+                        if (stub.delete(args[2]))
+                            System.out.println("Peer" + args[0] + ": file " + args[3] + " DELETE RMI message sent successfully");
+                        else
+                            System.out.println("Error sending DELETE message via RMI");
+                        break;
                 }
 
         } catch (Exception e) {
