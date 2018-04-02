@@ -3,12 +3,14 @@ package protocol;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class TestClient {
 
     /**
-     * <peer_ap> rmi object name
+     * <peer_ap> [resgistryIP:port/]rmi object name
      *<operation>
      *Is the operation the peer of the backup servic
      *<opnd_1>
@@ -25,19 +27,43 @@ public class TestClient {
             System.exit(1);
         }
 
+        /*//Parse peer Access Point - registry IP and Port + rmi name
+        Pattern p = Pattern.compile("(?:(?:([^:]+)?:?(\\d+)\\/)?(\\w+))");
+        Matcher m = p.matcher(args[0]);
+        m.matches();
+
+
 
          try {
+             Registry registry;
+             Services stub;
+             if(m.groupCount() == 1) {
+                 registry = LocateRegistry.getRegistry();
+                 stub = (Services) registry.lookup(m.group(1));
+             }
+             else if (m.groupCount() == 2) {
+                 registry = LocateRegistry.getRegistry(Integer.parseInt(m.group(1)));
+                 stub = (Services) registry.lookup(m.group(2));
+
+             }
+             else {
+                 registry = LocateRegistry.getRegistry(m.group(1), Integer.parseInt(m.group(2)));
+                 stub = (Services) registry.lookup(m.group(3));
+             }*/
+
+        try {
             Registry registry = LocateRegistry.getRegistry();
             Services stub = (Services) registry.lookup(args[0]);
 
-            switch (args[1]){
-                case "BACKUP":
-                    if (stub.backup(args[2], Integer.parseInt(args[3])))
-                        System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
-                    else
-                        System.out.println("Error in file Backup");
-                    break;
-            }
+
+                switch (args[1]){
+                    case "BACKUP":
+                        if (stub.backup(args[2], Integer.parseInt(args[3])))
+                            System.out.println("Peer" + args[0] + ": backup file" + args[3] + "succefuly");
+                        else
+                            System.out.println("Error in file Backup");
+                        break;
+                }
 
         } catch (Exception e) {
             System.err.println("TestClient exception: " + e.toString());

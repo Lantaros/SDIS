@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,7 +36,7 @@ public class Peer implements Services {
     private String rmiID;
     private double diskSpace;
     private ConcurrentHashMap<String, Chunk> storedChunks;
-    private ConcurrentHashMap<Chunk, ArrayList<Integer>> peersStoredChunk;
+    private ConcurrentHashMap<Chunk, HashSet<Integer>> peersStoredChunk;
     public static ExecutorService poolExecutor;
 
     public String getVersion() {
@@ -54,7 +55,7 @@ public class Peer implements Services {
         return storedChunks;
     }
 
-    public ConcurrentHashMap<Chunk, ArrayList<Integer>> getPeersStoredChunk() {
+    public ConcurrentHashMap<Chunk, HashSet<Integer>> getPeersStoredChunk() {
         return peersStoredChunk;
     }
 
@@ -173,6 +174,7 @@ public class Peer implements Services {
                 String resp = new String(receivePacket.getData());
                 //System.out.println("Control " + resp);
                 Message msg = new Message(resp);
+                p.handleControlRequest(receivePacket);
 
                 //System.out.println("\nSuccess receiving " + msg.getType() + "via <controlSocket channel> \n<senderID: " + msg.getSenderID()  + "> ");
             } catch (IOException e) {
@@ -187,6 +189,7 @@ public class Peer implements Services {
 
         switch (message.getType()) {
             case STORED:
+                System.out.println("Received STORED from" + message.getSenderID() + " " + message.getChunkNum());
                 Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
                 peersStoredChunk.get(chunk).add(message.getSenderID());
                 break;
@@ -227,7 +230,7 @@ public class Peer implements Services {
 
         long waitTime;
         int nTries;
-        long readLength;
+
         Chunk chunk;
         int readBytes;
         for (int i = 0; i < nChunks; i++){
@@ -235,11 +238,9 @@ public class Peer implements Services {
             waitTime = 500;
 
             chunk = new Chunk(fileHash, i);
-            peersStoredChunk.put(chunk, new ArrayList<>()); //Create new chunk entry with no peers who stored it
+            peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
 
-//            readLength = fileSize - i*CHUNK_SIZE;
-//            if(fileSize - i*CHUNK_SIZE > 0)
-//                readLength = CHUNK_SIZE;
+
 
             try {
                 readBytes = fileInput.read(buff);
@@ -257,16 +258,12 @@ public class Peer implements Services {
                 nTries++;
                 waitTime = waitTime * 2;
 
+                System.out.println("Current Replication degree " + peersStoredChunk.get(chunk).size());
+
                 try {
                     dataBackup.send(packet);
-//                    System.out.println("\nTry nr." + nTries + " -> SUCCESS SENDING PUTCHUNK MESSAGE \n<Sent via: dataBackup channel> \n<Sender id: " +
-//                            message.getSenderID()  + ">  \n<fileID: " +
-//                            message.getFileID() + ">\n");
+                   System.out.println("\nTry nr." + nTries + " sending PUTCHUNK message " +  message.getFileID() + " chunk " + i);
                 } catch (IOException e) {
-//                    System.out.println("\nTry nr." + nTries + " -> FAIL SENDING PUTCHUNK MESSAGE via <Sent via: dataBackup channel> \n <Sender id: " +
-//                            message.getSenderID()  + ">  \n<fileID: " +
-//                           message.getFileID() + ">\n");
-
                     e.printStackTrace();
                 }
 
@@ -278,6 +275,8 @@ public class Peer implements Services {
             }
             if(nTries > MAX_PUTCHUNK_ATTEMPTS)
                 System.out.println("Didn't achieve desired repDegree on Chunk " + i);
+            else
+                System.out.println("Desired repDegree Achieved");
 
         }
         return true;
