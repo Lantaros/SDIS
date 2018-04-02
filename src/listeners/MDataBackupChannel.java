@@ -40,7 +40,9 @@ public class MDataBackupChannel implements Runnable{
                         System.out.println("Received PUTCHUNK " + message.getFileID() + " " + message.getChunkNum());
                         Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
 
-                        if (!peer.getStoredChunks().containsValue(chunk)){
+                        boolean bool = peer.getStoredChunks().containsValue(chunk);
+                        if (!bool){
+                            System.out.println("Saving new chunk!!");
                             //if (peer.getDiskSpace() - message.getPayload().length >= 0) {
                                 //peer.setDiskSpace(peer.getDiskSpace() - message.getPayload().length);
                                 chunk.setData(message.getPayload());

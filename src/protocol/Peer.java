@@ -171,11 +171,11 @@ public class Peer implements Services {
             try {
                 Peer.controlSocket.receive(receivePacket);
                 String resp = new String(receivePacket.getData());
-                System.out.println("Control " + resp);
+                //System.out.println("Control " + resp);
                 Message msg = new Message(resp);
 
-                System.out.println("\nSUCCESS RECEIVING" + msg.getType() + "PACKET via <controlSocket channel> \n<senderID: " +
-                        msg.getSenderID()  + "> \n<fileID: " + msg.getFileID() + ">\n");            } catch (IOException e) {
+                //System.out.println("\nSuccess receiving " + msg.getType() + "via <controlSocket channel> \n<senderID: " + msg.getSenderID()  + "> ");
+            } catch (IOException e) {
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -217,8 +217,8 @@ public class Peer implements Services {
 
         System.out.println("FileHash: " + fileHash);
 
-        long nChunks = file.length() / CHUNK_SIZE;
-        byte[] buff = new byte[PACKET_SIZE];
+        long nChunks = file.length() / CHUNK_SIZE + 1;
+        byte[] buff = new byte[CHUNK_SIZE];
 
 
         long fileSize = file.length();

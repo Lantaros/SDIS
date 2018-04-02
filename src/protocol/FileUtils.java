@@ -11,7 +11,10 @@ public class FileUtils {
 
 
     public static void saveChunk(Peer peer, Chunk chunk) {
-        File file = new File("peer" + peer.getId() + "/" + new String(chunk.getFileID()) +"|" + chunk.getOrderNum());
+        System.out.println("saveChunk body size: " + chunk.getData().length);
+
+
+        File file = new File("../peer" + peer.getId() + "/" + chunk.getFileID() +"/" + chunk.getOrderNum());
         file.getParentFile().mkdirs();
 
         try {
@@ -25,15 +28,15 @@ public class FileUtils {
             out = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println("File not found Exception");
+        }
 
-            try {
-                out.write(chunk.getData());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }catch (NullPointerException e2){
-                System.err.println("Null pointer exception ata saveChunk");
-            }
-
+        try {
+            out.write(chunk.getData());
+            out.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }catch (NullPointerException e2){
+            System.err.println("Null pointer exception at saveChunk");
         }
     }
 
