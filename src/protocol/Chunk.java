@@ -1,5 +1,7 @@
 package protocol;
 
+import java.util.Objects;
+
 /**
  * FileStuct's Chunk representation class
  */
@@ -43,6 +45,12 @@ public class Chunk {
             return fileID.equals(chunk.fileID) && this.orderNum == chunk.getOrderNum();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(fileID, orderNum);
     }
 
     public void setData(byte[] payload) {

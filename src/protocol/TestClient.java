@@ -63,6 +63,7 @@ public class TestClient {
                         else
                             System.out.println("Error in file Backup");
                         break;
+                    case "DELETE":
                 }
 
         } catch (Exception e) {

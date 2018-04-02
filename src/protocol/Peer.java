@@ -186,22 +186,25 @@ public class Peer implements Services {
 
     private void handleControlRequest(DatagramPacket receivePacket) {
         Message message = new Message(new String(receivePacket.getData()));
+        Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
 
         switch (message.getType()) {
             case STORED:
                 System.out.println("Received STORED from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
-                Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
 
-                if(!peersStoredChunk.containsValue(chunk)){
+
+                if(peersStoredChunk.get(chunk) == null){
                     peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
                     peersStoredChunk.get(chunk).add(message.getSenderID());
                 }
                 else{
                     peersStoredChunk.get(chunk).add(message.getSenderID());
                 }
+            break;
+            case DELETE:
 
-                break;
         }
+        System.out.println("HashSet Size: " + peersStoredChunk.get(chunk).size() + " | " + peersStoredChunk.size());
     }
 
 
@@ -248,9 +251,6 @@ public class Peer implements Services {
             chunk = new Chunk(fileHash, i);
             if(!peersStoredChunk.containsValue(chunk))
                 peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
-            else
-                continue;
-
 
 
             try {
