@@ -19,6 +19,7 @@ public class Peer implements Services {
     public static final double MAX_BACKUP_SIZE = 2048;
     public static final int MAX_PUTCHUNK_ATTEMPTS = 5;
     public static final int CHUNK_SIZE = 64000;
+    public static final int PACKET_SIZE = 64200;
 
     public static MulticastSocket controlSocket;
     public static MulticastSocket dataBackup;
@@ -122,6 +123,7 @@ public class Peer implements Services {
 
         poolExecutor = Executors.newCachedThreadPool();
         peersStoredChunk = new ConcurrentHashMap<>();
+        storedChunks = new ConcurrentHashMap<>();
     }
 
     /**
@@ -162,18 +164,20 @@ public class Peer implements Services {
         Peer.poolExecutor.execute(dBckChannel);
 
         //Listen to Control Channel requests
-        byte[] rcvBuffer = new byte[64512];
+        byte[] rcvBuffer = new byte[PACKET_SIZE];
         DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
 
         while(true){
             try {
                 Peer.controlSocket.receive(receivePacket);
-                Message msg = new Message(new String(receivePacket.getData()));
+                String resp = new String(receivePacket.getData());
+                System.out.println("Control " + resp);
+                Message msg = new Message(resp);
 
                 System.out.println("\nSUCCESS RECEIVING" + msg.getType() + "PACKET via <controlSocket channel> \n<senderID: " +
-                        msg.getSenderID()  + "> \n<fileID: " + new String(msg.getFileID()) + ">\n");            } catch (IOException e) {
+                        msg.getSenderID()  + "> \n<fileID: " + msg.getFileID() + ">\n");            } catch (IOException e) {
             }catch (Exception e){
-                System.out.println("\nFAIL RECEIVING PACKET\n");
+                e.printStackTrace();
             }
         }
     }
@@ -214,7 +218,7 @@ public class Peer implements Services {
         System.out.println("FileHash: " + fileHash);
 
         long nChunks = file.length() / CHUNK_SIZE;
-        byte[] buff = new byte[CHUNK_SIZE];
+        byte[] buff = new byte[PACKET_SIZE];
 
 
         long fileSize = file.length();
@@ -233,21 +237,20 @@ public class Peer implements Services {
             chunk = new Chunk(fileHash, i);
             peersStoredChunk.put(chunk, new ArrayList<>()); //Create new chunk entry with no peers who stored it
 
-            readLength = fileSize - i*CHUNK_SIZE;
-            if(fileSize - i*CHUNK_SIZE > 0)
-                readLength = CHUNK_SIZE;
+//            readLength = fileSize - i*CHUNK_SIZE;
+//            if(fileSize - i*CHUNK_SIZE > 0)
+//                readLength = CHUNK_SIZE;
 
             try {
-                readBytes = fileInput.read(buff, i*CHUNK_SIZE, (int) readLength);
+                readBytes = fileInput.read(buff);
                 System.out.println("Read " + readBytes + " bytes from the file");
             } catch (IOException e) {
-                System.out.println("Chunk " + i + "IOException");
+                e.printStackTrace();
             }
 
             Message message = new Message(MessageType.PUTCHUNK, this.version, this.id, fileHash, i, repDegree, buff);
             byte[] messageBytes = message.getBytes();
 
-            System.out.println(dataBackupIP.getHostAddress() + " " + dataBackup.getLocalPort());
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackupIP, dataBackup.getLocalPort());
 
             while(nTries < MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {

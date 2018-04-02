@@ -22,6 +22,8 @@ public class Message {
     byte[] payload;
 
 
+
+
     public MessageType getType() {
         return type;
     }
@@ -51,50 +53,50 @@ public class Message {
     }
 
     //PutChunk Protocol message
-    public Message(MessageType type, String version, int senderId, String fileID, int chunkNum, int desiredRepDegree, byte[] body) {
+    public Message(MessageType type, String version, int senderID, String fileID, int chunkNum, int desiredRepDegree, byte[] body) {
         this.type = type;
         this.version = version;
-        this.senderID = senderId;
+        this.senderID = senderID;
         this.fileID = fileID;
         this.chunkNum = chunkNum;
         this.desiredRepDeg = desiredRepDegree;
         this.payload = body;
+    }
 
-        System.out.println(payload.length);
+    public Message(MessageType type, String version, int senderID, String fileID, int chunkNum) {
+        this.type = type;
+        this.version = version;
+        this.senderID = senderID;
+        this.fileID = fileID;
+        this.chunkNum = chunkNum;
     }
 
     public Message(String response) {
         String[] splitedMsg = response.trim().split("\r\n\r\n");
         String[] tokens = splitedMsg[0].split(" ");
 
+        //System.out.println(splitedMsg[0]);
         this.type = MessageType.fromString(tokens[0]);
 
-        if(!tokens[1].equals("1.0"))
-            return;
+        this.version = tokens[1];
+        this.senderID = Integer.parseInt(tokens[2]);
+        this.fileID = tokens[3];
 
-        switch (this.type){
-            case PUTCHUNK:
-                this.senderID = Integer.parseInt(tokens[2]);
-                this.fileID = tokens[3];
-                this.chunkNum = Integer.parseInt(tokens[4]);
-                this.desiredRepDeg = Integer.parseInt(tokens[5]);
-                this.payload = splitedMsg[1].getBytes(Charset.forName("ISO_8859_1"));
-            break;
+        if(type != MessageType.DELETE)
+            this.chunkNum = Integer.parseInt(tokens[4]);
 
-            case STORED:
-                this.senderID = Integer.parseInt(tokens[2]);
-                this.fileID = tokens[3];
-                this.chunkNum = Integer.parseInt(tokens[3]);
-            break;
-            default:
-                return;
-        }
+        if(type == MessageType.PUTCHUNK)
+            this.desiredRepDeg = Integer.parseInt(tokens[5]);
+
+        if(type == MessageType.PUTCHUNK || type == MessageType.CHUNK)
+            this.payload = splitedMsg[1].getBytes(Charset.forName("ISO_8859_1"));
     }
 
     public byte[] getBytes(){
         String header =
                 type + " " +
                 version + " " +
+                senderID + " " +
                 fileID + " ";
 
         if(type != MessageType.DELETE)

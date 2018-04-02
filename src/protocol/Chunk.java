@@ -1,7 +1,5 @@
 package protocol;
 
-import java.util.Arrays;
-
 /**
  * FileStuct's Chunk representation class
  */

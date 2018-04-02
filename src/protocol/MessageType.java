@@ -53,7 +53,7 @@ public enum MessageType {
                 return MessageType.PUTCHUNK;
 
             case "STORED":
-                return MessageType.PUTCHUNK;
+                return MessageType.STORED;
 
             case "GETCHUNK":
                 return MessageType.GETCHUNK;
