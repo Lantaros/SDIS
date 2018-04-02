@@ -189,9 +189,17 @@ public class Peer implements Services {
 
         switch (message.getType()) {
             case STORED:
-                System.out.println("Received STORED from" + message.getSenderID() + " " + message.getChunkNum());
+                System.out.println("Received STORED from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
                 Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
-                peersStoredChunk.get(chunk).add(message.getSenderID());
+
+                if(!peersStoredChunk.containsValue(chunk)){
+                    peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
+                    peersStoredChunk.get(chunk).add(message.getSenderID());
+                }
+                else{
+                    peersStoredChunk.get(chunk).add(message.getSenderID());
+                }
+
                 break;
         }
     }
@@ -238,7 +246,10 @@ public class Peer implements Services {
             waitTime = 500;
 
             chunk = new Chunk(fileHash, i);
-            peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
+            if(!peersStoredChunk.containsValue(chunk))
+                peersStoredChunk.put(chunk, new HashSet<>()); //Create new chunk entry with no peers who stored it
+            else
+                continue;
 
 
 
