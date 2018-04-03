@@ -69,6 +69,12 @@ public class TestClient {
                         else
                             System.out.println("Error sending DELETE message via RMI");
                         break;
+                    case "RESTORE":
+                        if (stub.restore(args[2]))
+                            System.out.println("Peer" + args[0] + ": file " + args[3] + " DELETE RMI message sent successfully");
+                        else
+                            System.out.println("Error sending DELETE message via RMI");
+                        break;
                 }
 
         } catch (Exception e) {

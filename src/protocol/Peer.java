@@ -1,6 +1,7 @@
 package protocol;
 
 import listeners.MDataBackupChannel;
+import listeners.MDataRecoveryChannel;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -164,6 +165,9 @@ public class Peer implements Services {
         MDataBackupChannel dBckChannel = new MDataBackupChannel(p);
         Peer.poolExecutor.execute(dBckChannel);
 
+        MDataRecoveryChannel dRcvChannel = new MDataRecoveryChannel(p);
+        Peer.poolExecutor.execute(dRcvChannel);
+
         //Listen to Control Channel requests
         byte[] rcvBuffer = new byte[PACKET_SIZE];
         DatagramPacket receivePacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
@@ -205,9 +209,19 @@ public class Peer implements Services {
                 System.out.println("Received DELETE from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
                 deleteChunks(message, chunk);
                 break;
+            case GETCHUNK:
+                System.out.println("Received GETCHUNK from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
+                restoreChunk(message, chunk);
+                break;
 
         }
         //System.out.println("HashSet Size: " + peersStoredChunk.get(chunk).size() + " | " + peersStoredChunk.size());
+    }
+
+    public boolean restoreChunk(Message message, Chunk chunk){
+        //envia para o recoveryChannel
+
+        return true;
     }
 
     public boolean deleteChunks(Message message, Chunk chunk){
@@ -215,20 +229,25 @@ public class Peer implements Services {
 
         int fileNr = 0;
 
-        System.out.println("tamanho: " + peersStoredChunk.size());
+        System.out.println("tamanho: " + storedChunks.size());
 
-        for (ConcurrentHashMap.Entry<Chunk, HashSet<Integer>> chunkKey : peersStoredChunk.entrySet()) {
+        for (ConcurrentHashMap.Entry<String, Chunk> chunkValue : storedChunks.entrySet()) {
+
             System.out.println("entra 2");
             System.out.println("message fileID = " + message.getFileID());
-            System.out.println("current fileID = " + chunkKey.getKey().getFileID());
+            System.out.println("current fileID = " + chunkValue.getValue().getFileID());
 
-            if(message.getFileID().equals(chunkKey.getKey().getFileID())){
+            if(message.getFileID().equals(chunkValue.getValue().getFileID())){
+
                 System.out.println("entra 4");
-                File file = new File("../peer" + this.id + "/" + chunkKey.getKey().getFileID() +"/" + chunkKey.getKey().getOrderNum());
-                System.out.println("../peer" + this.id + "/" + chunkKey.getKey().getFileID() +"/" + chunkKey.getKey().getOrderNum());
+
+                File file = new File("../peer" + this.id + "/" + chunkValue.getValue().getFileID() +"/" + chunkValue.getValue().getOrderNum());
+
+                System.out.println("../peer" + this.id + "/" + chunkValue.getValue().getFileID() +"/" + chunkValue.getValue().getOrderNum());
 
                 if(file.exists()){
                     file.delete();
+
                     System.out.println("entra 5");
                 }
                 else
@@ -329,11 +348,9 @@ public class Peer implements Services {
     public boolean delete(String pathname){
 
         File file = new File(pathname);
-        FileInputStream fileInput;
-        try {
-            fileInput = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            System.out.println("Peer" + this.id + " File not found " + pathname);
+
+        if(!file.exists()){
+            System.out.println("File not exists!");
             return false;
         }
 
@@ -354,6 +371,46 @@ public class Peer implements Services {
                 e.printStackTrace();
             }
         //}
+
+        return true;
+    }
+
+    //GETCHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+
+    public boolean restore(String pathname){
+        File file = new File(pathname);
+        FileInputStream fileInput;
+
+        if(!file.exists()){
+            System.out.println("File not exists!");
+            return false;
+        }
+
+
+        long nChunks = file.length() / CHUNK_SIZE + 1;
+
+        long fileSize = file.length();
+        System.out.println("File size: " + fileSize);
+        System.out.println("N. Chunks: " + nChunks);
+
+        for (int i = 0; i < nChunks; i++) {
+
+            String fileID = file.getName() + file.lastModified();
+            String fileHash = FileUtils.computeHash(fileID);
+
+            Message message = new Message(MessageType.GETCHUNK, this.version, this.id, fileHash, i);
+            byte[] messageBytes = message.getBytes();
+            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, controlSocketIP, controlSocket.getLocalPort());
+
+            try {
+                controlSocket.send(packet);
+                System.out.println("\nSUCCESS Sending GETCHUNK message with fileID: " +  message.getFileID());
+            } catch (IOException e) {
+                System.out.println("\nFAIL Sending GETCHUNK message with fileID: " +  message.getFileID());
+                e.printStackTrace();
+            }
+
+        }
 
         return true;
     }
