@@ -10,10 +10,7 @@ import java.net.MulticastSocket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Observable;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -252,6 +249,13 @@ public class Peer implements Services {
 
             if (file.exists()) {
                 try {
+                    Random r = new Random(System.currentTimeMillis());
+                    try {
+                        Thread.sleep(r.nextInt(401));
+                    } catch (InterruptedException e) {
+                        System.out.println("Sleep Interrupted");
+                    }
+
                     dataRecovery.send(packet);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -390,11 +394,11 @@ public class Peer implements Services {
 
 
         long nChunks = file.length() / CHUNK_SIZE + 1;
+        numChunksRestore = (int)nChunks;
 
         long fileSize = file.length();
         System.out.println("File size: " + fileSize);
         System.out.println("N. Chunks: " + nChunks);
-
 
 
         for (int i = 0; i < nChunks; i++) {
@@ -414,10 +418,12 @@ public class Peer implements Services {
                 e.printStackTrace();
             }
 
+
         }
 
         while(getRestoredChunks().size() < nChunks){
-
+            System.out.println(getRestoredChunks().size());
+            System.out.println(nChunks);
         }
 
         System.out.println("Sai do ciclo");
@@ -425,6 +431,42 @@ public class Peer implements Services {
         for(int i = 0; i < getRestoredChunks().size(); i++){
             System.out.println("Posicao "+ i +" do array getRestoredChunks = " + getRestoredChunks().get(i).getOrderNum());
         }
+
+
+        File restoreFile = new File("../RestoredFiles/" + file.getName());
+        restoreFile.getParentFile().mkdirs();
+
+        try {
+            restoreFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(restoreFile);
+        } catch (FileNotFoundException e) {
+        }
+
+        byte[] fullFile = new byte[CHUNK_SIZE * (int) nChunks];
+        for(int i = 0; i < getRestoredChunks().size(); i++){
+            System.out.println(getRestoredChunks().get(i).getData().length);
+            System.arraycopy(restoredChunks.get(i).getData(), 0, fullFile, i*CHUNK_SIZE, CHUNK_SIZE);
+        }
+
+        try {
+            fileOut.write(fullFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        restoredChunks.clear();
 
         return true;
     }

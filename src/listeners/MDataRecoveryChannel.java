@@ -35,11 +35,21 @@ public class MDataRecoveryChannel implements Runnable {
             String response = new String(receivedPacket.getData(), Charset.forName("ISO_8859_1"));
             Message message = new Message(response);
 
-            peer.getRestoredChunks().add(new Chunk(message.getFileID(), message.getChunkNum(), message.getPayload()));
+            Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum(), message.getPayload());
+            if(!peer.getRestoredChunks().contains(chunk))
+                peer.getRestoredChunks().add(chunk);
             System.out.println("analyzed");
+
+            for(int i = 0; i < peer.getRestoredChunks().size(); i++){
+                System.out.println("Chunk Nr: " + peer.getRestoredChunks().get(i).getOrderNum());
+                System.out.println("Length: " + peer.getRestoredChunks().get(i).getData().length);
+            }
+
+            System.out.println(peer.getRestoredChunks().size());
 
 
             if(peer.getRestoredChunks().size() == Peer.numChunksRestore) {
+                System.out.println("YUPPPIIII");
                 Collections.sort(peer.getRestoredChunks());
             };
         }
