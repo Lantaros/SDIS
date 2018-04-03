@@ -12,7 +12,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,7 +38,7 @@ public class Peer implements Services {
     private int id;
     private String rmiID;
     private double diskSpace;
-    private ConcurrentHashMap<String, Chunk> storedChunks;
+    private ConcurrentHashMap<String, ConcurrentLinkedDeque<Chunk>> storedChunks;
     private ConcurrentHashMap<Chunk, HashSet<Integer>> peersStoredChunk;
     public static ExecutorService poolExecutor;
 
@@ -52,7 +54,7 @@ public class Peer implements Services {
         return diskSpace;
     }
 
-    public ConcurrentHashMap<String, Chunk> getStoredChunks() {
+    public ConcurrentHashMap<String, ConcurrentLinkedDeque<Chunk>> getStoredChunks() {
         return storedChunks;
     }
 
@@ -207,7 +209,7 @@ public class Peer implements Services {
             break;
             case DELETE:
                 System.out.println("Received DELETE from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
-                deleteChunks(message, chunk);
+                deleteChunks(message);
                 break;
             case GETCHUNK:
                 System.out.println("Received GETCHUNK from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
@@ -224,37 +226,29 @@ public class Peer implements Services {
         return true;
     }
 
-    public boolean deleteChunks(Message message, Chunk chunk){
+    public boolean deleteChunks(Message message){
         System.out.println("entra 1");
 
         int fileNr = 0;
 
         System.out.println("tamanho: " + storedChunks.size());
 
-        for (ConcurrentHashMap.Entry<String, Chunk> chunkValue : storedChunks.entrySet()) {
+        ConcurrentLinkedDeque<Chunk> fileChunks = storedChunks.get(message.getFileID());
 
-            System.out.println("entra 2");
-            System.out.println("message fileID = " + message.getFileID());
-            System.out.println("current fileID = " + chunkValue.getValue().getFileID());
+        for (Chunk chunk : fileChunks) {
 
-            if(message.getFileID().equals(chunkValue.getValue().getFileID())){
+            File file = new File("../peer" + this.id + "/" + chunk.getFileID() + "/" + chunk.getOrderNum());
 
-                System.out.println("entra 4");
+            System.out.println("../peer" + this.id + "/" + chunk.getFileID() + "/" + chunk.getOrderNum());
 
-                File file = new File("../peer" + this.id + "/" + chunkValue.getValue().getFileID() +"/" + chunkValue.getValue().getOrderNum());
-
-                System.out.println("../peer" + this.id + "/" + chunkValue.getValue().getFileID() +"/" + chunkValue.getValue().getOrderNum());
-
-                if(file.exists()){
-                    file.delete();
-
-                    System.out.println("entra 5");
-                }
-                else
-                    System.out.println("File to delete not found!");
-            }
-            fileNr++;
+            if (file.exists()) {
+                file.delete();
+            } else
+                System.out.println("File to delete not found!");
         }
+
+        File folder = new File("../peer" + this.id + "/" + message.getFileID());
+        folder.delete();
 
         return true;
     }
@@ -264,7 +258,7 @@ public class Peer implements Services {
         return "Testing RMI Connection...";
     }
 
-    public boolean backup(String pathname, int repDegree){
+    public void backup(String pathname, int repDegree){
 
         System.out.println("Peer" + this.id + ": BACKUP request " + pathname + " repDeg " + repDegree);
 
@@ -274,7 +268,7 @@ public class Peer implements Services {
             fileInput = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println("Peer" + this.id + " File not found " + pathname);
-            return false;
+            return;
         }
 
 
@@ -291,14 +285,9 @@ public class Peer implements Services {
         System.out.println("File size: " + fileSize);
         System.out.println("N. Chunks: " + nChunks);
 
-        long waitTime;
-        int nTries;
-
         Chunk chunk;
         int readBytes;
         for (int i = 0; i < nChunks; i++){
-            nTries = 0;
-            waitTime = 500;
 
             chunk = new Chunk(fileHash, i);
             if(!peersStoredChunk.containsValue(chunk))
@@ -317,32 +306,8 @@ public class Peer implements Services {
 
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataBackupIP, dataBackup.getLocalPort());
 
-            while(nTries < MAX_PUTCHUNK_ATTEMPTS && peersStoredChunk.get(chunk).size() < repDegree) {
-                nTries++;
-                waitTime = waitTime * 2;
-
-                System.out.println("Current Replication degree " + peersStoredChunk.get(chunk).size());
-
-                try {
-                    dataBackup.send(packet);
-                   System.out.println("\nTry nr." + nTries + " sending PUTCHUNK message " +  message.getFileID() + " chunk " + i);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException e) {
-                    System.out.println("Sleep Interrupted");
-                }
-            }
-            if(nTries > MAX_PUTCHUNK_ATTEMPTS)
-                System.out.println("Didn't achieve desired repDegree on Chunk " + i);
-            else
-                System.out.println("Desired repDegree Achieved");
-
+            poolExecutor.execute(new Putchunk(this, packet, chunk, repDegree));
         }
-        return true;
     }
 
     public boolean delete(String pathname){

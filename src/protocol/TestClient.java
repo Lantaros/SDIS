@@ -58,10 +58,8 @@ public class TestClient {
 
                 switch (args[1]){
                     case "BACKUP":
-                        if (stub.backup(args[2], Integer.parseInt(args[3])))
+                        stub.backup(args[2], Integer.parseInt(args[3]));
                             System.out.println("Peer" + args[0] + ": file " + args[3] + " BACKUP RMI Message sent successfully");
-                        else
-                            System.out.println("Error sending BACKUP message via RMI");
                         break;
                     case "DELETE":
                         if (stub.delete(args[2]))

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.Charset;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class MDataBackupChannel implements Runnable{
     private Peer peer;
@@ -40,17 +41,16 @@ public class MDataBackupChannel implements Runnable{
                         System.out.println("Received PUTCHUNK " + message.getFileID() + " " + message.getChunkNum());
                         Chunk chunk = new Chunk(message.getFileID(), message.getChunkNum());
 
-                        boolean bool = peer.getStoredChunks().containsValue(chunk);
-                        if (!bool){
+                        if(!peer.getStoredChunks().containsKey(message.getFileID()))
+                            peer.getStoredChunks().put(message.getFileID(), new ConcurrentLinkedDeque<>());
+
+                        if (!peer.getStoredChunks().get(message.getFileID()).contains(chunk)){
                             System.out.println("Saving new chunk!!");
-                            //if (peer.getDiskSpace() - message.getPayload().length >= 0) {
-                                //peer.setDiskSpace(peer.getDiskSpace() - message.getPayload().length);
+
                                 chunk.setData(message.getPayload());
                                 FileUtils.saveChunk(peer, chunk);
-                                peer.getStoredChunks().put(message.getFileID(), chunk);
-//                            }
-//                            else
-//                                break;
+
+                                peer.getStoredChunks().get(message.getFileID()).add(chunk);
                         }
                         Message storedMsg = new Message(MessageType.STORED, message.getVersion(), peer.getId(), message.getFileID(), message.getChunkNum());
                         sendStored(storedMsg);
