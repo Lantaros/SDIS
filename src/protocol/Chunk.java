@@ -6,7 +6,7 @@ import java.util.Objects;
  * FileStuct's Chunk representation class
  */
 
-public class Chunk {
+public class Chunk implements  Comparable{
     private int orderNum;
     String fileID; //fileHash
 
@@ -16,6 +16,12 @@ public class Chunk {
     public Chunk(String fileID, int chunkNum) {
         this.fileID = fileID;
         this.orderNum = chunkNum;
+    }
+
+    public Chunk(String fileID, int chunkNum, byte[] payload) {
+        this.fileID = fileID;
+        this.orderNum = chunkNum;
+        this.data = payload;
     }
 
     public int getOrderNum() {
@@ -55,6 +61,19 @@ public class Chunk {
 
     public void setData(byte[] payload) {
         this.data = payload;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof Chunk) {
+            Chunk chunk = (Chunk) o;
+
+            if(this.orderNum < chunk.orderNum)
+                return -1;
+            else
+                return 1;
+        }
+        return 0;
     }
 
     //public Chunk()

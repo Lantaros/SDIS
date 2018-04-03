@@ -28,6 +28,15 @@ public class Message {
         this.fileID = fileID;
     }
 
+    public Message(MessageType type, String version, int senderID, String fileID, int orderNum, byte[] data) {
+        this.type = type;
+        this.version = version;
+        this.senderID = senderID;
+        this.fileID = fileID;
+        this.chunkNum = orderNum;
+        this.payload = data;
+    }
+
 
     public MessageType getType() {
         return type;

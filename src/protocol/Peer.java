@@ -13,10 +13,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
 
 
 public class Peer implements Services {
@@ -33,11 +35,15 @@ public class Peer implements Services {
     public static InetAddress dataBackupIP;
     public static InetAddress dataRecoveryIP;
 
+    public static Lock allChunksReceived;
+    public static int numChunksRestore;
+
     private String version;
 
     private int id;
     private String rmiID;
     private double diskSpace;
+    private ArrayList<Chunk> restoredChunks;
     private ConcurrentHashMap<String, ConcurrentLinkedDeque<Chunk>> storedChunks;
     private ConcurrentHashMap<Chunk, HashSet<Integer>> peersStoredChunk;
     public static ExecutorService poolExecutor;
@@ -48,6 +54,10 @@ public class Peer implements Services {
 
     public int getId() {
         return id;
+    }
+
+    public ArrayList<Chunk> getRestoredChunks() {
+        return restoredChunks;
     }
 
     public double getDiskSpace() {
@@ -128,6 +138,8 @@ public class Peer implements Services {
         poolExecutor = Executors.newCachedThreadPool();
         peersStoredChunk = new ConcurrentHashMap<>();
         storedChunks = new ConcurrentHashMap<>();
+        restoredChunks = new ArrayList<Chunk>();
+
     }
 
     /**
@@ -209,19 +221,44 @@ public class Peer implements Services {
             break;
             case DELETE:
                 System.out.println("Received DELETE from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
-                deleteChunks(message);
+                if(this.id != message.getSenderID())
+                    deleteChunks(message);
                 break;
             case GETCHUNK:
                 System.out.println("Received GETCHUNK from senderID " + message.getSenderID() + " and chunckNr " + message.getChunkNum());
-                restoreChunk(message, chunk);
+                if(this.id != message.getSenderID())
+                    restoreChunk(message);
                 break;
 
         }
         //System.out.println("HashSet Size: " + peersStoredChunk.get(chunk).size() + " | " + peersStoredChunk.size());
     }
 
-    public boolean restoreChunk(Message message, Chunk chunk){
+    public boolean restoreChunk(Message message){
         //envia para o recoveryChannel
+
+        ConcurrentLinkedDeque<Chunk> fileChunks = storedChunks.get(message.getFileID());
+
+        for (Chunk chunk : fileChunks) {
+
+            File file = new File("../peer" + this.id + "/" + chunk.getFileID() + "/" + chunk.getOrderNum());
+
+            //System.out.println("../peer" + this.id + "/" + chunk.getFileID() + "/" + chunk.getOrderNum());
+
+            Message msg = new Message(MessageType.CHUNK, version, message.getSenderID(), chunk.getFileID(), chunk.getOrderNum(), chunk.getData());
+
+            byte[] messageBytes = msg.getBytes();
+            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, dataRecoveryIP, dataRecovery.getLocalPort());
+
+            if (file.exists()) {
+                try {
+                    dataRecovery.send(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else
+                System.out.println("File to RECOVER not found!");
+        }
 
         return true;
     }
@@ -358,6 +395,8 @@ public class Peer implements Services {
         System.out.println("File size: " + fileSize);
         System.out.println("N. Chunks: " + nChunks);
 
+
+
         for (int i = 0; i < nChunks; i++) {
 
             String fileID = file.getName() + file.lastModified();
@@ -375,6 +414,16 @@ public class Peer implements Services {
                 e.printStackTrace();
             }
 
+        }
+
+        while(getRestoredChunks().size() < nChunks){
+
+        }
+
+        System.out.println("Sai do ciclo");
+
+        for(int i = 0; i < getRestoredChunks().size(); i++){
+            System.out.println("Posicao "+ i +" do array getRestoredChunks = " + getRestoredChunks().get(i).getOrderNum());
         }
 
         return true;
