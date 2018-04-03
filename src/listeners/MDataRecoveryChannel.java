@@ -27,7 +27,6 @@ public class MDataRecoveryChannel implements Runnable {
 
             try {
                 Peer.dataRecovery.receive(receivedPacket);
-                System.out.println("received message");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,7 +48,6 @@ public class MDataRecoveryChannel implements Runnable {
 
 
             if(peer.getRestoredChunks().size() == Peer.numChunksRestore) {
-                System.out.println("YUPPPIIII");
                 Collections.sort(peer.getRestoredChunks());
             };
         }

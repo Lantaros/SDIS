@@ -356,7 +356,7 @@ public class Peer implements Services {
         File file = new File(pathname);
 
         if(!file.exists()){
-            System.out.println("File not exists!");
+            System.out.println("File does not exist!");
             return false;
         }
 
@@ -422,11 +422,9 @@ public class Peer implements Services {
         }
 
         while(getRestoredChunks().size() < nChunks){
-            System.out.println(getRestoredChunks().size());
-            System.out.println(nChunks);
+
         }
 
-        System.out.println("Sai do ciclo");
 
         for(int i = 0; i < getRestoredChunks().size(); i++){
             System.out.println("Posicao "+ i +" do array getRestoredChunks = " + getRestoredChunks().get(i).getOrderNum());

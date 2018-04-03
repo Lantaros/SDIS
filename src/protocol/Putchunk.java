@@ -19,7 +19,6 @@ public class Putchunk implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Entered Putchunk");
         long nTries = 0;
         int waitTime = 500;
 
@@ -28,11 +27,10 @@ public class Putchunk implements Runnable{
         while (nTries < Peer.MAX_PUTCHUNK_ATTEMPTS && peer.getPeersStoredChunk().get(currentChunk).size() < desiredRepDegree) {
             nTries++;
             waitTime = waitTime * 2;
-            System.out.println("ENTROU!!");
 
             try {
                 peer.dataBackup.send(packet);
-                System.out.println("Enviou!!");
+                System.out.println("\nTry nr." + nTries + " sending PUTCHUNK message " +  currentChunk.getFileID() + " chunk " + currentChunk.getOrderNum());
 
             } catch (IOException e) {
                 System.out.println("Failed sending PutChunk message");
