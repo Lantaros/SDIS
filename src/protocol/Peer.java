@@ -17,6 +17,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Peer implements Services {
     public static final double MAX_BACKUP_SIZE = 2048;
@@ -152,17 +155,43 @@ public class Peer implements Services {
             System.exit(1);
         }
 
+	 Pattern pattern = Pattern.compile("(?:(?:([^:]+):)?(\\d+)\\/)?(\\w+)");
+	 Matcher m = pattern.matcher(args[2]);
+	 m.matches();
+
+	String rmiID = "";
+	String registryIP = "127.0.0.1";
+	int registryPort = 1099;
+
+	System.out.println("Group Count "+ m.groupCount());
+	if(m.groupCount() == 1)
+		rmiID =  m.group(1);
+	else if(m.groupCount() == 2){
+		registryPort = Integer.parseInt(m.group(1));
+		rmiID = m.group(2);
+	}		
+	else if(m.groupCount() == 3){
+		registryIP = m.group(1);
+		registryPort = Integer.parseInt(m.group(2));
+		rmiID = m.group(3);	
+	}
+	else{
+		System.out.println("Invalid peer AP specified");
+		System.exit(1);	
+	}
+
+	
 
         Peer p = null;
         try {
-            p = new Peer(args[0], args[1], args[2],
+            p = new Peer(args[0], args[1], rmiID,
                     args[3], args[4], args[5], args[6],
                     args[7], args[8], args[9]);
 
             Services stub = (Services) UnicastRemoteObject.exportObject(p, 0);
 
             // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.getRegistry();
+            Registry registry = LocateRegistry.getRegistry(registryIP, registryPort);
             registry.rebind(p.rmiID, stub);
 
             System.out.println("Peer " + p.id + " is ready");
