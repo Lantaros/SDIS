@@ -4,9 +4,14 @@ class ListenerClient implements Runnable {
 
 	@Override
 	public void run() {
-		
-		while (true) {
 
+		while (true) {
+			try {
+				Server.server.receiveStream.read(Server.msg, 0, Server.msg.length);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println(new String(Server.msg));
 		}
 	}
 

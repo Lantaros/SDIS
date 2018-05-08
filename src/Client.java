@@ -11,7 +11,7 @@ import java.net.SocketException;
     //protected int port;
     private SSLSocket sslSocket;
     private InputStream receiveStream;
-    OutputStream sendStream;
+    protected OutputStream sendStream;
 
     //To Thread SendServer use
     static boolean toSendServer = false;

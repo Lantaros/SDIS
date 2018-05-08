@@ -11,7 +11,7 @@ public class Server {
     private SSLServerSocket sslSocket;
     private Socket socket;
     //protected KeyStore keystore;
-    InputStream receiveStream;
+    protected static InputStream receiveStream;
 
     protected static byte[] msg = new byte[1024];
 
@@ -83,14 +83,7 @@ public class Server {
         new Thread(listClient).start();
 
 
-        while (true){
-            try {
-                server.receiveStream.read(msg, 0, msg.length);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println(new String(msg));
-        }
+
 
     }
 }
