@@ -80,9 +80,8 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //System.out.println(new String(receiveBytes));
+            System.out.println(new String(receiveBytes));
         }
-
 
 
 
