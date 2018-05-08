@@ -1,0 +1,24 @@
+import java.io.IOException;
+
+@SuppressWarnings("ResultOfMethodCallIgnored")
+class ListenerClient implements Runnable {
+
+	@Override
+	public void run() {
+
+		while (true) {
+			try {
+				Server.server.receiveStream.read(Server.server.msg, 0, Server.server.msg.length);
+		        System.out.println(new String(Server.server.msg));
+		        System.out.println("aqui babe\n");
+		        parseMsg();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void parseMsg() throws NumberFormatException {
+
+	}
+}

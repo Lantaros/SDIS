@@ -2,20 +2,26 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyStore;
 
 
 public class Server {
-    SSLServerSocket sslSocket;
-    Socket socket;
-    KeyStore keystore;
+    private SSLServerSocket sslSocket;
+    private Socket socket;
+    //protected KeyStore keystore;
     InputStream receiveStream;
 
-    Server(int port){
+    protected static byte[] msg = new byte[1024];
+
+    static Server server = new Server();
+
+    private Server() {
+
+    }
+
+    private Server(int port){
         SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 
         try {
@@ -44,7 +50,7 @@ public class Server {
             String[] cypherSuites = new String[args.length-1];
             System.arraycopy(args, 1, cypherSuites, 0, args.length-1);
             server.sslSocket.setEnabledCipherSuites(cypherSuites);
-            throw new NullPointerException();
+            //throw new NullPointerException();
         }
 
         try {
@@ -65,25 +71,26 @@ public class Server {
             e.printStackTrace();
         }
 
+        /*
         System.out.println("############################PROTOCOLS####################################");
         for(String protocol: server.sslSocket.getSupportedProtocols()){
             System.out.println(protocol);
         }
         System.out.println("#########################################################################");
+        */
+
+        ListenerClient listClient = new ListenerClient();
+        new Thread(listClient).start();
 
 
-
-        byte[] receiveBytes = new byte[1024];
         while (true){
             try {
-                server.receiveStream.read(receiveBytes, 0, receiveBytes.length);
+                server.receiveStream.read(msg, 0, msg.length);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println(new String(receiveBytes));
+            System.out.println(new String(msg));
         }
-
-
 
     }
 }

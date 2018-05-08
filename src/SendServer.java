@@ -1,6 +1,6 @@
 import java.io.IOException;
 
-public class SendServer implements Runnable {
+class SendServer implements Runnable {
 
 	@Override
 	public void run() {
@@ -11,13 +11,13 @@ public class SendServer implements Runnable {
 					Client.toSendServer = false;
 					sendMsg(Client.msgSendServer);
 				}
-			} catch (IOException | NumberFormatException | InterruptedException e) {
+			} catch (IOException | NumberFormatException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void sendMsg(String msg) throws NumberFormatException, IOException, InterruptedException {
+	private void sendMsg(String msg) throws NumberFormatException, IOException {
 		Client.client.sendStream.write(Message.convertToBytes(msg));
 	}
 	
