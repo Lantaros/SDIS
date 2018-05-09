@@ -7,31 +7,29 @@ import java.net.SocketException;
 
  class Client {
 
-    //conection with the server
+
+     static private int clientID;
+     //conection with the server
     //protected int port;
     private SSLSocket sslSocket;
     protected static InputStream receiveStream;
-    protected OutputStream sendStream;
+    protected static OutputStream sendStream;
 
     //To Thread SendServer use
     protected static boolean toSendServer = false;
     protected static byte[] msgSendServer = new byte[1024];
 
-    //To Thread ListenerServer use
+    //To Thread ServerChannel use
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
     //Connection within peers
     //protected int[] portPeer = new int[4];
-    private SSLSocket[] sslSocketPeer = new SSLSocket[4];
+    private static SSLSocket[] sslSocketPeer = new SSLSocket[4];
     private final InputStream[] receiveStreamPeer = new InputStream[4];
     private OutputStream[] sendStreamPeer = new OutputStream[4];
 
-    static Client client = new Client();
 
-    private Client() {
-
-    }
     
     private Client(String host, int port){
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -42,12 +40,14 @@ import java.net.SocketException;
             e.printStackTrace();
         }
 
+        //this.clientID = clientID;
+
     }
 
     //-Djavax.net.debug=all -> Debug flag, a TON of information
     //java  -Djavax.net.ssl.keyStore=../client.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=../truststore -Djavax.net.ssl.trustStorePassword=123456 Client 127.0.0.1 3030 "qualquer coisa"
     public static void main(String[] args){
-        client = new Client(args[0], Integer.parseInt(args[1]));
+        Client client = new Client(args[0], Integer.parseInt(args[1]));
 
 
         int nOperands;
@@ -115,21 +115,23 @@ import java.net.SocketException;
 
 
 
-        ListenerServer listServer = new ListenerServer();
+        ServerChannel listServer = new ServerChannel();
         new Thread(listServer).start();
 /*
         SendServer sendServer = new SendServer();
         new Thread(sendServer).start();
         */
-        client.connectRoom();
+        client.connectRoom("Sala 1");
     }
 
-    public void connectRoom() {
+    public void connectRoom(String roomName) {
+        //roomID -> roomID, neste caso 1
+
         //send to server to connect to room
-        
-        msgSendServer = Message.handler("ROOM_CONNECT");
+        Message connectRequest = new Message(MessageType.ROOM_CONNECT, this.clientID, 1);
+
         try {
-            sendStream.write(msgSendServer);
+            sendStream.write(connectRequest.getBytes());
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
@@ -143,32 +145,32 @@ import java.net.SocketException;
     }
 
     //making the connection only between peers!!!
-    public void connectToPeer(String adress, int port, int nPlayer) {
+    public void connectToPeer(String address, int port, int nPlayer) {
         
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         try {
-            client.sslSocketPeer[nPlayer] = (SSLSocket) serverSocketFactory.createSocket(adress, port);
+            this.sslSocketPeer[nPlayer] = (SSLSocket) serverSocketFactory.createSocket(address, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            client.sslSocketPeer[nPlayer].setReceiveBufferSize(1024);
-            client.sslSocketPeer[nPlayer].setSendBufferSize(1024);
+            this.sslSocketPeer[nPlayer].setReceiveBufferSize(1024);
+            this.sslSocketPeer[nPlayer].setSendBufferSize(1024);
         } catch (SocketException e) {
             e.printStackTrace();
         }
 
         try {
-            client.receiveStreamPeer[nPlayer] = client.sslSocketPeer[nPlayer].getInputStream();
-            client.sendStreamPeer[nPlayer] = client.sslSocketPeer[nPlayer].getOutputStream();
+            this.receiveStreamPeer[nPlayer] = this.sslSocketPeer[nPlayer].getInputStream();
+            this.sendStreamPeer[nPlayer] = this.sslSocketPeer[nPlayer].getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            client.sslSocketPeer[nPlayer].startHandshake();
+            this.sslSocketPeer[nPlayer].startHandshake();
         } catch (IOException e) {
             e.printStackTrace();
         }

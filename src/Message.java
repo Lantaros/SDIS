@@ -1,36 +1,64 @@
 import java.util.Scanner;
 
 class Message {
-	//messages types!
-	public static final int ROOM_AVAILABLE = 0;
-	public static final int ROOM_CONNECT = 1;
-	public static final int ROOM_CREATE = 2;
+	MessageType type;
+	int clientID;
+	int roomID;
 
-	public static String CRLF = "\r\n";
+
+	public static String CR = "\r";
+	public static String LF = "\n";
+	public static String CRLF = CR + LF;
 	public static String TAB = "\t";
 
-	public static byte[] convertToBytes(String msg) {
-        return msg.getBytes();
+	public Message(MessageType type, int clientID, int roomID) {
+		this.type = type;
+		this.clientID = clientID;
+		this.roomID = roomID;		
 	}
 
-	public static byte[] handler(String type) {
-		byte[] bytes = type.getBytes();
-		switch (type) {
-			case "ROOM_AVAILABLE":
-                break;
-            case "ROOM_CONNECT":
-                return roomConnect();
-            case "ROOM_CREATE":
-                break;		
+	public Message(String message) {
+		String[] tokens = message.split(" ");
+		
+		try {
+			switch (MessageType.fromString(tokens[0])) {
+			case ROOM_CONNECT:
+				this.clientID = Integer.parseInt(tokens[1]);
+				this.roomID = Integer.parseInt(tokens[2]);
+			break;
+			
+			case ROOM_CREATE:
+			break;
+			
+			case ROOM_AVAILABLE:
+			break;
+			}
+			
+		}catch (InvalidMessage m){
+			System.out.println(m.toString());
+			m.printStackTrace();
 		}
-		return bytes;
 	}
-	public static byte[] roomConnect() {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Qual é a sala que te queres ligar?");
-		int i = sc.nextInt();
-		String msg = Integer.toString(ROOM_CONNECT) + " ROOM_CONNECT " + Integer.toString(i);
-		System.out.println(msg);
-		return convertToBytes(msg);
+
+	public byte[] getBytes() {
+        return this.toString().getBytes();
+	}
+
+	@Override
+	public String toString() {
+		String message = type.toString();
+
+		switch (type){
+			case ROOM_CONNECT:
+				message += " " + clientID + " ";
+			break;
+		}
+
+		message += CRLF;
+		return message;
+	}
+
+	public MessageType getType() {
+		return type;
 	}
 }
