@@ -6,14 +6,17 @@ class ListenerServer implements Runnable {
 	public void run() {
 
 		while (true) {
-
-				String str = " ";
-				parseMsg(str);
-
+			try {
+				Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
+				Client.toReceiveServer = true;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println(new String(Client.msgReceivedServer));
 		}
 	}
 
-	private void parseMsg(String msg) throws NumberFormatException {
+	private void parseMsg() throws NumberFormatException {
 
 	}
 }

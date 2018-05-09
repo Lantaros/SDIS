@@ -10,6 +10,7 @@ class SendServer implements Runnable {
 				if(Client.toSendServer){
 					Client.toSendServer = false;
 					sendMsg(Client.msgSendServer);
+					System.out.println(new String(Client.msgSendServer));
 				}
 			} catch (IOException | NumberFormatException e) {
 				e.printStackTrace();
@@ -17,8 +18,8 @@ class SendServer implements Runnable {
 		}
 	}
 
-	private void sendMsg(String msg) throws NumberFormatException, IOException {
-		Client.client.sendStream.write(Message.convertToBytes(msg));
+	private void sendMsg(byte[] msg) throws NumberFormatException, IOException {
+		Client.client.sendStream.write(msg);
 	}
 	
 }

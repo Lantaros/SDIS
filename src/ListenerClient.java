@@ -8,10 +8,10 @@ class ListenerClient implements Runnable {
 		while (true) {
 			try {
 				Server.server.receiveStream.read(Server.msg, 0, Server.msg.length);
+				System.out.println(new String(Server.msg));
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-			System.out.println(new String(Server.msg));
+			}			
 		}
 	}
 

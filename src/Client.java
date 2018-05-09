@@ -10,12 +10,16 @@ import java.net.SocketException;
     //conection with the server
     //protected int port;
     private SSLSocket sslSocket;
-    private InputStream receiveStream;
+    protected static InputStream receiveStream;
     protected OutputStream sendStream;
 
     //To Thread SendServer use
-    static boolean toSendServer = false;
-    static String msgSendServer;
+    protected static boolean toSendServer = false;
+    protected static byte[] msgSendServer = new byte[1024];
+
+    //To Thread ListenerServer use
+    protected static boolean toReceiveServer = false;
+    protected static byte[] msgReceivedServer = new byte[1024];
 
     //Connection within peers
     //protected int[] portPeer = new int[4];
@@ -113,12 +117,29 @@ import java.net.SocketException;
 
         ListenerServer listServer = new ListenerServer();
         new Thread(listServer).start();
-
+/*
         SendServer sendServer = new SendServer();
         new Thread(sendServer).start();
+        */
+        client.connectRoom();
+    }
 
-        toSendServer = true;
-        msgSendServer = "Quero conectar à filha da mãe da sala 1!";
+    public void connectRoom() {
+        //send to server to connect to room
+        
+        msgSendServer = Message.handler("ROOM_CONNECT");
+        try {
+            sendStream.write(msgSendServer);
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+       
+
+        //wait to response
+        while(!toReceiveServer){
+
+        }
+        toReceiveServer = false;
     }
 
     //making the connection only between peers!!!
