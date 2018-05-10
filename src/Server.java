@@ -2,15 +2,24 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Queue;
 
 
 public class Server {
     private SSLServerSocket sslSocket;
+
+    private ArrayList<ClientConnection> clientConnections;
+
+    public static DatagramSocket udpSocket;
+
     private Socket socket;
     //protected KeyStore keystore;
+    private int nextClientID = 1;
     protected static InputStream receiveStream;
 
     protected static byte[] msg = new byte[1024];
@@ -21,14 +30,20 @@ public class Server {
 
     }
 
-    private Server(int port){
-        SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+    private Server(int udpPort){
 
         try {
-            sslSocket = (SSLServerSocket) serverSocketFactory.createServerSocket(port);
-        } catch (IOException e) {
+            udpSocket = new DatagramSocket(udpPort);
+        } catch (SocketException e) {
+            System.out.println("Failed Creating UDP Socket, port " + udpPort);
             e.printStackTrace();
         }
+
+        clientConnections = new ArrayList<>();
+
+
+
+
 
     }
 
@@ -39,6 +54,10 @@ public class Server {
             System.exit(1);
         }
         Server server =  new Server(Integer.parseInt(args[0]));
+
+
+        //TCP port Request Listener
+        new Thread(new UDPListener()).start();
 
         //Setting up SSL configuration
             // Require client authentication
@@ -85,5 +104,25 @@ public class Server {
 
 
 
+    }
+
+    public static int getFreeTCPPort(int nextClientID, String clientIP) {
+
+
+        SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        SSLServerSocket sslSocket = null;
+        try {
+            sslSocket = (SSLServerSocket) serverSocketFactory.createServerSocket();
+            this.clientConnections.add(new ClientConnection(nextClientID, clientIP, sslSocket))
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return sslSocket();
+    }
+
+    public static int getNextClientID() {
+        return ;
     }
 }

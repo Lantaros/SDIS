@@ -47,8 +47,6 @@ import javax.net.ssl.SSLSession;
             e.printStackTrace();
         }
 
-        this.clientID = clientID;
-
     }
 
     //-Djavax.net.debug=all -> Debug flag, a TON of information
