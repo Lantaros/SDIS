@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.net.ServerSocket;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLSession;
 
  class Client {
 
@@ -25,9 +30,11 @@ import java.net.SocketException;
 
     //Connection within peers
     //protected int[] portPeer = new int[4];
-    private static SSLSocket[] sslSocketPeer = new SSLSocket[4];
-    private final InputStream[] receiveStreamPeer = new InputStream[4];
-    private OutputStream[] sendStreamPeer = new OutputStream[4];
+    private SSLSocket[] sslSocketPeer = new SSLSocket[4];
+    private InputStream[] receiveStreamPeer;
+    private OutputStream[] sendStreamPeer;
+
+    private static String[] cypherSuites;
 
 
     
@@ -40,7 +47,7 @@ import java.net.SocketException;
             e.printStackTrace();
         }
 
-        //this.clientID = clientID;
+        this.clientID = clientID;
 
     }
 
@@ -122,6 +129,19 @@ import java.net.SocketException;
         new Thread(sendServer).start();
         */
         client.connectRoom("Sala 1");
+
+        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        int port = client.nextFreePort(49152, 65535);
+        System.out.println(port);
+        try {
+            client.sslSocketPeer[0] = (SSLSocket) serverSocketFactory.createSocket(args[0], port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println(client.sslSocketPeer[0].getLocalPort());
+
+
     }
 
     public void connectRoom(String roomName) {
@@ -173,6 +193,27 @@ import java.net.SocketException;
             this.sslSocketPeer[nPlayer].startHandshake();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public int nextFreePort(int from, int to) {
+        Random rand = new Random();
+        int port = rand.nextInt(to-from) + from;
+        while (true) {
+            if (isLocalPortFree(port)) {
+                return port;
+            } else {
+                port = ThreadLocalRandom.current().nextInt(from, to);
+            }
+        }
+    }
+
+    private boolean isLocalPortFree(int port) {
+        try {
+            new ServerSocket(port).close();
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }

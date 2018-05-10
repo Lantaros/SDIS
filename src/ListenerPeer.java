@@ -13,14 +13,14 @@ class ListenerPeer implements Runnable {
 	public void run() {
 
 		while (true) {
-			try {
+			/*try {
 				Client.receiveStreamPeer[peerID].read
 					(message, 0, message.length);
 				System.out.println(new String(message));
 				handleMsg();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 			
 		}
 	}
