@@ -40,6 +40,10 @@ class Message {
 		}
 	}
 
+	public Message(MessageType type) {
+		this.type = type;
+	}
+
 	public byte[] getBytes() {
         return this.toString().getBytes();
 	}

@@ -1,5 +1,7 @@
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramSocket;
@@ -13,13 +15,13 @@ import java.util.Queue;
 public class Server {
     private SSLServerSocket sslSocket;
 
-    private ArrayList<ClientConnection> clientConnections;
+    public static ArrayList<ClientConnection> clientConnections;
 
     public static DatagramSocket udpSocket;
+    private static String[] cypherSuites;
 
-    private Socket socket;
     //protected KeyStore keystore;
-    private int nextClientID = 1;
+    private static int nextClientID = 1;
     protected static InputStream receiveStream;
 
     protected static byte[] msg = new byte[1024];
@@ -66,29 +68,27 @@ public class Server {
         if(args.length > 1){
             System.err.println("Specified Cipher Suites");
 
-            String[] cypherSuites = new String[args.length-1];
+            cypherSuites = new String[args.length-1];
             System.arraycopy(args, 1, cypherSuites, 0, args.length-1);
-            server.sslSocket.setEnabledCipherSuites(cypherSuites);
-            //throw new NullPointerException();
         }
 
-        try {
-            server.socket = server.sslSocket.accept();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            server.socket.setReceiveBufferSize(1024);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            server.receiveStream = server.socket.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            server.socket = server.sslSocket.accept();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            server.socket.setReceiveBufferSize(1024);
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            server.receiveStream = server.socket.getInputStream();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         /*
         System.out.println("############################PROTOCOLS####################################");
@@ -106,23 +106,33 @@ public class Server {
 
     }
 
-    public static int getFreeTCPPort(int nextClientID, String clientIP) {
-
-
-        SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        SSLServerSocket sslSocket = null;
+    public static SSLSocket createSSLSocket() {
+        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocket sslSocket = null;
         try {
-            sslSocket = (SSLServerSocket) serverSocketFactory.createServerSocket();
-            this.clientConnections.add(new ClientConnection(nextClientID, clientIP, sslSocket))
+            sslSocket = (SSLSocket) socketFactory.createSocket();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        configureSSLSocket(sslSocket);
 
-        return sslSocket();
+        return sslSocket;
+    }
+
+    private static void configureSSLSocket(SSLSocket sslSocket) {
+        if(Server.cypherSuites != null)
+            sslSocket.setEnabledCipherSuites(Server.cypherSuites);
+
+        try {
+            sslSocket.setReceiveBufferSize(1024);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     public static int getNextClientID() {
-        return ;
+        return nextClientID++;
+
     }
 }

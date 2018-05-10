@@ -1,11 +1,12 @@
-import javax.net.ssl.SSLServerSocket;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class ClientConnection {
     int clientID;
-    String clientIP;
-    SSLServerSocket socket;
+    InetAddress clientIP;
+    Socket socket;
 
-    public ClientConnection(int nextClientID, String clientIP, SSLServerSocket sslSocket) {
+    public ClientConnection(int nextClientID, InetAddress clientIP, Socket sslSocket) {
         this.clientID = nextClientID;
         this.clientIP = clientIP;
         socket = sslSocket;        

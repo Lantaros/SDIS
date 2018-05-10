@@ -1,22 +1,19 @@
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.net.ServerSocket;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLSession;
 
- class Client {
+class Client {
 
 
      static private int clientID;
      //conection with the server
     //protected int port;
-    private SSLSocket sslSocket;
+
+    private static SSLSocket serverConnection;
     protected static InputStream receiveStream;
     protected static OutputStream sendStream;
 
@@ -39,17 +36,29 @@ import javax.net.ssl.SSLSession;
 
     
     private Client(String host, int port){
-        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        DatagramSocket udpSocket;
 
         try {
-            sslSocket = (SSLSocket) serverSocketFactory.createSocket(host, port);
+            udpSocket = new DatagramSocket(port, InetAddress.getByName(host));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+
+        Message msg = new Message(MessageType.TCP_ID_REQ);
+
+        SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        SSLSocket sslSocket = serverSocketFactory.createServerSocket()
+
+        try {
+            sslSocket = (SSLSocket) socketFactory.createSocket(host, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
 
-    //-Djavax.net.debug=all -> Debug flag, a TON of information
+
+        //-Djavax.net.debug=all -> Debug flag, a TON of information
     //java  -Djavax.net.ssl.keyStore=../client.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=../truststore -Djavax.net.ssl.trustStorePassword=123456 Client 127.0.0.1 3030 "qualquer coisa"
     public static void main(String[] args){
         Client client = new Client(args[0], Integer.parseInt(args[1]));

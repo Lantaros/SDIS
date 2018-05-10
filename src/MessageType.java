@@ -2,7 +2,8 @@ public enum MessageType {
     ROOM_AVAILABLE,
     ROOM_CONNECT,
     ROOM_CREATE,
-    PEERS_INFO, PORT;
+    PEERS_INFO,
+    PORT_ID, TCP_PORT_ID_REQ, TCP_ID_REQ;
 
     @Override
     public String toString() {
