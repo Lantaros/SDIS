@@ -13,7 +13,7 @@ import javax.net.ssl.SSLSession;
  class Client {
 
 
-     static private int clientID;
+     static private int clientID = 1;
      //conection with the server
     //protected int port;
     private SSLSocket sslSocket;
@@ -130,17 +130,6 @@ import javax.net.ssl.SSLSession;
         */
         client.connectRoom("Sala 1");
 
-        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        int port = client.nextFreePort(49152, 65535);
-        System.out.println(port);
-        try {
-            client.sslSocketPeer[0] = (SSLSocket) serverSocketFactory.createSocket(args[0], port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        System.out.println(client.sslSocketPeer[0].getLocalPort());
-
 
     }
 
@@ -155,13 +144,19 @@ import javax.net.ssl.SSLSession;
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
-       
 
-        //wait to response
-        while(!toReceiveServer){
+    }
 
+    public static void requestPorts(int nPorts) {
+        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        String msg = Integer.toString(clientID);
+        for(int i = 0; i<nPorts; i++){
+            int port = Client.nextFreePort(49152, 65535);
+            msg += " ";
+            msg += port;
         }
-        toReceiveServer = false;
+        System.out.println(msg);
+
     }
 
     //making the connection only between peers!!!
@@ -196,7 +191,7 @@ import javax.net.ssl.SSLSession;
         }
     }
 
-    public int nextFreePort(int from, int to) {
+    public static int nextFreePort(int from, int to) {
         Random rand = new Random();
         int port = rand.nextInt(to-from) + from;
         while (true) {
@@ -208,7 +203,7 @@ import javax.net.ssl.SSLSession;
         }
     }
 
-    private boolean isLocalPortFree(int port) {
+    private static boolean isLocalPortFree(int port) {
         try {
             new ServerSocket(port).close();
             return true;

@@ -5,14 +5,14 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyStore;
-
+import java.io.OutputStream;
 
 public class Server {
     private SSLServerSocket sslSocket;
     private Socket socket;
     //protected KeyStore keystore;
     protected static InputStream receiveStream;
-
+    protected static OutputStream sendStream;
     protected static byte[] msg = new byte[1024];
 
     static Server server = new Server();
@@ -67,6 +67,7 @@ public class Server {
 
         try {
             server.receiveStream = server.socket.getInputStream();
+            server.sendStream = server.socket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,5 +86,14 @@ public class Server {
 
 
 
+    }
+
+    public void sendMessage(Message message, int clientId) {
+        try {
+            sendStream.write(message.getBytes());
+            System.out.println(message.getBytes());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }   
     }
 }

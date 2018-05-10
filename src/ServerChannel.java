@@ -15,6 +15,10 @@ class ServerChannel implements Runnable {
 				switch (message.getType()){
 					case PEERS_INFO:
 					break;
+					case SEND_PORTS:
+						Client.requestPorts(message.nPorts);
+					break;
+
 
 				}
 
