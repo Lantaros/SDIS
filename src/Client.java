@@ -8,12 +8,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Client {
 
-
      static private int clientID;
-     //conection with the server
-    //protected int port;
 
-    private static SSLSocket serverConnection;
+     //Conection with the server
+    //protected int port;
+    private static Socket serverConnection;
+    private static String[] cypherSuites;
+
     protected static InputStream receiveStream;
     protected static OutputStream sendStream;
 
@@ -31,12 +32,10 @@ class Client {
     private InputStream[] receiveStreamPeer;
     private OutputStream[] sendStreamPeer;
 
-    private static String[] cypherSuites;
-
 
     
     private Client(String host, int port){
-        DatagramSocket udpSocket;
+        DatagramSocket udpSocket = null;
 
         try {
             udpSocket = new DatagramSocket(port, InetAddress.getByName(host));
@@ -44,48 +43,83 @@ class Client {
             e.printStackTrace();
         } catch (SocketException e) {
             e.printStackTrace();
-
-        Message msg = new Message(MessageType.TCP_ID_REQ);
+        }
 
         SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        SSLSocket sslSocket = serverSocketFactory.createServerSocket()
+        SSLServerSocket sslSocket = null;
+        try {
+            sslSocket = (SSLServerSocket) serverSocketFactory.createServerSocket();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        if(Client.cypherSuites != null)
+            sslSocket.setEnabledCipherSuites(Client.cypherSuites);
+
+        sslSocket.setNeedClientAuth(true);
 
         try {
-            sslSocket = (SSLSocket) socketFactory.createSocket(host, port);
+            sslSocket.setReceiveBufferSize(1024);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        Message msg = new Message(MessageType.TCP_ID_REQ, sslSocket.getLocalPort());
+        byte[] reqBytes = msg.getBytes();
+
+        DatagramPacket request = null;
+        try {
+            request = new DatagramPacket(reqBytes, reqBytes.length, InetAddress.getByName(host), port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            udpSocket.send(request);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            Client.serverConnection = sslSocket.accept();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 
         //-Djavax.net.debug=all -> Debug flag, a TON of information
     //java  -Djavax.net.ssl.keyStore=../client.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=../truststore -Djavax.net.ssl.trustStorePassword=123456 Client 127.0.0.1 3030 "qualquer coisa"
     public static void main(String[] args){
-        Client client = new Client(args[0], Integer.parseInt(args[1]));
-
 
         int nOperands;
 
         switch (args[2]){
             case "REGISTER":
                 nOperands = 2;
-            break;
+                break;
             case "LOOKUP":
                 nOperands = 1;
-            break;
+                break;
             default:
                 nOperands = 0;
-            break;
+                break;
         }
 
         //Setting up SSL configuration
-        if(args.length > 3 + nOperands){
+        if(args.length > 3 + nOperands) {
             int nCyphers = 3 + nOperands;
             System.out.println("Specified Cipher Suites");
-            String[] cypherSuites = new String[args.length - nCyphers];
+            cypherSuites = new String[args.length - nCyphers];
             System.arraycopy(args, 3 + nOperands, cypherSuites, 0, cypherSuites.length);
 
             System.out.println("Args Lenght: " + args.length);
+        }
+
+        Client client = new Client(args[0], Integer.parseInt(args[1]));
+
             /*
             System.out.println("############################Cypher####################################");
             for(String cypher: cypherSuites){
@@ -93,9 +127,6 @@ class Client {
             }
             System.out.println("#########################################################################");
 
-            */
-            client.sslSocket.setEnabledCipherSuites(cypherSuites);
-        }
 
 /*
         System.out.println("############################Supported Cyphers####################################");
@@ -108,24 +139,20 @@ class Client {
 
 
         try {
-            client.sslSocket.setReceiveBufferSize(1024);
-            client.sslSocket.setSendBufferSize(1024);
+            serverConnection.setReceiveBufferSize(1024);
+            serverConnection.setSendBufferSize(1024);
         } catch (SocketException e) {
             e.printStackTrace();
         }
 
         try {
-            client.receiveStream = client.sslSocket.getInputStream();
-            client.sendStream = client.sslSocket.getOutputStream();
+            client.receiveStream = Client.serverConnection.getInputStream();
+            client.sendStream = Client.serverConnection.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
-            client.sslSocket.startHandshake();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
 
 
@@ -155,7 +182,7 @@ class Client {
         //roomID -> roomID, neste caso 1
 
         //send to server to connect to room
-        Message connectRequest = new Message(MessageType.ROOM_CONNECT, this.clientID, 1);
+        Message connectRequest = new Message(MessageType.ROOM_CONNECT, Client.clientID, 1);
 
         try {
             sendStream.write(connectRequest.getBytes());

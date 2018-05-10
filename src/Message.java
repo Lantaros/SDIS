@@ -1,9 +1,11 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class Message {
 	MessageType type;
 	int clientID;
 	int roomID;
+	int port;
 
 
 	public static String CR = "\r";
@@ -40,9 +42,11 @@ class Message {
 		}
 	}
 
-	public Message(MessageType type) {
+	public Message(MessageType type, int port) {
 		this.type = type;
+		this.port = port;
 	}
+
 
 	public byte[] getBytes() {
         return this.toString().getBytes();
@@ -56,6 +60,7 @@ class Message {
 			case ROOM_CONNECT:
 				message += " " + clientID + " ";
 			break;
+			case TCP_ID_REQ:
 		}
 
 		message += CRLF;
