@@ -1,4 +1,7 @@
-import javax.net.ssl.*;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -99,13 +102,13 @@ class Client {
         switch (args[2]){
             case "REGISTER":
                 nOperands = 2;
-                break;
+            break;
             case "LOOKUP":
                 nOperands = 1;
-                break;
+            break;
             default:
                 nOperands = 0;
-                break;
+            break;
         }
 
         //Setting up SSL configuration
@@ -189,13 +192,18 @@ class Client {
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
-       
 
-        //wait to response
-        while(!toReceiveServer){
 
+    public static void requestPorts(int nPorts) {
+        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        String msg = Integer.toString(clientID);
+        for(int i = 0; i<nPorts; i++){
+            int port = Client.nextFreePort(49152, 65535);
+            msg += " ";
+            msg += port;
         }
-        toReceiveServer = false;
+        System.out.println(msg);
+
     }
 
     //making the connection only between peers!!!
@@ -230,7 +238,7 @@ class Client {
         }
     }
 
-    public int nextFreePort(int from, int to) {
+    public static int nextFreePort(int from, int to) {
         Random rand = new Random();
         int port = rand.nextInt(to-from) + from;
         while (true) {
@@ -242,7 +250,7 @@ class Client {
         }
     }
 
-    private boolean isLocalPortFree(int port) {
+    private static boolean isLocalPortFree(int port) {
         try {
             new ServerSocket(port).close();
             return true;

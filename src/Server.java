@@ -8,8 +8,9 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyStore;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Queue;
+
 
 
 public class Server {
@@ -20,10 +21,11 @@ public class Server {
     public static DatagramSocket udpSocket;
     private static String[] cypherSuites;
 
+    private Socket socket;
     //protected KeyStore keystore;
     private static int nextClientID = 1;
     protected static InputStream receiveStream;
-
+    protected static OutputStream sendStream;
     protected static byte[] msg = new byte[1024];
 
     static Server server = new Server();
@@ -85,6 +87,18 @@ public class Server {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+        try {
+            server.socket.setReceiveBufferSize(1024);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            server.receiveStream = server.socket.getInputStream();
+            server.sendStream = server.socket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         /*
         System.out.println("############################PROTOCOLS####################################");
@@ -102,7 +116,15 @@ public class Server {
 
     }
 
-    public static SSLSocket createSSLSocket() {
+    public void sendMessage(Message message, int clientId) {
+        try {
+            sendStream.write(message.getBytes());
+            System.out.println(message.getBytes());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        public static SSLSocket createSSLSocket() {
         SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket sslSocket = null;
         try {
