@@ -76,6 +76,12 @@ class Message {
 				this.address = tokens[2].trim();
 			break;
 
+			case PORT_TO_CONNECT:
+				this.type = MessageType.fromString("PORT_TO_CONNECT");
+				this.port = Integer.parseInt(tokens[1].trim());
+				this.address = tokens[2].trim();
+			break;
+
 			}
 			
 		}catch (InvalidMessage m){

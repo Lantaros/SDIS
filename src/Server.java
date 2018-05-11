@@ -83,6 +83,7 @@ public class Server {
                 e.printStackTrace();
             }  
         }
+        Server.room[roomId].setClientId(id);
     }
 
     public void sendMessage(Message message, int clientId) {
