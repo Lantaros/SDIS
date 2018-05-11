@@ -1,11 +1,9 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 class Message {
 	MessageType type;
 	int clientID;
 	int roomID;
-	int port;
 	int nPorts;
 
 
@@ -22,12 +20,20 @@ class Message {
 
 	public Message(MessageType type, int nPorts) {
 		this.type = type;
-		this.nPorts = nPorts;
+		try{
+			if(type == MessageType.fromString("OWN_CLIENT_ID"))
+				this.clientID = nPorts;	
+			else
+				this.nPorts = nPorts;
+		} catch (InvalidMessage m){
+			System.out.println(m.toString());
+			m.printStackTrace();
+		}
+
 	}
 
 	public Message(String message) {
 		String[] tokens = message.split(" ");
-		
 		try {
 			switch (MessageType.fromString(tokens[0])) {
 			case ROOM_CONNECT:
@@ -49,6 +55,10 @@ class Message {
 				this.type = MessageType.fromString("REQUEST_PORTS");
 				this.nPorts = Integer.parseInt(tokens[1].trim());
 			break;
+			case OWN_CLIENT_ID:
+				this.type = MessageType.fromString("OWN_CLIENT_ID");
+				this.clientID = Integer.parseInt(tokens[1].trim());
+			break;
 			}
 			
 		}catch (InvalidMessage m){
@@ -56,12 +66,6 @@ class Message {
 			m.printStackTrace();
 		}
 	}
-
-	public Message(MessageType type, int port) {
-		this.type = type;
-		this.port = port;
-	}
-
 
 	public byte[] getBytes() {
         return this.toString().getBytes();
@@ -77,7 +81,10 @@ class Message {
 			break;
 			case SEND_PORTS:
 				message += " " + nPorts;
-			case TCP_ID_REQ:
+			break;
+			case OWN_CLIENT_ID:
+				message += " " + clientID;
+			break;
 		}
 
 		//message += CRLF;
@@ -90,5 +97,13 @@ class Message {
 
 	public int getNPorts() {
 		return nPorts;
+	}
+
+	public int getClientID() {
+		return clientID;
+	}
+
+	public void setClientID(int id) {
+		this.clientID = id;
 	}
 }
