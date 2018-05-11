@@ -1,4 +1,5 @@
 import javax.net.ssl.SSLSocket;
+import java.net.Socket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,9 @@ import javax.net.ssl.SSLSession;
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
+    protected static Rooms[] room = new Rooms[3];
     protected static ClientData[] peer = new ClientData[100];
+    protected static int countPeer = 0;
 
     private static String[] cypherSuites;
 
@@ -128,7 +131,7 @@ import javax.net.ssl.SSLSession;
         }
         
         client.connectRoom("Sala 1");
-
+        room[1] = new Rooms(1);
 
     }
 
@@ -160,39 +163,10 @@ import javax.net.ssl.SSLSession;
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
+
+        PeerConnection listConnection = new PeerConnection(nPorts, port);
+        new Thread(listConnection).start();
     }
-
-    //making the connection only between peers!!!
-   /* public void connectToPeer(String address, int port, int nPlayer) {
-        
-        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-
-        try {
-            this.sslSocketPeer[nPlayer] = (SSLSocket) serverSocketFactory.createSocket(address, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            this.sslSocketPeer[nPlayer].setReceiveBufferSize(1024);
-            this.sslSocketPeer[nPlayer].setSendBufferSize(1024);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            this.receiveStreamPeer[nPlayer] = this.sslSocketPeer[nPlayer].getInputStream();
-            this.sendStreamPeer[nPlayer] = this.sslSocketPeer[nPlayer].getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            this.sslSocketPeer[nPlayer].startHandshake();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public static int nextFreePort(int from, int to) {
         Random rand = new Random();
@@ -212,6 +186,73 @@ import javax.net.ssl.SSLSession;
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    public static void saveClient(Socket socket, InputStream receiveStream,
+                                        OutputStream sendStream) {
+        int id = countPeer;
+        countPeer++;
+
+        peer[id] = new ClientData(id);
+        peer[id].setSocket(socket);
+        peer[id].setOutputStream(sendStream);
+        peer[id].setInputStream(receiveStream);
+        
+        System.out.println("*********DATA********");
+        System.out.println(socket.getLocalPort());
+        System.out.println(socket.getLocalAddress().getHostAddress());
+        System.out.println(socket.getPort());
+        System.out.println(socket.getRemoteSocketAddress());
+
+        room[1].setClientId(id);
+
+        ListenerPeer listPeer = new ListenerPeer(id);
+        new Thread(listPeer).start();
+    }
+
+    public static void connectPeer(int port, String address) {
+
+        SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocket sslSocketP;
+
+        try {
+            System.out.println(address);
+            System.out.println(port);
+            sslSocketP = (SSLSocket) serverSocketFactory.createSocket(address, port);
+
+            peer[countPeer] = new ClientData(countPeer);
+
+            try {
+                sslSocketP.setReceiveBufferSize(1024);
+                sslSocketP.setSendBufferSize(1024);
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                peer[countPeer].setInputStream(sslSocketP.getInputStream());
+                peer[countPeer].setOutputStream(sslSocketP.getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                sslSocketP.startHandshake();
+                System.out.println("Mas Connectou");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            room[1].setClientId(countPeer);
+
+            ListenerPeer listPeer = new ListenerPeer(countPeer);
+            new Thread(listPeer).start();
+
+            countPeer++;
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

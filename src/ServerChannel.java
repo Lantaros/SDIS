@@ -23,6 +23,9 @@ class ServerChannel implements Runnable {
 					case OWN_CLIENT_ID:
 						Client.clientID = message.getClientID();
 					break;
+					case PORT_TO_CONNECT:
+						Client.connectPeer(message.getPort(), message.getAddress());
+					break;
 				}
 
 			} catch (IOException e) {
