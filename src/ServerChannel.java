@@ -14,17 +14,16 @@ class ServerChannel implements Runnable {
 
 				Message message = new Message(new String(Client.msgReceivedServer));
 				switch (message.getType()){
-					case PEERS_INFO:
-					break;
 					case SEND_PORTS:
-						Client.requestPorts(message.nPorts);
+						if(message.nPorts == 0) {
+							break;
+						}
+						Client.requestPort(message.nPorts);
 					break;
 					case OWN_CLIENT_ID:
 						Client.clientID = message.getClientID();
 					break;
 				}
-
-				Client.toReceiveServer = true;
 
 			} catch (IOException e) {
 

@@ -5,6 +5,7 @@ import java.io.OutputStream;
 class ClientData {
     
 	private int clientId;
+    private int roomsId;
     private InputStream receiveStream;
     private OutputStream sendStream;
     private Socket socket;
@@ -30,6 +31,10 @@ class ClientData {
         this.msg = msg;
     }
 
+    public void setRoomId(int room) {
+        this.roomsId = room;
+    }
+
     public InputStream getInputStream() {
         return this.receiveStream;
     }
@@ -44,5 +49,9 @@ class ClientData {
 
     public byte[] getMessage() {
         return this.msg;
+    }
+
+    public int getRoomId() {
+        return this.roomsId;
     }
 }

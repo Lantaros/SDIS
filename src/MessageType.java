@@ -5,7 +5,9 @@ public enum MessageType {
     PEERS_INFO,
     REQUEST_PORTS,
     SEND_PORTS,
-    OWN_CLIENT_ID;
+    OWN_CLIENT_ID,
+    PORT_TO_SEND,
+    PORT_TO_CONNECT;
 
     @Override
     public String toString() {
@@ -18,12 +20,22 @@ public enum MessageType {
 
             case ROOM_CREATE:
                 return "ROOM_CREATE";
+
             case REQUEST_PORTS:
                 return "REQUEST_PORTS";
+
             case SEND_PORTS:
                 return "SEND_PORTS";
+
             case OWN_CLIENT_ID:
                 return "OWN_CLIENT_ID";
+
+            case PORT_TO_SEND:
+                return "PORT_TO_SEND";
+
+            case PORT_TO_CONNECT:
+                return "PORT_TO_CONNECT";
+
             default:
                 return "FAIL";
         }
@@ -39,12 +51,22 @@ public enum MessageType {
 
             case "ROOM_CREATE":
                 return ROOM_CREATE;
+
             case "REQUEST_PORTS":
                 return REQUEST_PORTS;
+
             case "SEND_PORTS":
                 return SEND_PORTS;
+
             case "OWN_CLIENT_ID":
                 return OWN_CLIENT_ID;
+
+            case "PORT_TO_SEND":
+                return PORT_TO_SEND;
+
+            case "PORT_TO_CONNECT":
+                return PORT_TO_CONNECT;
+                
             default:
                 throw new InvalidMessage(type);
         }

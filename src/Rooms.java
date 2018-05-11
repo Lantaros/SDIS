@@ -16,4 +16,12 @@ class Rooms {
     	return this.id_room;
     }
 
+    public int[] getClients() {
+        return this.client_id;
+    }
+
+    public int getnClients() {
+        return this.nClients;
+    }
+
 }

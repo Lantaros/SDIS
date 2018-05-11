@@ -57,7 +57,7 @@ public class Server {
         
         System.out.println("*********DATA********");
         System.out.println(socket.getLocalPort());
-        System.out.println(socket.getLocalSocketAddress());
+        System.out.println(socket.getLocalAddress().getHostAddress());
         System.out.println(socket.getPort());
         System.out.println(socket.getRemoteSocketAddress());
 
@@ -66,6 +66,23 @@ public class Server {
 
         ListenerClient listClient = new ListenerClient(id);
         new Thread(listClient).start();
+    }
+
+    public static void sendPortToClients(int port, String address, int id) {
+        int roomId = Server.client[id].getRoomId();
+        int n = room[roomId].getnClients();
+        int[] clients = room[roomId].getClients();
+
+        Message messageSend = new Message(MessageType.PORT_TO_CONNECT, port, address);
+        for(int i = 1; i <= n; i++) {
+            int clientId = clients[i];
+            try{
+                Server.client[clientId].getOutputStream().write(messageSend.getBytes());
+                System.out.println(messageSend);
+            } catch (IOException | NumberFormatException e) {
+                e.printStackTrace();
+            }  
+        }
     }
 
     public void sendMessage(Message message, int clientId) {

@@ -16,7 +16,7 @@ import javax.net.ssl.SSLSession;
     protected static int clientID;
      //conection with the server
     //protected int port;
-    private SSLSocket sslSocket;
+    protected static SSLSocket sslSocket;
     protected static InputStream receiveStream;
     protected static OutputStream sendStream;
 
@@ -28,11 +28,7 @@ import javax.net.ssl.SSLSession;
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
-    //Connection within peers
-    //protected int[] portPeer = new int[4];
-    private SSLSocket[] sslSocketPeer = new SSLSocket[4];
-    private InputStream[] receiveStreamPeer;
-    private OutputStream[] sendStreamPeer;
+    protected static ClientData[] peer = new ClientData[100];
 
     private static String[] cypherSuites;
 
@@ -150,20 +146,24 @@ import javax.net.ssl.SSLSession;
 
     }
 
-    public static void requestPorts(int nPorts) {
+    public static void requestPort(int nPorts) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         String msg = Integer.toString(clientID);
-        for(int i = 0; i<nPorts; i++){
-            int port = Client.nextFreePort(49152, 65535);
-            msg += " ";
-            msg += port;
-        }
-        System.out.println(msg);
 
+        int port = Client.nextFreePort(49152, 65535);
+        msg += " ";
+        msg += port;
+        Message message = new Message(MessageType.PORT_TO_SEND, port, Client.sslSocket.getLocalAddress().getHostAddress());
+        
+        try {
+            sendStream.write(message.getBytes());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     //making the connection only between peers!!!
-    public void connectToPeer(String address, int port, int nPlayer) {
+   /* public void connectToPeer(String address, int port, int nPlayer) {
         
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
@@ -192,7 +192,7 @@ import javax.net.ssl.SSLSession;
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public static int nextFreePort(int from, int to) {
         Random rand = new Random();
