@@ -7,6 +7,8 @@ public class Hangman {
 	private int peerID;
 	private Connection[] peers;
 
+	static int NUMBER_MAX_ERRORS = 8;
+
 	String wordToGuess;
 
 	String currentWord;
@@ -22,38 +24,76 @@ public class Hangman {
 	}
 
 	public void startGame(String wordToGuess) {
-		this.wordToGuess = wordToGuess;
+		this.wordToGuess = wordToGuess.toLowerCase();
 		wrongLetters = new ArrayList<Character>();
 		guessedLetters = new ArrayList<Character>();
 		currentWord = wordToGuess.replaceAll("[a-zA-Z]", "*");
 	}
 
 	// return true if right
-	public boolean guessLetter(char letter) {
+	public boolean guessLetter(char letterArg) {
+		char letter = Character.toLowerCase(letterArg);
 		boolean wordHasLetter = false;
-		
+
 		if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
 			return false;
-		
-		
-		for(int i = 0; i < wordToGuess.length(); i++)
-			if(wordToGuess.charAt(i)==letter){
+
+		for (int i = 0; i < wordToGuess.length(); i++)
+			if (wordToGuess.charAt(i) == letter) {
 				wordHasLetter = true;
-				
-				//TODO replace currentWord at pos i 
-				//Have to use StringBuilder
-				
+				StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
+				wordToGuessStrBuild.setCharAt(i, letter);
+				currentWord = wordToGuessStrBuild.toString();
 			}
-			
-		if(wordHasLetter)
+
+		if (wordHasLetter)
 			guessedLetters.add(letter);
-		else 
+		else
 			wrongLetters.add(letter);
 
 		return wordHasLetter;
 	}
 
+	public int getNumberOfWrongGuesses() {
+		return wrongLetters.size();
+
+	}
+
 	public static void main(String[] args) {
+		//just 4 testing
+		Hangman hang = new Hangman(1, 1, null);
+		hang.startGame("Qualquer  sdasadsa  dsadsa");
+		System.out.println(hang.currentWord);
+		hang.guessLetter('q');
+		System.out.println(hang.currentWord);
+		hang.guessLetter('u');
+		System.out.println(hang.currentWord);
+		hang.guessLetter('z');
+		System.out.println(hang.currentWord);
+		hang.guessLetter('x');
+		System.out.println(hang.currentWord);
+		hang.guessLetter('c');
+		System.out.println(hang.currentWord);
+		hang.guessLetter('v');
+		System.out.println(hang.currentWord);
+		if(hang.hasLost())
+			System.out.println("lost");
+		
+
+	}
+
+	public boolean hasWon() {
+		return wordToGuess.equals(currentWord);
+
+	}
+
+	public boolean hasLost() {
+		return wrongLetters.size() >= NUMBER_MAX_ERRORS;
+
+	}
+	
+	public boolean gameOver() {
+		return  hasWon() ||  hasLost();
 
 	}
 
