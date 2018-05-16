@@ -254,5 +254,16 @@ import javax.net.ssl.SSLSession;
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Message message = new Message(MessageType.PEER_INFO, Client.clientID);
+        try {
+            peer[countPeer-1].getOutputStream().write(message.getBytes());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addPeer(int clientID, int generalID) {
+        peer[clientID].setClientID(generalID);
     }
 }
