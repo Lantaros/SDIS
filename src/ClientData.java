@@ -35,6 +35,10 @@ class ClientData {
         this.roomsId = room;
     }
 
+    public void setClientID(int id) {
+        this.clientId = id;
+    }
+
     public InputStream getInputStream() {
         return this.receiveStream;
     }

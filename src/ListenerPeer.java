@@ -19,7 +19,9 @@ class ListenerPeer implements Runnable {
 				Client.peer[this.id].setMessage(msg);
 				Message message = new Message(new String(msg));
 				switch (message.getType()){
-					
+					case PEER_INFO:
+						Client.addPeer(this.id, message.getClientID());
+					break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

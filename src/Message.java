@@ -30,8 +30,10 @@ class Message {
 		try{
 			if(type == MessageType.fromString("OWN_CLIENT_ID"))
 				this.clientID = nPorts;	
-			else
+			else if(type == MessageType.fromString("SEND_PORTS"))
 				this.nPorts = nPorts;
+			else if(type == MessageType.fromString("PEER_INFO"))
+				this.clientID = nPorts;
 		} catch (InvalidMessage m){
 			System.out.println(m.toString());
 			m.printStackTrace();
@@ -82,6 +84,11 @@ class Message {
 				this.address = tokens[2].trim();
 			break;
 
+			case PEER_INFO:
+				this.type = MessageType.fromString("PEER_INFO");
+				this.clientID = Integer.parseInt(tokens[1].trim());
+			break;
+
 			}
 			
 		}catch (InvalidMessage m){
@@ -117,6 +124,10 @@ class Message {
 
 			case PORT_TO_CONNECT:
 				message += " " + port + " " + address;
+			break;
+
+			case PEER_INFO:
+				message += " " + clientID;
 			break;
 		}
 

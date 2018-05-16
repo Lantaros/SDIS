@@ -7,7 +7,8 @@ public enum MessageType {
     SEND_PORTS,
     OWN_CLIENT_ID,
     PORT_TO_SEND,
-    PORT_TO_CONNECT;
+    PORT_TO_CONNECT,
+    PEER_INFO;
 
     @Override
     public String toString() {
@@ -35,7 +36,9 @@ public enum MessageType {
 
             case PORT_TO_CONNECT:
                 return "PORT_TO_CONNECT";
-
+                
+            case PEER_INFO:
+                return "PEER_INFO";
             default:
                 return "FAIL";
         }
@@ -66,6 +69,9 @@ public enum MessageType {
 
             case "PORT_TO_CONNECT":
                 return PORT_TO_CONNECT;
+
+            case "PEER_INFO":
+                return PEER_INFO;
                 
             default:
                 throw new InvalidMessage(type);
