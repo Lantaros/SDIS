@@ -8,7 +8,20 @@ public enum MessageType {
     OWN_CLIENT_ID,
     PORT_TO_SEND,
     PORT_TO_CONNECT,
-    PEER_INFO;
+    PEER_INFO,
+
+    START_REQUEST,
+    START_CHECK,
+    START_GAME,
+
+    WORD_REQUEST,
+    WORD_CHECK,
+    WORD_TO_GUESS,
+
+    LETTER_REQUEST,
+    LETTER_CHECK,
+    LETTER_TO_CHECK;
+
 
     @Override
     public String toString() {
@@ -39,6 +52,10 @@ public enum MessageType {
                 
             case PEER_INFO:
                 return "PEER_INFO";
+
+            case PEER_INFO:
+                return "PEER_INFO";
+
             default:
                 return "FAIL";
         }

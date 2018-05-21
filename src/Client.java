@@ -10,6 +10,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.net.ServerSocket;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSession;
+import java.net.InetAddress;
+import java.net.*;
+import java.util.*;
 
  class Client {
 
@@ -29,13 +32,11 @@ import javax.net.ssl.SSLSession;
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
-    protected static Rooms[] room = new Rooms[3];
+    protected static Room[] rooms = new Room[3];
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
     private static String[] cypherSuites;
-
-
     
     private Client(String host, int port){
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -131,14 +132,14 @@ import javax.net.ssl.SSLSession;
         }
         
         client.connectRoom("Sala 1");
-        room[1] = new Rooms(1);
+        rooms[1] = new Room(1);
 
     }
 
-    public void connectRoom(String roomName) {
-        //roomID -> roomID, neste caso 1
+    public void connectRoom(String roomsName) {
+        //roomsID -> roomsID, neste caso 1
 
-        //send to server to connect to room
+        //send to server to connect to rooms
         Message connectRequest = new Message(MessageType.ROOM_CONNECT, this.clientID, 1);
 
         try {
@@ -146,23 +147,45 @@ import javax.net.ssl.SSLSession;
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
-
+        Hangman game = new Hangman(1);
+        rooms[1].addGame(game);
     }
 
     public static void requestPort(int nPorts) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         String msg = Integer.toString(clientID);
-
+        String address = "";
         int port = Client.nextFreePort(49152, 65535);
         msg += " ";
         msg += port;
-        Message message = new Message(MessageType.PORT_TO_SEND, port, Client.sslSocket.getLocalAddress().getHostAddress());
-        
         try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
+                    .getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface ni = (NetworkInterface) networkInterfaces
+                        .nextElement();
+                Enumeration<InetAddress> nias = ni.getInetAddresses();
+                while(nias.hasMoreElements()) {
+                    InetAddress ia= (InetAddress) nias.nextElement();
+                    if (!ia.isLinkLocalAddress() 
+                     && !ia.isLoopbackAddress()
+                     && ia instanceof Inet4Address) {
+                        address = ia.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.out.println(e.getMessage());
+        }
+        //System.out.println("Local IP " + Client.sslSocket.getLocalAddress().getHostAddress());
+        try {
+            Message message = new Message(MessageType.PORT_TO_SEND, port, address);
             sendStream.write(message.getBytes());
-        } catch (IOException | NumberFormatException e) {
+            
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        
 
         PeerConnection listConnection = new PeerConnection(nPorts, port);
         new Thread(listConnection).start();
@@ -205,7 +228,7 @@ import javax.net.ssl.SSLSession;
         System.out.println(socket.getPort());
         System.out.println(socket.getRemoteSocketAddress());
 
-        room[1].setClientId(id);
+        rooms[1].setClientId(id);
 
         ListenerPeer listPeer = new ListenerPeer(id);
         new Thread(listPeer).start();
@@ -239,12 +262,11 @@ import javax.net.ssl.SSLSession;
 
             try {
                 sslSocketP.startHandshake();
-                System.out.println("Mas Connectou");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            room[1].setClientId(countPeer);
+            rooms[1].setClientId(countPeer);
 
             ListenerPeer listPeer = new ListenerPeer(countPeer);
             new Thread(listPeer).start();

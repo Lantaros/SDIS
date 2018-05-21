@@ -15,7 +15,7 @@ public class Server {
     static Server server = new Server();
 
     protected static ClientData[] client = new ClientData[100];
-    protected static Rooms[] room = new Rooms[25];
+    protected static Room[] rooms = new Room[25];
 
     private Server() {
 
@@ -30,7 +30,7 @@ public class Server {
             e.printStackTrace();
         }
 
-        room[1] = new Rooms(1);
+        rooms[1] = new Room(1);
 
     }
 
@@ -69,10 +69,11 @@ public class Server {
     }
 
     public static void sendPortToClients(int port, String address, int id) {
-        int roomId = Server.client[id].getRoomId();
-        int n = room[roomId].getnClients();
-        int[] clients = room[roomId].getClients();
-
+        int roomsId = Server.client[id].getRoomId();
+        int n = rooms[roomsId].getnClients();
+        int[] clients = rooms[roomsId].getClients();
+       
+        System.out.println( Server.client[id].getSocket().getInetAddress().getHostAddress());
         Message messageSend = new Message(MessageType.PORT_TO_CONNECT, port, address);
         for(int i = 1; i <= n; i++) {
             int clientId = clients[i];
@@ -83,7 +84,7 @@ public class Server {
                 e.printStackTrace();
             }  
         }
-        Server.room[roomId].setClientId(id);
+        Server.rooms[roomsId].setClientId(id);
     }
 
     public void sendMessage(Message message, int clientId) {

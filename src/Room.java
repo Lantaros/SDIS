@@ -1,9 +1,12 @@
-class Rooms {
+
+class Room {
 	private int id_room;
 	private int[] client_id = new int[4];
 	private int nClients = 0;
+    private Hangman game;
+    private boolean owner = false;
 
-	public Rooms(int id_room) {
+	public Room(int id_room) {
 		this.id_room = id_room;
     }
 
@@ -22,6 +25,22 @@ class Rooms {
 
     public int getnClients() {
         return this.nClients;
+    }
+
+    public void addGame(Hangman game) {
+        this.game = game;
+    }
+
+    public Hangman getGame() {
+        return this.game;
+    }
+
+    public void setOwner(boolean yes) {
+        this.owner = yes;
+    }
+
+    public boolean getOwner() {
+        return this.owner;
     }
 
 }

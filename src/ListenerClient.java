@@ -22,10 +22,10 @@ class ListenerClient implements Runnable {
 					case ROOM_CONNECT:
 						int roomId = message.getRoomId();
 						Server.client[this.id].setRoomId(roomId);
-						Message messageSend = new Message(MessageType.SEND_PORTS, Server.room[roomId].getnClients());
+						Message messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getnClients());
 						Server.server.sendMessage(messageSend, this.id);
-						if(Server.room[roomId].getnClients() == 0) {
-							Server.room[roomId].setClientId(this.id);
+						if(Server.rooms[roomId].getnClients() == 0) {
+							Server.rooms[roomId].setClientId(this.id);
 						}
 					break;
 
