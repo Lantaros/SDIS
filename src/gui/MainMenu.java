@@ -1,79 +1,71 @@
-package gui;
+package GUI;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Font;
 
-public class MainMenu extends JFrame {
+public class MainMenu extends JPanel {
 
-    private JPanel contentPane;
+	private Frame frame;
 
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    MainMenu frame = new MainMenu();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+	/**
+	 * Create the panel.
+	 * 
+	 * @param frame
+	 */
+	public MainMenu(Frame frame) {
+		this.frame = frame;
 
-    /**
-     * Create the frame.
-     */
-    public MainMenu() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
+		JLabel lblMainmenu = new JLabel("Hangman");
+		lblMainmenu.setFont(new Font("Arial", Font.PLAIN, 18));
 
-        JLabel lblNewLabel = new JLabel("Hangman");
-        lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		JButton btnCreateLobby = new JButton("Create Lobby");
+		btnCreateLobby.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setpanel(frame.gamePanel);
 
-        JButton btnNewButton = new JButton("Create Room");
-        btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-            }
-        });
+			}
+		});
+		
+		JButton btnFindRoom = new JButton("Find Room");
+		
+		JButton btnExitGame = new JButton("Exit Game");
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(166)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(btnCreateLobby, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(btnFindRoom, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(btnExitGame, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(179)
+							.addComponent(lblMainmenu)))
+					.addContainerGap(181, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(35)
+					.addComponent(lblMainmenu)
+					.addGap(64)
+					.addComponent(btnCreateLobby)
+					.addGap(18)
+					.addComponent(btnFindRoom)
+					.addGap(18)
+					.addComponent(btnExitGame)
+					.addContainerGap(74, Short.MAX_VALUE))
+		);
+		setLayout(groupLayout);
 
-        JButton btnNewButton_1 = new JButton("Join Room");
+	}
 
-        JButton btnNewButton_2 = new JButton("Exit");
-        GroupLayout gl_contentPane = new GroupLayout(contentPane);
-        gl_contentPane.setHorizontalGroup(
-                gl_contentPane.createParallelGroup(Alignment.LEADING)
-                        .addGroup(gl_contentPane.createSequentialGroup()
-                                .addGap(171)
-                                .addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-                                        .addComponent(btnNewButton_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnNewButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(lblNewLabel, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btnNewButton_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(158, Short.MAX_VALUE))
-        );
-        gl_contentPane.setVerticalGroup(
-                gl_contentPane.createParallelGroup(Alignment.LEADING)
-                        .addGroup(gl_contentPane.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-                                .addGap(49)
-                                .addComponent(btnNewButton)
-                                .addGap(18)
-                                .addComponent(btnNewButton_1)
-                                .addGap(18)
-                                .addComponent(btnNewButton_2)
-                                .addContainerGap(62, Short.MAX_VALUE))
-        );
-        contentPane.setLayout(gl_contentPane);
-    }
 }
