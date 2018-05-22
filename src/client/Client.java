@@ -2,6 +2,7 @@ package client;
 
 import game.Hangman;
 import game.Room;
+import gui.Launcher;
 import protocol.ClientData;
 import protocol.Message;
 import protocol.MessageType;
@@ -135,6 +136,9 @@ class Client {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+
+        //Open GUI
+        Launcher.main(null);
 
         //TODO::create the looby properly
         Client.connectRoom("Sala 1");
