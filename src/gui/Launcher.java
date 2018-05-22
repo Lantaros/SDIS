@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 public class Launcher {
 
+	protected static Frame frame;
 	/**
 	 * Launch the application.
 	 */
@@ -12,7 +13,7 @@ public class Launcher {
 			public void run() {
 
 				try {
-					Frame frame = new Frame();
+					frame = new Frame();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -21,6 +22,8 @@ public class Launcher {
 		});
 	}
 
-	
+	public static Frame getFrame(){
+		return frame;
+	}
 
 }

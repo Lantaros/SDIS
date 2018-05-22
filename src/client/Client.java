@@ -27,6 +27,8 @@ class Client {
     protected static InputStream receiveStream;
     protected static OutputStream sendStream;
 
+    protected static Launcher launcher;
+
     //To Thread SendServer use
     protected static boolean toSendServer = false;
     protected static byte[] msgSendServer = new byte[1024];
@@ -138,11 +140,44 @@ class Client {
         }
 
         //Open GUI
-        Launcher.main(null);
+        launcher = new Launcher();
+        launcher.main(null);
 
         //TODO::create the looby properly
         Client.connectRoom("Sala 1");
 
+        //Após 5segundos começar o jogo
+        try {
+            Thread.sleep(5000); //10segundos
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+
+        if(rooms[1].getOwner()) {
+            String word = "Adivinha Eu";
+            String word2 = "_ _ _ _ _ _ _ _   _ _";
+            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+            Client.sendAll(sendWord);
+        }
+        
+
+
+    }
+
+    public static void sendAll(Message message) {
+        for(int i = 0; i<countPeer; i++) {
+            try {
+                peer[i].getOutputStream().write(message.getBytes());
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void setWord(String word) {
+        System.out.println(word);
+        launcher.getFrame().gamePanel.setWordToGuess(word);
     }
 
     public static void connectRoom(String roomsName) {

@@ -27,6 +27,9 @@ class ListenerPeer implements Runnable {
                     case PEER_INFO:
                         Client.addPeer(this.id, message.getClientID());
                         break;
+                    case WORD_TO_GUESS:
+                        Client.setWord(message.getWord());
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

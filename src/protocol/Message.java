@@ -7,6 +7,7 @@ public class Message {
     private int nPorts;
     private int port;
     private String address;
+    private String word;
 
     public static String CR = "\r";
     public static String LF = "\n";
@@ -23,6 +24,11 @@ public class Message {
         this.type = type;
         this.port = port;
         this.address = address;
+    }
+
+    public Message(MessageType type, String word) {
+        this.type = type;
+        this.word = word;
     }
 
     public Message(MessageType type, int nPorts) {
@@ -90,6 +96,13 @@ public class Message {
                     this.clientID = Integer.parseInt(tokens[1].trim());
                     break;
 
+                case WORD_TO_GUESS:
+                    this.type = MessageType.fromString("WORD_TO_GUESS");
+                    this.word = "";
+                    for(int i = 1; i < tokens.length; i++)
+                        this.word += tokens[i];
+                    break;
+
             }
 
         } catch (InvalidMessage m) {
@@ -130,6 +143,10 @@ public class Message {
             case PEER_INFO:
                 message += " " + clientID;
                 break;
+
+            case WORD_TO_GUESS:
+                message += " " + word;
+                break;
         }
 
         //message += CRLF;
@@ -162,5 +179,9 @@ public class Message {
 
     public void setClientID(int id) {
         this.clientID = id;
+    }
+
+    public String getWord() {
+        return this.word;
     }
 }

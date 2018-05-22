@@ -45,6 +45,7 @@ public class GamePanel extends JPanel {
 				// gotta do smt with it
 				
 				textField.setText("");
+				//Client.handleNewLetter();
 
 			}
 		});
