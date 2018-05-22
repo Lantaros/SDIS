@@ -3,65 +3,65 @@ package game;
 import java.util.ArrayList;
 
 public class Hangman {
-	private int roomID;
-	private int peerID;
-	private Connection[] peers;
-	
-	static int NUMBER_MAX_ERRORS = 8;
+    private int roomID;
+    private int peerID;
+    private Connection[] peers;
 
-	String wordToGuess;
+    static int NUMBER_MAX_ERRORS = 8;
 
-	String currentWord;
+    String wordToGuess;
 
-	ArrayList<Character> wrongLetters;
+    String currentWord;
 
-	ArrayList<Character> guessedLetters;
+    ArrayList<Character> wrongLetters;
 
-	public Hangman(int roomID) {
-		this.roomID = roomID;
-	}
+    ArrayList<Character> guessedLetters;
 
-	public Hangman(int roomID, int peerID, Connection[] peers) {
-		this.roomID = roomID;
-		this.peerID = peerID;
-		this.peers = peers;
-	}
+    public Hangman(int roomID) {
+        this.roomID = roomID;
+    }
 
-	public void startGame(String wordToGuess) {
-		this.wordToGuess = wordToGuess.toLowerCase();
-		wrongLetters = new ArrayList<Character>();
-		guessedLetters = new ArrayList<Character>();
-		currentWord = wordToGuess.replaceAll("[a-zA-Z]", "*");
-	}
+    public Hangman(int roomID, int peerID, Connection[] peers) {
+        this.roomID = roomID;
+        this.peerID = peerID;
+        this.peers = peers;
+    }
 
-	// return true if right
-	public boolean guessLetter(char letterArg) {
-		char letter = Character.toLowerCase(letterArg);
-		boolean wordHasLetter = false;
+    public void startGame(String wordToGuess) {
+        this.wordToGuess = wordToGuess.toLowerCase();
+        wrongLetters = new ArrayList<Character>();
+        guessedLetters = new ArrayList<Character>();
+        currentWord = wordToGuess.replaceAll("[a-zA-Z]", "*");
+    }
 
-		if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
-			return false;
+    // return true if right
+    public boolean guessLetter(char letterArg) {
+        char letter = Character.toLowerCase(letterArg);
+        boolean wordHasLetter = false;
 
-		for (int i = 0; i < wordToGuess.length(); i++)
-			if (wordToGuess.charAt(i) == letter) {
-				wordHasLetter = true;
-				StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
-				wordToGuessStrBuild.setCharAt(i, letter);
-				currentWord = wordToGuessStrBuild.toString();
-			}
+        if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
+            return false;
 
-		if (wordHasLetter)
-			guessedLetters.add(letter);
-		else
-			wrongLetters.add(letter);
+        for (int i = 0; i < wordToGuess.length(); i++)
+            if (wordToGuess.charAt(i) == letter) {
+                wordHasLetter = true;
+                StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
+                wordToGuessStrBuild.setCharAt(i, letter);
+                currentWord = wordToGuessStrBuild.toString();
+            }
 
-		return wordHasLetter;
-	}
+        if (wordHasLetter)
+            guessedLetters.add(letter);
+        else
+            wrongLetters.add(letter);
 
-	public int getNumberOfWrongGuesses() {
-		return wrongLetters.size();
+        return wordHasLetter;
+    }
 
-	}
+    public int getNumberOfWrongGuesses() {
+        return wrongLetters.size();
+
+    }
 
 	/*public static void main(String[] args) {
 		//just 4 testing
@@ -86,19 +86,19 @@ public class Hangman {
 
 	}*/
 
-	public boolean hasWon() {
-		return wordToGuess.equals(currentWord);
+    public boolean hasWon() {
+        return wordToGuess.equals(currentWord);
 
-	}
+    }
 
-	public boolean hasLost() {
-		return wrongLetters.size() >= NUMBER_MAX_ERRORS;
+    public boolean hasLost() {
+        return wrongLetters.size() >= NUMBER_MAX_ERRORS;
 
-	}
-	
-	public boolean gameOver() {
-		return  hasWon() ||  hasLost();
+    }
 
-	}
+    public boolean gameOver() {
+        return hasWon() || hasLost();
+
+    }
 
 }

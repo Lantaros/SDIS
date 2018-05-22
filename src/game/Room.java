@@ -1,29 +1,30 @@
+package game;
 
-class Room {
-	private int id_room;
-	private int[] client_id = new int[4];
-	private int nClients = 0;
+public class Room {
+    private int id_room;
+    private int[] client_id = new int[4];
+    private int nClients = 0;
     private Hangman game = null;
     private boolean owner = false;
 
-	public Room(int id_room) {
-		this.id_room = id_room;
+    public Room(int id_room) {
+        this.id_room = id_room;
     }
 
     public void setClientId(int id_client) {
-    	this.nClients++;
-    	client_id[this.nClients] = id_client;
+        this.nClients++;
+        client_id[this.nClients] = id_client;
     }
 
     public int getRoomId() {
-    	return this.id_room;
+        return this.id_room;
     }
 
     public int[] getClients() {
         return this.client_id;
     }
 
-    public int getnClients() {
+    public int getNClients() {
         return this.nClients;
     }
 

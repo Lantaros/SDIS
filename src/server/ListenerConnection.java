@@ -1,11 +1,13 @@
+package server;
+
+import server.Server;
+
 import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.KeyStore;
-import java.io.OutputStream;
 
 public class ListenerConnection implements Runnable {
 
@@ -19,7 +21,7 @@ public class ListenerConnection implements Runnable {
     @Override
     public void run() {
 
-        while (true) {          
+        while (true) {
 
             try {
                 socket = Server.sslSocket.accept();
@@ -37,7 +39,7 @@ public class ListenerConnection implements Runnable {
                 sendStream = socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
-            }       
+            }
 
             Server.saveClient(socket, receiveStream, sendStream, id);
             id++;

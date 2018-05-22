@@ -8,7 +8,7 @@ public class Connection {
     int port;
     Socket socket;
 
-    private boolean isAlive(){
+    private boolean isAlive() {
         //TODO Check whether the connection is up
         return true;
     }

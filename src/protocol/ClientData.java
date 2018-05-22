@@ -1,18 +1,20 @@
-import java.io.InputStream;
-import java.net.Socket;
-import java.io.OutputStream;
+package protocol;
 
-class ClientData {
-    
-	private int clientId;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+public class ClientData {
+
+    private int clientId;
     private int roomsId;
     private InputStream receiveStream;
     private OutputStream sendStream;
     private Socket socket;
     private byte[] msg = new byte[1024];
 
-	public ClientData(int id_client) {
-		this.clientId = id_client;
+    public ClientData(int id_client) {
+        this.clientId = id_client;
     }
 
     public void setInputStream(InputStream s) {

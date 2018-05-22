@@ -1,3 +1,5 @@
+package protocol;
+
 public class InvalidMessage extends Throwable {
     String type;
 
@@ -7,6 +9,6 @@ public class InvalidMessage extends Throwable {
 
     @Override
     public String toString() {
-        return "Invalid Message Type " + type;
+        return "Invalid protocol.Message Type " + type;
     }
 }

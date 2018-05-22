@@ -1,3 +1,5 @@
+package protocol;
+
 public enum MessageType {
     ROOM_AVAILABLE,
     ROOM_CONNECT,
@@ -49,9 +51,6 @@ public enum MessageType {
 
             case PORT_TO_CONNECT:
                 return "PORT_TO_CONNECT";
-                
-            case PEER_INFO:
-                return "PEER_INFO";
 
             case START_REQUEST:
                 return "START_REQUEST";
@@ -79,7 +78,7 @@ public enum MessageType {
 
             case LETTER_TO_CHECK:
                 return "LETTER_TO_CHECK";
-                
+
             default:
                 return "FAIL";
         }
@@ -140,7 +139,7 @@ public enum MessageType {
 
             case "LETTER_TO_CHECK":
                 return LETTER_TO_CHECK;
-                
+
             default:
                 throw new InvalidMessage(type);
         }
