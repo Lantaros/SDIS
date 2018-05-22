@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Hangman {
     private int roomID;
     private int peerID;
-    private Connection[] peers;
 
     static int NUMBER_MAX_ERRORS = 8;
 
@@ -21,10 +20,9 @@ public class Hangman {
         this.roomID = roomID;
     }
 
-    public Hangman(int roomID, int peerID, Connection[] peers) {
+    public Hangman(int roomID, int peerID) {
         this.roomID = roomID;
         this.peerID = peerID;
-        this.peers = peers;
     }
 
     public void startGame(String wordToGuess) {
