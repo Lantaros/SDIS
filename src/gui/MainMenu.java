@@ -33,8 +33,18 @@ public class MainMenu extends JPanel {
 		});
 		
 		JButton btnFindRoom = new JButton("Find Room");
+		btnFindRoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setpanel(frame.createLobby);
+			}
+		});
 		
 		JButton btnExitGame = new JButton("Exit Game");
+		btnExitGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frame.dispose();
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)

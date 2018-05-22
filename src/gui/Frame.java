@@ -8,6 +8,7 @@ public class Frame extends JFrame {
 
 	public MainMenu mainMenu;
 	public GamePanel gamePanel;
+	public CreateLobby createLobby;
 
 	/**
 	 * Create the frame.
@@ -18,6 +19,7 @@ public class Frame extends JFrame {
 
 		mainMenu = new MainMenu(this);
 		gamePanel = new GamePanel(this);
+		createLobby = new CreateLobby(this);
 
 		setpanel(mainMenu);
 		setVisible(true);
