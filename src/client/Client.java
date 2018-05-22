@@ -49,8 +49,6 @@ class Client {
             e.printStackTrace();
         }
 
-        this.clientID = clientID;
-
     }
 
     //-Djavax.net.debug=all -> Debug flag, a TON of information
@@ -159,6 +157,7 @@ class Client {
 
         Client.rooms[1] = new Room(1);
         Hangman game = new Hangman(1);
+        rooms[1].addGame(game);
         System.out.println(Client.rooms[1].getRoomId());
     }
 
@@ -291,6 +290,7 @@ class Client {
         Message message = new Message(MessageType.PEER_INFO, Client.clientID);
         try {
             peer[countPeer - 1].getOutputStream().write(message.getBytes());
+            System.out.println(message.toString());
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
