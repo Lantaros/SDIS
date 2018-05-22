@@ -16,7 +16,6 @@ import java.util.*;
 
  class Client {
 
-
     protected static int clientID;
      //conection with the server
     //protected int port;
@@ -131,24 +130,26 @@ import java.util.*;
             Thread.currentThread().interrupt();
         }
         
-        client.connectRoom("Sala 1");
-        rooms[1] = new Room(1);
+        //TODO::create the looby properly
+        Client.connectRoom("Sala 1");
 
     }
 
-    public void connectRoom(String roomsName) {
+    public static void connectRoom(String roomsName) {
         //roomsID -> roomsID, neste caso 1
 
         //send to server to connect to rooms
-        Message connectRequest = new Message(MessageType.ROOM_CONNECT, this.clientID, 1);
+        Message connectRequest = new Message(MessageType.ROOM_CONNECT, clientID, 1);
 
         try {
             sendStream.write(connectRequest.getBytes());
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
+
+        Client.rooms[1] = new Room(1);
         Hangman game = new Hangman(1);
-        rooms[1].addGame(game);
+        System.out.println(Client.rooms[1].getRoomId());
     }
 
     public static void requestPort(int nPorts) {

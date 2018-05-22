@@ -53,9 +53,33 @@ public enum MessageType {
             case PEER_INFO:
                 return "PEER_INFO";
 
-            case PEER_INFO:
-                return "PEER_INFO";
+            case START_REQUEST:
+                return "START_REQUEST";
 
+            case START_CHECK:
+                return "START_CHECK";
+
+            case START_GAME:
+                return "START_GAME";
+
+            case WORD_REQUEST:
+                return "WORD_REQUEST";
+
+            case WORD_CHECK:
+                return "WORD_CHECK";
+
+            case WORD_TO_GUESS:
+                return "WORD_TO_GUESS";
+
+            case LETTER_REQUEST:
+                return "LETTER_REQUEST";
+
+            case LETTER_CHECK:
+                return "LETTER_CHECK";
+
+            case LETTER_TO_CHECK:
+                return "LETTER_TO_CHECK";
+                
             default:
                 return "FAIL";
         }
@@ -89,6 +113,33 @@ public enum MessageType {
 
             case "PEER_INFO":
                 return PEER_INFO;
+
+            case "START_REQUEST":
+                return START_REQUEST;
+
+            case "START_CHECK":
+                return START_CHECK;
+
+            case "START_GAME":
+                return START_GAME;
+
+            case "WORD_REQUEST":
+                return WORD_REQUEST;
+
+            case "WORD_CHECK":
+                return WORD_CHECK;
+
+            case "WORD_TO_GUESS":
+                return WORD_TO_GUESS;
+
+            case "LETTER_REQUEST":
+                return LETTER_REQUEST;
+
+            case "LETTER_CHECK":
+                return LETTER_CHECK;
+
+            case "LETTER_TO_CHECK":
+                return LETTER_TO_CHECK;
                 
             default:
                 throw new InvalidMessage(type);

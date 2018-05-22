@@ -3,7 +3,7 @@ class Room {
 	private int id_room;
 	private int[] client_id = new int[4];
 	private int nClients = 0;
-    private Hangman game;
+    private Hangman game = null;
     private boolean owner = false;
 
 	public Room(int id_room) {

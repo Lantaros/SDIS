@@ -6,13 +6,13 @@ public class Hangman {
 	
 	static int NUMBER_MAX_ERRORS = 8;
 
-	String wordToGuess;
+	String wordToGuess = null;
 
-	String currentWord;
+	String currentWord = null;
 
-	ArrayList<Character> wrongLetters;
+	ArrayList<Character> wrongLetters = null;
 
-	ArrayList<Character> guessedLetters;
+	ArrayList<Character> guessedLetters = null;
 
 	public Hangman(int roomID) {
 		this.roomID = roomID;
