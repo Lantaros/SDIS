@@ -2,9 +2,9 @@ package client;
 
 import game.Hangman;
 import game.Room;
+import protocol.ClientData;
 import protocol.Message;
 import protocol.MessageType;
-import protocol.ClientData;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;

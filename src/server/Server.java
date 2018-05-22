@@ -1,5 +1,6 @@
 package server;
 
+import game.Room;
 import protocol.ClientData;
 import protocol.Message;
 import protocol.MessageType;
@@ -10,9 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
-
-import game.Room;
 
 public class Server {
     protected static SSLServerSocket sslSocket;
