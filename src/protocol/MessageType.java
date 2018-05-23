@@ -22,7 +22,9 @@ public enum MessageType {
 
     LETTER_REQUEST,
     LETTER_CHECK,
-    LETTER_TO_CHECK;
+    LETTER_TO_CHECK,
+    
+    READY_TO_START;
 
 
     @Override
@@ -81,6 +83,9 @@ public enum MessageType {
 
             case LETTER_TO_CHECK:
                 return "LETTER_TO_CHECK";
+                
+            case READY_TO_START:
+                return "READY_TO_START";
 
             default:
                 return "FAIL";
@@ -142,6 +147,9 @@ public enum MessageType {
 
             case "LETTER_TO_CHECK":
                 return LETTER_TO_CHECK;
+            
+            case "READY_TO_START":
+                return READY_TO_START;
 
             default:
                 throw new InvalidMessage(type);

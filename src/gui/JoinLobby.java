@@ -9,15 +9,15 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JList;
-import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 
-import java.awt.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class CreateLobby extends JPanel {
+@SuppressWarnings("serial")
+public class JoinLobby extends JPanel {
 
+	@SuppressWarnings("unused")
 	private Frame frame;
 
 	JList<String> listofIDs;
@@ -26,7 +26,7 @@ public class CreateLobby extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CreateLobby(Frame frame) {
+	public JoinLobby(Frame frame) {
 		this.frame = frame;
 
 		JLabel lblLobby = new JLabel("Lobby");
@@ -40,7 +40,7 @@ public class CreateLobby extends JPanel {
 		});
 
 		JScrollPane scrollPane = new JScrollPane();
-		listofIDs = new JList<>();
+		listofIDs = new JList<String>();
 
 		
 		listModel = new DefaultListModel<String>();
@@ -60,9 +60,15 @@ public class CreateLobby extends JPanel {
 		btnJoinSelected.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//TODO Just TEmp
-				String[] items2 = { "A", "B", "C", "D" };
-			
-				setRooms(items2);
+				//String[] items2 = { "A", "B", "C", "D" };
+				//setRooms(items2);
+
+//				int index =  listofIDs.getSelectedIndex();
+//				String valueSelected = listModel.get(index);
+//				listModel.add(0, valueSelected);
+
+				frame.setpanel(frame.waitingRoom);
+//
 
 			}
 		});

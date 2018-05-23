@@ -8,7 +8,9 @@ public class Frame extends JFrame {
 
 	public MainMenu mainMenu;
 	public GamePanel gamePanel;
-	public CreateLobby createLobby;
+	public JoinLobby createLobby;
+	public SetWordRoom setWordRoom;
+	public WaitingRoom waitingRoom;
 
 	/**
 	 * Create the frame.
@@ -19,7 +21,9 @@ public class Frame extends JFrame {
 
 		mainMenu = new MainMenu(this);
 		gamePanel = new GamePanel(this);
-		createLobby = new CreateLobby(this);
+		createLobby = new JoinLobby(this);
+		setWordRoom = new SetWordRoom(this);
+		waitingRoom = new WaitingRoom(this);
 
 		setpanel(mainMenu);
 		setVisible(true);

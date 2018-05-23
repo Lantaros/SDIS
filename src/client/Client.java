@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-class Client {
+public class Client {
 
     protected static int clientID;
     //conection with the server
@@ -348,5 +348,20 @@ class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
+    }
+    
+    
+    public static void sendReadyToAll(){
+    	Message sendReady = new Message(MessageType.READY_TO_START, Client.clientID);
+    	sendAll(sendReady);    	
+    }
+    
+    public static ClientData getDataClient(int idClient){
+    	for(int i = 0; i < peer.length;i++)
+    		if(peer[i].getClientID()==idClient)
+    			return peer[i];
+    	
+		return null;
+    	
     }
 }
