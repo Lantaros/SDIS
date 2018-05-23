@@ -41,9 +41,12 @@ public class Client {
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
+    protected static String newLetter = "";
+    protected static int requestNumber = 0;
+
     private static String[] cypherSuites;
 
-    private Client(String host, int port) {
+    public Client(String host, int port) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         try {
@@ -159,7 +162,7 @@ public class Client {
 
         //Após 5segundos começar o jogo
         try {
-            Thread.sleep(5000); //10segundos
+            Thread.sleep(10000); //10segundos
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -167,13 +170,20 @@ public class Client {
 
         if(rooms[1].getOwner()) {
             String word = "Adivinha Eu";
-            String word2 = "_ _ _ _ _ _ _ _   _ _";
+            String word2 = "_*_*_*_*_*_";
+             Hangman game = rooms[1].getGame();
+            game.startGame(word);
             Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
             Client.sendAll(sendWord);
         }
         
 
 
+    }
+
+    public static void guessLetter() {
+        Hangman game = rooms[1].getGame();
+        game.guessLetter(newLetter.charAt(0));
     }
 
     public static void sendAll(Message message) {
@@ -188,7 +198,43 @@ public class Client {
 
     public static void setWord(String word) {
         System.out.println(word);
+        Hangman game = rooms[1].getGame();
+        game.startGame(word);
+        setWordInGUI(game.getWord());
+    }
+
+    public static void setWordInGUI(String word) {
         launcher.getFrame().gamePanel.setWordToGuess(word);
+    }
+
+    public static String sendLetter(String letter) {
+        if(letter.length() == 1) {
+            //TODO::protocolos
+            Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
+            sendAll(letterToSend);
+            System.out.println(rooms[1].getNClients());
+            while(requestNumber < rooms[1].getNClients()) {
+                //System.out.println(requestNumber);
+            }
+            System.out.println("chegou");
+            Message message = new Message(MessageType.LETTER_GO);
+            sendAll(message);
+            requestNumber = 0;
+            return "ok";
+        } else {
+            return "Must Be 1 Word";
+        }
+
+    }
+
+    public static void handleLetter(int id, String letter) {
+        newLetter = letter;
+        Message message = new Message(MessageType.LETTER_CHECK, "yes");
+        try {
+            peer[id].getOutputStream().write(message.getBytes());
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void connectRoom(String roomsName) {

@@ -30,8 +30,26 @@ class ListenerPeer implements Runnable {
                     case WORD_TO_GUESS:
                         Client.setWord(message.getWord());
                         break;
+<<<<<<< HEAD
+                    case LETTER_TO_GUESS:
+                        Client.handleLetter(this.id, message.getLetter());
+                        break;
+                    case LETTER_CHECK:
+                        System.out.println(message.getBool());
+                        Client.requestNumber++;
+                        if(message.getBool() == "yes"){
+                            System.out.println("ENTROU CARALHO");
+                            
+                            System.out.println(Client.requestNumber);
+                        }
+                        break;
+                    case LETTER_GO:
+                        if(Client.rooms[1].getOwner())
+                            Client.guessLetter();
+=======
                     case READY_TO_START:
                         
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
                         break;
                 }
             } catch (IOException e) {

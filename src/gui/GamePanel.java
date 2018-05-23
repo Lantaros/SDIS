@@ -1,5 +1,7 @@
 package gui;
 
+import client.Client;
+
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,7 +13,12 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+<<<<<<< HEAD
+
+
+=======
 @SuppressWarnings("serial")
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
 public class GamePanel extends JPanel {
 
 	@SuppressWarnings("unused")
@@ -44,11 +51,12 @@ public class GamePanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String letterGuessed = textField.getText();
 
-				// gotta do smt with it
-				
-				textField.setText("");
-				//Client.handleNewLetter();
-
+				String aswner = Client.sendLetter(letterGuessed);
+				if(aswner == "ok") {
+					textField.setText("");
+				} else {
+					textField.setText(aswner);
+				}
 			}
 		});
 

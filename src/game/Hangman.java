@@ -1,5 +1,7 @@
 package game;
 
+import client.Client;
+
 import java.util.ArrayList;
 
 public class Hangman {
@@ -29,7 +31,13 @@ public class Hangman {
         this.wordToGuess = wordToGuess.toLowerCase();
         wrongLetters = new ArrayList<Character>();
         guessedLetters = new ArrayList<Character>();
-        currentWord = wordToGuess.replaceAll("[a-zA-Z]", "*");
+        this.currentWord = wordToGuess.replaceAll(" ", "  ");
+        this.currentWord = this.currentWord.replaceAll("[a-zA-Z]", "_ ");
+
+    }
+
+    public String getWord() {
+        return this.currentWord;
     }
 
     // return true if right
@@ -46,6 +54,7 @@ public class Hangman {
                 StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
                 wordToGuessStrBuild.setCharAt(i, letter);
                 currentWord = wordToGuessStrBuild.toString();
+                Client.setWordInGUI(currentWord);
             }
 
         if (wordHasLetter)

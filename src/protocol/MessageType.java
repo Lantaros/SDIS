@@ -20,11 +20,15 @@ public enum MessageType {
     WORD_CHECK,
     WORD_TO_GUESS,
 
-    LETTER_REQUEST,
+    LETTER_TO_GUESS,
     LETTER_CHECK,
+<<<<<<< HEAD
+    LETTER_GO;
+=======
     LETTER_TO_CHECK,
     
     READY_TO_START;
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
 
 
     @Override
@@ -75,17 +79,22 @@ public enum MessageType {
             case WORD_TO_GUESS:
                 return "WORD_TO_GUESS";
 
-            case LETTER_REQUEST:
-                return "LETTER_REQUEST";
+            case LETTER_TO_GUESS:
+                return "LETTER_TO_GUESS";
 
             case LETTER_CHECK:
                 return "LETTER_CHECK";
 
+<<<<<<< HEAD
+            case LETTER_GO:
+                return "LETTER_GO";
+=======
             case LETTER_TO_CHECK:
                 return "LETTER_TO_CHECK";
                 
             case READY_TO_START:
                 return "READY_TO_START";
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
 
             default:
                 return "FAIL";
@@ -139,17 +148,22 @@ public enum MessageType {
             case "WORD_TO_GUESS":
                 return WORD_TO_GUESS;
 
-            case "LETTER_REQUEST":
-                return LETTER_REQUEST;
+            case "LETTER_TO_GUESS":
+                return LETTER_TO_GUESS;
 
             case "LETTER_CHECK":
                 return LETTER_CHECK;
 
+<<<<<<< HEAD
+            case "LETTER_GO":
+                return LETTER_GO;
+=======
             case "LETTER_TO_CHECK":
                 return LETTER_TO_CHECK;
             
             case "READY_TO_START":
                 return READY_TO_START;
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
 
             default:
                 throw new InvalidMessage(type);

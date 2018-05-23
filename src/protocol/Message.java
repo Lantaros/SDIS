@@ -8,6 +8,8 @@ public class Message {
     private int port;
     private String address;
     private String word;
+    private String letter;
+    private String bool;
 
     public static String CR = "\r";
     public static String LF = "\n";
@@ -20,6 +22,10 @@ public class Message {
         this.roomID = roomID;
     }
 
+    public Message(MessageType type) {
+        this.type = type;
+    }
+
     public Message(MessageType type, int port, String address) {
         this.type = type;
         this.port = port;
@@ -28,7 +34,18 @@ public class Message {
 
     public Message(MessageType type, String word) {
         this.type = type;
-        this.word = word;
+        try {
+            if(type == MessageType.fromString("LETTER_TO_GUESS"))
+                this.letter = word;
+            else if(type == MessageType.fromString("LETTER_CHECK") )
+                this.bool = word;
+            else {
+                this.word = word;
+            }
+        } catch (InvalidMessage m) {
+            m.printStackTrace();
+        }
+        
     }
     
     public Message(MessageType type) {
@@ -105,8 +122,24 @@ public class Message {
                 case WORD_TO_GUESS:
                     this.type = MessageType.fromString("WORD_TO_GUESS");
                     this.word = "";
-                    for(int i = 1; i < tokens.length; i++)
+                    for(int i = 1; i < tokens.length; i++)  {                      
                         this.word += tokens[i];
+                        if(i != tokens.length)
+                            this.word += " ";
+                    }
+                    break;
+
+                case LETTER_TO_GUESS:
+                    this.type = MessageType.fromString("LETTER_TO_GUESS");
+                    this.letter = tokens[1];
+                    break;
+
+                case LETTER_CHECK:
+                    this.type = MessageType.fromString("LETTER_CHECK");
+                    this.bool = tokens[1];
+                    break;
+
+                case LETTER_GO:
                     break;
                 case READY_TO_START:
                     this.type = MessageType.fromString("READY_TO_START");
@@ -156,8 +189,22 @@ public class Message {
             case WORD_TO_GUESS:
                 message += " " + word;
                 break;
+<<<<<<< HEAD
+
+            case LETTER_TO_GUESS:
+                message += " " + letter;
+                break;
+
+            case LETTER_CHECK:
+                message += " " + bool;
+                break;
+
+            case LETTER_GO:
+                    break;
+=======
             case READY_TO_START:
             	message += " " + clientID;
+>>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
         }
 
         //message += CRLF;
@@ -194,5 +241,13 @@ public class Message {
 
     public String getWord() {
         return this.word;
+    }
+
+    public String getLetter() {
+        return this.letter;
+    }
+
+    public String getBool() {
+        return this.bool;
     }
 }
