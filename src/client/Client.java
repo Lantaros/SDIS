@@ -170,7 +170,6 @@ public class Client {
 
         if(rooms[1].getOwner()) {
             String word = "Adivinha Eu";
-            String word2 = "_*_*_*_*_*_";
              Hangman game = rooms[1].getGame();
             game.startGame(word);
             Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
@@ -184,6 +183,9 @@ public class Client {
     public static void guessLetter() {
         Hangman game = rooms[1].getGame();
         game.guessLetter(newLetter.charAt(0));
+        String word = game.getWord();
+        Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
+        Client.sendAll(sendWord);
     }
 
     public static void sendAll(Message message) {

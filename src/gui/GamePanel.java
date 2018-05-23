@@ -13,12 +13,8 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-<<<<<<< HEAD
-
-
-=======
 @SuppressWarnings("serial")
->>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
+
 public class GamePanel extends JPanel {
 
 	@SuppressWarnings("unused")

@@ -54,6 +54,7 @@ public class Hangman {
                 StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
                 wordToGuessStrBuild.setCharAt(i, letter);
                 currentWord = wordToGuessStrBuild.toString();
+                System.out.println(currentWord);
                 Client.setWordInGUI(currentWord);
             }
 

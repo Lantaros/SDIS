@@ -39,6 +39,8 @@ public class Message {
                 this.letter = word;
             else if(type == MessageType.fromString("LETTER_CHECK") )
                 this.bool = word;
+            else if(type == MessageType.fromString("WORD_TO_GUI"))
+                this.word = word;
             else {
                 this.word = word;
             }
@@ -46,10 +48,6 @@ public class Message {
             m.printStackTrace();
         }
         
-    }
-    
-    public Message(MessageType type) {
-        this.type = type;
     }
 
     public Message(MessageType type, int nPorts) {
@@ -140,9 +138,21 @@ public class Message {
                     break;
 
                 case LETTER_GO:
+                    this.type = MessageType.fromString("LETTER_GO");
                     break;
+
                 case READY_TO_START:
                     this.type = MessageType.fromString("READY_TO_START");
+                    break;
+
+                case WORD_TO_GUI:
+                    this.type = MessageType.fromString("WORD_TO_GUI");
+                    this.word = "";
+                    for(int i = 1; i < tokens.length; i++)  {                      
+                        this.word += tokens[i];
+                        if(i != tokens.length)
+                            this.word += " ";
+                    }
                     break;
 
             }
@@ -189,7 +199,6 @@ public class Message {
             case WORD_TO_GUESS:
                 message += " " + word;
                 break;
-<<<<<<< HEAD
 
             case LETTER_TO_GUESS:
                 message += " " + letter;
@@ -200,11 +209,16 @@ public class Message {
                 break;
 
             case LETTER_GO:
-                    break;
-=======
+                message += " " + "teste";
+                break;
+
             case READY_TO_START:
             	message += " " + clientID;
->>>>>>> 2e0b613f7c7c01fe02872698769bb51911b8554c
+                break;
+
+            case WORD_TO_GUI:
+                message += " " + word;
+                break;
         }
 
         //message += CRLF;
