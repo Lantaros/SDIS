@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import client.Client;
 
 public class WaitingRoom extends JPanel {
 
@@ -27,24 +28,37 @@ public class WaitingRoom extends JPanel {
 				
 			}
 		});
+		
+		JButton btnImReady = new JButton("I'm Ready");
+		btnImReady.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Client.sendReadyToAll();
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(56)
 					.addComponent(lblWaitingForUser, GroupLayout.PREFERRED_SIZE, 339, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(55, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addContainerGap(324, Short.MAX_VALUE)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(322, Short.MAX_VALUE)
 					.addComponent(btnLeaveRoom)
 					.addGap(37))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(170)
+					.addComponent(btnImReady)
+					.addContainerGap(191, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(130)
 					.addComponent(lblWaitingForUser, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnImReady)
+					.addPreferredGap(ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
 					.addComponent(btnLeaveRoom)
 					.addGap(24))
 		);

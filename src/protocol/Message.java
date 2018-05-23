@@ -30,6 +30,10 @@ public class Message {
         this.type = type;
         this.word = word;
     }
+    
+    public Message(MessageType type) {
+        this.type = type;
+    }
 
     public Message(MessageType type, int nPorts) {
         this.type = type;
@@ -41,6 +45,8 @@ public class Message {
                 this.nPorts = nPorts;
             else if (type == MessageType.fromString("PEER_INFO"))
                 this.clientID = nPorts;
+            else
+            	this.clientID = nPorts;
         } catch (InvalidMessage m) {
             System.out.println(m.toString());
             m.printStackTrace();
@@ -102,6 +108,9 @@ public class Message {
                     for(int i = 1; i < tokens.length; i++)
                         this.word += tokens[i];
                     break;
+                case READY_TO_START:
+                    this.type = MessageType.fromString("READY_TO_START");
+                    break;
 
             }
 
@@ -147,6 +156,8 @@ public class Message {
             case WORD_TO_GUESS:
                 message += " " + word;
                 break;
+            case READY_TO_START:
+            	message += " " + clientID;
         }
 
         //message += CRLF;

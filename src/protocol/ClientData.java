@@ -12,6 +12,8 @@ public class ClientData {
     private OutputStream sendStream;
     private Socket socket;
     private byte[] msg = new byte[1024];
+    
+    private boolean isReady = false;
 
     public ClientData(int id_client) {
         this.clientId = id_client;
@@ -40,6 +42,10 @@ public class ClientData {
     public void setClientID(int id) {
         this.clientId = id;
     }
+    
+    public int getClientID() {
+        return this.clientId;
+    }
 
     public InputStream getInputStream() {
         return this.receiveStream;
@@ -60,4 +66,12 @@ public class ClientData {
     public int getRoomId() {
         return this.roomsId;
     }
+
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
 }

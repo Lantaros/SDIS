@@ -30,6 +30,9 @@ class ListenerPeer implements Runnable {
                     case WORD_TO_GUESS:
                         Client.setWord(message.getWord());
                         break;
+                    case READY_TO_START:
+                        
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
