@@ -11,8 +11,10 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class GamePanel extends JPanel {
 
+	@SuppressWarnings("unused")
 	private Frame frame;
 	private JTextField textField;
 	private JLabel lblHagmanWord;
