@@ -96,7 +96,14 @@ class Client {
             System.out.println("#########################################################################");
 
             */
-            client.sslSocket.setEnabledCipherSuites(cypherSuites);
+            client.sslSocket.setEnabledCipherSuites(
+                new String[]{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_RSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"}
+            );
         }
 
 /*
@@ -132,8 +139,12 @@ class Client {
 
         ServerChannel listServer = new ServerChannel();
         new Thread(listServer).start();
+        Object lock = listServer.getLock();
 
         try {
+            synchronized(lock) {
+                lock.wait();
+            }
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();

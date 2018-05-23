@@ -40,7 +40,7 @@ public class CreateLobby extends JPanel {
 		});
 
 		JScrollPane scrollPane = new JScrollPane();
-		listofIDs = new JList();
+		listofIDs = new JList<>();
 
 		
 		listModel = new DefaultListModel<String>();

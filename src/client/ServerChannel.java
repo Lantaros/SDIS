@@ -7,6 +7,16 @@ import java.util.Arrays;
 
 class ServerChannel implements Runnable {
 
+    private Object lock;
+
+    public ServerChannel(){
+        this.lock = new Object();
+    }
+
+    public Object getLock() {
+        return lock;
+    }
+
     @Override
     public void run() {
 
@@ -27,6 +37,12 @@ class ServerChannel implements Runnable {
                         break;
                     case OWN_CLIENT_ID:
                         Client.clientID = message.getClientID();
+                        System.out.println("Received ID - notified Client");
+
+                        synchronized (this.lock) {
+                            this.lock.notify();
+                        }
+
                         break;
                     case PORT_TO_CONNECT:
                         Client.connectPeer(message.getPort(), message.getAddress());
