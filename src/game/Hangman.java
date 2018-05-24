@@ -1,5 +1,7 @@
 package game;
 
+import client.Client;
+
 import java.util.ArrayList;
 
 public class Hangman {
@@ -29,7 +31,20 @@ public class Hangman {
         this.wordToGuess = wordToGuess.toLowerCase();
         wrongLetters = new ArrayList<Character>();
         guessedLetters = new ArrayList<Character>();
-        currentWord = wordToGuess.replaceAll("[a-zA-Z]", "*");
+        this.currentWord = wordToGuess.replaceAll(" ", "  ");
+        this.currentWord = this.currentWord.replaceAll("[a-zA-Z]", "_ ");
+
+    }
+
+    public String getWord() {
+        return this.currentWord;
+    }
+
+    public boolean checkLetter(char letterArg) {
+        char letter = Character.toLowerCase(letterArg);
+        if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
+            return false;
+        return true;
     }
 
     // return true if right
@@ -44,8 +59,10 @@ public class Hangman {
             if (wordToGuess.charAt(i) == letter) {
                 wordHasLetter = true;
                 StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
-                wordToGuessStrBuild.setCharAt(i, letter);
+                wordToGuessStrBuild.setCharAt(i*2, letter);
                 currentWord = wordToGuessStrBuild.toString();
+                System.out.println(currentWord);
+                Client.setWordInGUI(currentWord);
             }
 
         if (wordHasLetter)
@@ -85,7 +102,9 @@ public class Hangman {
 	}*/
 
     public boolean hasWon() {
-        return wordToGuess.equals(currentWord);
+        String tokens = new String(wordToGuess.replaceAll("\\s+",""));
+        String tokens2 = new String(currentWord.replaceAll("\\s+",""));
+        return tokens.equals(tokens2);
 
     }
 
@@ -98,5 +117,7 @@ public class Hangman {
         return hasWon() || hasLost();
 
     }
+
+    //TODO::Colocar no Array!!!!!!
 
 }

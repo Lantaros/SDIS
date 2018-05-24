@@ -16,6 +16,7 @@ import java.net.*;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
 
 
 public class Client {
@@ -41,9 +42,13 @@ public class Client {
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
+    protected static String newLetter = "";
+    protected static int requestNumber = 0;
+    protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
+
     private static String[] cypherSuites;
 
-    private Client(String host, int port) {
+    public Client(String host, int port) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         try {
@@ -159,15 +164,16 @@ public class Client {
 
         //Após 5segundos começar o jogo
         try {
-            Thread.sleep(5000); //10segundos
+            Thread.sleep(10000); //10segundos
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
 
 
         if(rooms[1].getOwner()) {
-            String word = "Adivinha Eu";
-            String word2 = "_ _ _ _ _ _ _ _   _ _";
+            String word = "qweasd zxc";
+             Hangman game = rooms[1].getGame();
+            game.startGame(word);
             Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
             Client.sendAll(sendWord);
         }
@@ -176,9 +182,31 @@ public class Client {
 
     }
 
+    public static void guessLetter() {
+        Hangman game = rooms[1].getGame();
+        game.guessLetter(newLetter.charAt(0));
+        String word = game.getWord();
+        Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
+        Client.sendAll(sendWord);
+        if(game.gameOver()) {
+            if(game.hasLost()) {
+                Message message = new Message(MessageType.GAME_FINISH, false);
+                Client.sendAll(message);
+                return;
+            }   else if (game.hasWon()) {
+                Message message = new Message(MessageType.GAME_FINISH, true);
+                Client.sendAll(message);
+                return;
+            }
+        }
+       
+    }
+
     public static void sendAll(Message message) {
         for(int i = 0; i<countPeer; i++) {
+            
             try {
+                //Thread.sleep(100);
                 peer[i].getOutputStream().write(message.getBytes());
             } catch(IOException e) {
                 e.printStackTrace();
@@ -188,7 +216,48 @@ public class Client {
 
     public static void setWord(String word) {
         System.out.println(word);
+        Hangman game = rooms[1].getGame();
+        game.startGame(word);
+        setWordInGUI(game.getWord());
+    }
+
+    public static void setWordInGUI(String word) {
         launcher.getFrame().gamePanel.setWordToGuess(word);
+    }
+
+    public static String sendLetter(String letter) {
+        Hangman game = rooms[1].getGame();
+        if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
+            //TODO::protocolos
+            Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
+            sendAll(letterToSend);
+            int i = rooms[1].getNClients();
+            System.out.println(i);
+            while(Client.confirmMsg.size() < i) {
+                System.out.flush();
+            }
+            confirmMsg.clear();
+            Message message = new Message(MessageType.LETTER_GO);
+            sendAll(message);
+            requestNumber = 0;
+            return "ok";
+        } else if(!game.checkLetter(letter.charAt(0))) {
+            return "Ja foi tentado";
+        }
+        else {
+            return "Must Be 1 Word";        
+        }
+    }
+
+    public static void handleLetter(int id, String letter) {
+        newLetter = letter;
+        Message message = new Message(MessageType.LETTER_CHECK, Client.clientID, "yes");
+        try {
+            System.out.println(message.toString());
+            peer[id].getOutputStream().write(message.getBytes());
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void connectRoom(String roomsName) {

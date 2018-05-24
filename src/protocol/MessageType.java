@@ -19,10 +19,14 @@ public enum MessageType {
     WORD_REQUEST,
     WORD_CHECK,
     WORD_TO_GUESS,
+    WORD_TO_GUI,
 
-    LETTER_REQUEST,
+    LETTER_TO_GUESS,
     LETTER_CHECK,
+    LETTER_GO,
     LETTER_TO_CHECK,
+
+    GAME_FINISH,
     
     READY_TO_START;
 
@@ -75,17 +79,26 @@ public enum MessageType {
             case WORD_TO_GUESS:
                 return "WORD_TO_GUESS";
 
-            case LETTER_REQUEST:
-                return "LETTER_REQUEST";
+            case LETTER_TO_GUESS:
+                return "LETTER_TO_GUESS";
 
             case LETTER_CHECK:
                 return "LETTER_CHECK";
+
+            case LETTER_GO:
+                return "LETTER_GO";
 
             case LETTER_TO_CHECK:
                 return "LETTER_TO_CHECK";
                 
             case READY_TO_START:
                 return "READY_TO_START";
+
+            case WORD_TO_GUI:
+                return "WORD_TO_GUI";
+
+            case GAME_FINISH:
+                return "GAME_FINISH";
 
             default:
                 return "FAIL";
@@ -139,17 +152,26 @@ public enum MessageType {
             case "WORD_TO_GUESS":
                 return WORD_TO_GUESS;
 
-            case "LETTER_REQUEST":
-                return LETTER_REQUEST;
+            case "LETTER_TO_GUESS":
+                return LETTER_TO_GUESS;
 
             case "LETTER_CHECK":
                 return LETTER_CHECK;
+
+            case "LETTER_GO":
+                return LETTER_GO;
 
             case "LETTER_TO_CHECK":
                 return LETTER_TO_CHECK;
             
             case "READY_TO_START":
                 return READY_TO_START;
+
+            case "WORD_TO_GUI":
+                return WORD_TO_GUI;
+
+            case "GAME_FINISH":
+                return GAME_FINISH;
 
             default:
                 throw new InvalidMessage(type);

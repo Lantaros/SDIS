@@ -40,6 +40,7 @@ public class JoinLobby extends JPanel {
 		});
 
 		JScrollPane scrollPane = new JScrollPane();
+
 		listofIDs = new JList<String>();
 
 		
