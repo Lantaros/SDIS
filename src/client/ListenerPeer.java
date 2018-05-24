@@ -31,7 +31,8 @@ class ListenerPeer implements Runnable {
                         Client.setWord(message.getWord());
                         break;
                     case READY_TO_START:
-                        
+                    	Client.rooms[1].setReady(message.getClientID());
+                    	//if()
                         break;
                 }
             } catch (IOException e) {

@@ -13,8 +13,6 @@ public class ClientData {
     private Socket socket;
     private byte[] msg = new byte[1024];
     
-    private boolean isReady = false;
-
     public ClientData(int id_client) {
         this.clientId = id_client;
     }
@@ -67,11 +65,5 @@ public class ClientData {
         return this.roomsId;
     }
 
-	public boolean isReady() {
-		return isReady;
-	}
 
-	public void setReady(boolean isReady) {
-		this.isReady = isReady;
-	}
 }
