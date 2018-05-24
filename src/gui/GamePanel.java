@@ -19,9 +19,11 @@ public class GamePanel extends JPanel {
 
 	@SuppressWarnings("unused")
 	private Frame frame;
-	private JTextField textField;
+	private JTextField textFieldGuessLetter;
 	private JLabel lblHagmanWord;
 	private JLabel lblTimeRemaining;
+	private JTextField textFieldGuessWord;
+	JLabel lblWarning;
 
 	/**
 	 * Create the panel.
@@ -40,19 +42,19 @@ public class GamePanel extends JPanel {
 		lblHagmanWord = new JLabel("");
 		lblHagmanWord.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
-		textField = new JTextField();
-		textField.setColumns(10);
+		textFieldGuessLetter = new JTextField();
+		textFieldGuessLetter.setColumns(10);
 
 		JButton btnGuessLetter = new JButton("Guess Letter");
 		btnGuessLetter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String letterGuessed = textField.getText();
+				String letterGuessed = textFieldGuessLetter.getText();
 
 				String aswner = Client.sendLetter(letterGuessed);
 				if(aswner == "ok") {
-					textField.setText("");
+					textFieldGuessLetter.setText("");
 				} else {
-					textField.setText(aswner);
+					textFieldGuessLetter.setText(aswner);
 				}
 			}
 		});
@@ -71,40 +73,67 @@ public class GamePanel extends JPanel {
 		JLabel lblNumberOfErrors = new JLabel("Number of Errors: ");
 		
 		JLabel label_1 = new JLabel("0");
+		
+		lblWarning = new JLabel("");
+		
+		textFieldGuessWord = new JTextField();
+		textFieldGuessWord.setColumns(10);
+		
+		JButton btnGuessWord = new JButton("Guess Word");
+		btnGuessWord.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String wordGuessed = textFieldGuessWord.getText();
+				
+				//TODO Delete tests
+//				setWarning("work pls");
+//				int i = Integer.parseInt(lblTimeRemaining.getText())+1;
+//				setTimeRemaining(i);
+				
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-							.addGap(183)
-							.addComponent(lblGamepanel, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(TimeRemaininglbl, Alignment.TRAILING)
-								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-									.addComponent(lblTimeRemaining)
-									.addGap(27))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap(330, Short.MAX_VALUE)
-							.addComponent(btnLeaveRoom)))
-					.addGap(29))
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(27)
+					.addComponent(lblWarning)
+					.addContainerGap(423, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(19)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(textFieldGuessWord, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED, 197, Short.MAX_VALUE))
+								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+									.addComponent(lblGamepanel, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+									.addGap(35)))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+									.addComponent(TimeRemaininglbl)
+									.addGap(45))
+								.addGroup(Alignment.TRAILING, groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblTimeRemaining)
+									.addComponent(btnLeaveRoom)))
+							.addGap(29))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblNumberOfErrors)
 							.addGap(18)
 							.addComponent(label_1))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnGuessLetter))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblWordToGuess)
-							.addGap(18)
-							.addComponent(lblHagmanWord)))
-					.addContainerGap(228, Short.MAX_VALUE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(lblWordToGuess)
+									.addGap(18)
+									.addComponent(lblHagmanWord))
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+									.addComponent(btnGuessWord)
+									.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(textFieldGuessLetter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(btnGuessLetter))))
+							.addContainerGap(242, Short.MAX_VALUE))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -112,10 +141,8 @@ public class GamePanel extends JPanel {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblGamepanel, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-								.addComponent(TimeRemaininglbl))
-							.addGap(21)
+							.addComponent(lblGamepanel, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+							.addGap(9)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblNumberOfErrors)
 								.addComponent(label_1))
@@ -125,14 +152,25 @@ public class GamePanel extends JPanel {
 								.addComponent(lblHagmanWord))
 							.addGap(55)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnGuessLetter))
+								.addComponent(textFieldGuessLetter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnGuessLetter)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(34)
+							.addComponent(TimeRemaininglbl)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblTimeRemaining)))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(31)
 							.addComponent(btnLeaveRoom))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(34)
-							.addComponent(lblTimeRemaining)))
-					.addContainerGap(33, Short.MAX_VALUE))
+							.addGap(18)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textFieldGuessWord, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnGuessWord))))
+					.addPreferredGap(ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+					.addComponent(lblWarning)
+					.addContainerGap())
 		);
 		setLayout(groupLayout);
 
@@ -143,6 +181,10 @@ public class GamePanel extends JPanel {
 	}
 	
 	public void setTimeRemaining(int timeRemain) {
-		lblHagmanWord.setText(Integer.toString(timeRemain));
+		lblTimeRemaining.setText(Integer.toString(timeRemain));
+	}
+	
+	public void setWarning(String warning) {
+		lblWarning.setText(warning);
 	}
 }
