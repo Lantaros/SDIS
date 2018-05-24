@@ -80,22 +80,6 @@ public class Client {
                 break;
         }
 
-        //Setting up SSL configuration
-        if (args.length > 3 + nOperands) {
-            int nCyphers = 3 + nOperands;
-            System.out.println("Specified Cipher Suites");
-            String[] cypherSuites = new String[args.length - nCyphers];
-            System.arraycopy(args, 3 + nOperands, cypherSuites, 0, cypherSuites.length);
-
-            System.out.println("Args Lenght: " + args.length);
-            /*
-            System.out.println("############################Cypher####################################");
-            for(String cypher: cypherSuites){
-                System.out.println(cypher);
-            }
-            System.out.println("#########################################################################");
-
-            */
             client.sslSocket.setEnabledCipherSuites(
                 new String[]{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
                         "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
@@ -104,16 +88,7 @@ public class Client {
                         "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384",
                         "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"}
             );
-        }
 
-/*
-        System.out.println("############################Supported Cyphers####################################");
-        for(String protocol: client.sslSocket.getSupportedCipherSuites()){
-            System.out.println(protocol);
-        }
-        System.out.println("#########################################################################");
-
-*/
 
 
         try {

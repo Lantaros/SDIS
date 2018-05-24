@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class Server {
+
     protected static SSLServerSocket sslSocket;
     private Socket socket;
     //protected KeyStore keystore;
@@ -51,7 +52,7 @@ public class Server {
     //java -Djavax.net.ssl.keyStore=../server.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=../truststore -Djavax.net.ssl.trustStorePassword=123456  server.Server 3030
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("At least server port expected.\njava SSLServer <port> <cypher-suite>*");
+            System.out.println("Server port expected.\njava Server <port>");
             System.exit(1);
         }
         Server server = new Server(Integer.parseInt(args[0]));
