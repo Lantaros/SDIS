@@ -35,9 +35,9 @@ class ListenerPeer implements Runnable {
                         break;
                     case LETTER_CHECK:
                         Client.requestNumber++;
-                        if(message.getBool() == "yes"){            
-                            System.out.println(Client.requestNumber);
-                        }
+                                   
+                        System.out.println(Client.requestNumber);
+                        
                         break;
                     case LETTER_GO:
                         if(Client.rooms[1].getOwner())
@@ -45,6 +45,9 @@ class ListenerPeer implements Runnable {
                         break;
                     case WORD_TO_GUI:
                         Client.setWordInGUI(message.getWord());
+                        break;
+                    case GAME_FINISH:
+                        //TODO::receber a mensagem!
                         break;
                     case READY_TO_START:
                         

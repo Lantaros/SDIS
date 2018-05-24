@@ -40,6 +40,13 @@ public class Hangman {
         return this.currentWord;
     }
 
+    public boolean checkLetter(char letterArg) {
+        char letter = Character.toLowerCase(letterArg);
+        if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
+            return false;
+        return true;
+    }
+
     // return true if right
     public boolean guessLetter(char letterArg) {
         char letter = Character.toLowerCase(letterArg);
@@ -52,7 +59,7 @@ public class Hangman {
             if (wordToGuess.charAt(i) == letter) {
                 wordHasLetter = true;
                 StringBuilder wordToGuessStrBuild = new StringBuilder(currentWord);
-                wordToGuessStrBuild.setCharAt(i, letter);
+                wordToGuessStrBuild.setCharAt(i*2, letter);
                 currentWord = wordToGuessStrBuild.toString();
                 System.out.println(currentWord);
                 Client.setWordInGUI(currentWord);
@@ -95,7 +102,10 @@ public class Hangman {
 	}*/
 
     public boolean hasWon() {
-        return wordToGuess.equals(currentWord);
+        //TODO::verificacao melhorada!!
+        String tokens = new String(wordToGuess.replaceAll("\\s+",""));
+        String tokens2 = new String(currentWord.replaceAll("\\s+",""));
+        return tokens.equals(tokens2);
 
     }
 

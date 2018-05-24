@@ -185,6 +185,17 @@ public class Client {
         game.guessLetter(newLetter.charAt(0));
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
+        if(game.gameOver()) {
+            if(game.hasLost()) {
+                Message message = new Message(MessageType.GAME_FINISH, true);
+                Client.sendAll(message);
+                return;
+            }   else if (game.hasWon()) {
+                Message message = new Message(MessageType.GAME_FINISH, false);
+                Client.sendAll(message);
+                return;
+            }
+        }
         Client.sendAll(sendWord);
     }
 
@@ -210,7 +221,8 @@ public class Client {
     }
 
     public static String sendLetter(String letter) {
-        if(letter.length() == 1) {
+        Hangman game = rooms[1].getGame();
+        if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
             //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
@@ -223,10 +235,12 @@ public class Client {
             sendAll(message);
             requestNumber = 0;
             return "ok";
-        } else {
-            return "Must Be 1 Word";
+        } else if(!game.checkLetter(letter.charAt(0))) {
+            return "Ja foi tentado";
         }
-
+        else {
+            return "Must Be 1 Word";        
+        }
     }
 
     public static void handleLetter(int id, String letter) {

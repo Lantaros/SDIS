@@ -25,6 +25,8 @@ public enum MessageType {
     LETTER_CHECK,
     LETTER_GO,
     LETTER_TO_CHECK,
+
+    GAME_FINISH,
     
     READY_TO_START;
 
@@ -95,6 +97,9 @@ public enum MessageType {
             case WORD_TO_GUI:
                 return "WORD_TO_GUI";
 
+            case GAME_FINISH:
+                return "GAME_FINISH";
+
             default:
                 return "FAIL";
         }
@@ -164,6 +169,9 @@ public enum MessageType {
 
             case "WORD_TO_GUI":
                 return WORD_TO_GUI;
+
+            case "GAME_FINISH":
+                return GAME_FINISH;
 
             default:
                 throw new InvalidMessage(type);

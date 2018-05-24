@@ -10,6 +10,7 @@ public class Message {
     private String word;
     private String letter;
     private String bool;
+    private boolean gameOver;
 
     public static String CR = "\r";
     public static String LF = "\n";
@@ -24,6 +25,11 @@ public class Message {
 
     public Message(MessageType type) {
         this.type = type;
+    }
+
+    public Message(MessageType type, boolean bool) {
+        this.type = type;
+        this.gameOver = bool;
     }
 
     public Message(MessageType type, int port, String address) {
@@ -155,6 +161,13 @@ public class Message {
                     }
                     break;
 
+                case GAME_FINISH:
+                    this.type = MessageType.fromString("GAME_FINISH");
+                    if(tokens[1] == "true")
+                        this.gameOver = true;
+                    else if(tokens[1] == "false")  
+                        this.gameOver = false;
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -219,6 +232,10 @@ public class Message {
             case WORD_TO_GUI:
                 message += " " + word;
                 break;
+
+            case GAME_FINISH:
+                message += " " + gameOver;
+                break;
         }
 
         //message += CRLF;
@@ -263,5 +280,9 @@ public class Message {
 
     public String getBool() {
         return this.bool;
+    }
+
+    public boolean getGameOver() {
+        return this.gameOver;
     }
 }
