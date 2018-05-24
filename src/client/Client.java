@@ -16,6 +16,7 @@ import java.net.*;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
 
 
 public class Client {
@@ -43,6 +44,7 @@ public class Client {
 
     protected static String newLetter = "";
     protected static int requestNumber = 0;
+    protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
 
     private static String[] cypherSuites;
 
@@ -169,7 +171,7 @@ public class Client {
 
 
         if(rooms[1].getOwner()) {
-            String word = "Adivinha Eu";
+            String word = "qweasd zxc";
              Hangman game = rooms[1].getGame();
             game.startGame(word);
             Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
@@ -185,23 +187,26 @@ public class Client {
         game.guessLetter(newLetter.charAt(0));
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
+        Client.sendAll(sendWord);
         if(game.gameOver()) {
             if(game.hasLost()) {
-                Message message = new Message(MessageType.GAME_FINISH, true);
+                Message message = new Message(MessageType.GAME_FINISH, false);
                 Client.sendAll(message);
                 return;
             }   else if (game.hasWon()) {
-                Message message = new Message(MessageType.GAME_FINISH, false);
+                Message message = new Message(MessageType.GAME_FINISH, true);
                 Client.sendAll(message);
                 return;
             }
         }
-        Client.sendAll(sendWord);
+       
     }
 
     public static void sendAll(Message message) {
         for(int i = 0; i<countPeer; i++) {
+            
             try {
+                //Thread.sleep(100);
                 peer[i].getOutputStream().write(message.getBytes());
             } catch(IOException e) {
                 e.printStackTrace();
@@ -226,11 +231,12 @@ public class Client {
             //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
-            System.out.println(rooms[1].getNClients());
-            while(requestNumber < rooms[1].getNClients()) {
-                //System.out.println(requestNumber);
+            int i = rooms[1].getNClients();
+            System.out.println(i);
+            while(Client.confirmMsg.size() < i) {
+                System.out.flush();
             }
-            System.out.println("chegou");
+            confirmMsg.clear();
             Message message = new Message(MessageType.LETTER_GO);
             sendAll(message);
             requestNumber = 0;
@@ -245,8 +251,9 @@ public class Client {
 
     public static void handleLetter(int id, String letter) {
         newLetter = letter;
-        Message message = new Message(MessageType.LETTER_CHECK, "yes");
+        Message message = new Message(MessageType.LETTER_CHECK, Client.clientID, "yes");
         try {
+            System.out.println(message.toString());
             peer[id].getOutputStream().write(message.getBytes());
         } catch(IOException e) {
             e.printStackTrace();

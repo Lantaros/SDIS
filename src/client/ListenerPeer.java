@@ -34,9 +34,7 @@ class ListenerPeer implements Runnable {
                         Client.handleLetter(this.id, message.getLetter());
                         break;
                     case LETTER_CHECK:
-                        Client.requestNumber++;
-                                   
-                        System.out.println(Client.requestNumber);
+                        Client.confirmMsg.add(message.getClientID());
                         
                         break;
                     case LETTER_GO:

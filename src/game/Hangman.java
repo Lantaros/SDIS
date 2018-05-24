@@ -102,7 +102,6 @@ public class Hangman {
 	}*/
 
     public boolean hasWon() {
-        //TODO::verificacao melhorada!!
         String tokens = new String(wordToGuess.replaceAll("\\s+",""));
         String tokens2 = new String(currentWord.replaceAll("\\s+",""));
         return tokens.equals(tokens2);
@@ -118,5 +117,7 @@ public class Hangman {
         return hasWon() || hasLost();
 
     }
+
+    //TODO::Colocar no Array!!!!!!
 
 }

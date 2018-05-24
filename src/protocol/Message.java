@@ -34,8 +34,19 @@ public class Message {
 
     public Message(MessageType type, int port, String address) {
         this.type = type;
-        this.port = port;
-        this.address = address;
+        try {
+            if(type == MessageType.fromString("LETTER_TO_GUESS")){
+                this.bool = address;
+                this.clientID = port;
+            }else {
+                this.port = port;
+            this.address = address;
+            }
+        } catch (InvalidMessage m) {
+            m.printStackTrace();
+        }
+
+        
     }
 
     public Message(MessageType type, String word) {
@@ -43,8 +54,7 @@ public class Message {
         try {
             if(type == MessageType.fromString("LETTER_TO_GUESS"))
                 this.letter = word;
-            else if(type == MessageType.fromString("LETTER_CHECK") )
-                this.bool = word;
+            
             else if(type == MessageType.fromString("WORD_TO_GUI"))
                 this.word = word;
             else {
@@ -140,7 +150,8 @@ public class Message {
 
                 case LETTER_CHECK:
                     this.type = MessageType.fromString("LETTER_CHECK");
-                    this.bool = tokens[1];
+                    this.bool = tokens[2];
+                    this.clientID = Integer.parseInt(tokens[1].trim());
                     break;
 
                 case LETTER_GO:
@@ -218,7 +229,7 @@ public class Message {
                 break;
 
             case LETTER_CHECK:
-                message += " " + bool;
+                message += " " + clientID + " " + bool;
                 break;
 
             case LETTER_GO:
