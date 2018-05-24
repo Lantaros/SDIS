@@ -8,6 +8,9 @@ public class Message {
     private int port;
     private String address;
     private String word;
+    private String letter;
+    private String bool;
+    private boolean gameOver;
 
     public static String CR = "\r";
     public static String LF = "\n";
@@ -20,19 +23,47 @@ public class Message {
         this.roomID = roomID;
     }
 
+    public Message(MessageType type) {
+        this.type = type;
+    }
+
+    public Message(MessageType type, boolean bool) {
+        this.type = type;
+        this.gameOver = bool;
+    }
+
     public Message(MessageType type, int port, String address) {
         this.type = type;
-        this.port = port;
-        this.address = address;
+        try {
+            if(type == MessageType.fromString("LETTER_TO_GUESS")){
+                this.bool = address;
+                this.clientID = port;
+            }else {
+                this.port = port;
+            this.address = address;
+            }
+        } catch (InvalidMessage m) {
+            m.printStackTrace();
+        }
+
+        
     }
 
     public Message(MessageType type, String word) {
         this.type = type;
-        this.word = word;
-    }
-    
-    public Message(MessageType type) {
-        this.type = type;
+        try {
+            if(type == MessageType.fromString("LETTER_TO_GUESS"))
+                this.letter = word;
+            
+            else if(type == MessageType.fromString("WORD_TO_GUI"))
+                this.word = word;
+            else {
+                this.word = word;
+            }
+        } catch (InvalidMessage m) {
+            m.printStackTrace();
+        }
+        
     }
 
     public Message(MessageType type, int nPorts) {
@@ -105,13 +136,49 @@ public class Message {
                 case WORD_TO_GUESS:
                     this.type = MessageType.fromString("WORD_TO_GUESS");
                     this.word = "";
-                    for(int i = 1; i < tokens.length; i++)
+                    for(int i = 1; i < tokens.length; i++)  {                      
                         this.word += tokens[i];
+                        if(i != tokens.length)
+                            this.word += " ";
+                    }
                     break;
+
+                case LETTER_TO_GUESS:
+                    this.type = MessageType.fromString("LETTER_TO_GUESS");
+                    this.letter = tokens[1];
+                    break;
+
+                case LETTER_CHECK:
+                    this.type = MessageType.fromString("LETTER_CHECK");
+                    this.bool = tokens[2];
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    break;
+
+                case LETTER_GO:
+                    this.type = MessageType.fromString("LETTER_GO");
+                    break;
+
                 case READY_TO_START:
                     this.type = MessageType.fromString("READY_TO_START");
                     break;
 
+                case WORD_TO_GUI:
+                    this.type = MessageType.fromString("WORD_TO_GUI");
+                    this.word = "";
+                    for(int i = 1; i < tokens.length; i++)  {                      
+                        this.word += tokens[i];
+                        if(i != tokens.length)
+                            this.word += " ";
+                    }
+                    break;
+
+                case GAME_FINISH:
+                    this.type = MessageType.fromString("GAME_FINISH");
+                    if(tokens[1] == "true")
+                        this.gameOver = true;
+                    else if(tokens[1] == "false")  
+                        this.gameOver = false;
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -156,8 +223,30 @@ public class Message {
             case WORD_TO_GUESS:
                 message += " " + word;
                 break;
+
+            case LETTER_TO_GUESS:
+                message += " " + letter;
+                break;
+
+            case LETTER_CHECK:
+                message += " " + clientID + " " + bool;
+                break;
+
+            case LETTER_GO:
+                message += " " + "teste";
+                break;
+
             case READY_TO_START:
             	message += " " + clientID;
+                break;
+
+            case WORD_TO_GUI:
+                message += " " + word;
+                break;
+
+            case GAME_FINISH:
+                message += " " + gameOver;
+                break;
         }
 
         //message += CRLF;
@@ -194,5 +283,17 @@ public class Message {
 
     public String getWord() {
         return this.word;
+    }
+
+    public String getLetter() {
+        return this.letter;
+    }
+
+    public String getBool() {
+        return this.bool;
+    }
+
+    public boolean getGameOver() {
+        return this.gameOver;
     }
 }
