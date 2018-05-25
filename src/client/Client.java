@@ -71,28 +71,14 @@ public class Client {
         Client client = new Client(args[0], Integer.parseInt(args[1]));
 
 
-        int nOperands;
-
-        switch (args[2]) {
-            case "REGISTER":
-                nOperands = 2;
-                break;
-            case "LOOKUP":
-                nOperands = 1;
-                break;
-            default:
-                nOperands = 0;
-                break;
-        }
-
-            client.sslSocket.setEnabledCipherSuites(
-                new String[]{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-                        "TLS_RSA_WITH_AES_256_GCM_SHA384",
-                        "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384",
-                        "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384",
-                        "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"}
-            );
+        client.sslSocket.setEnabledCipherSuites(
+            new String[]{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"}
+        );
 
 
 
