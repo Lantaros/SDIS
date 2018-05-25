@@ -99,7 +99,7 @@ public class Server {
                 e.printStackTrace();
             }
         }
-        Server.rooms[roomsId].setClientId(id);
+        Server.rooms[roomsId].addClientId(id);
     }
 
     public void sendMessage(Message message, int clientId) {

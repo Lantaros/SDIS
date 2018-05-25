@@ -27,6 +27,10 @@ public enum MessageType {
     LETTER_TO_CHECK,
 
     GAME_FINISH,
+
+    TURN_PEER_ID,
+    TURN_CHECK,
+    TURN_GO,
     
     READY_TO_START;
 
@@ -100,6 +104,15 @@ public enum MessageType {
             case GAME_FINISH:
                 return "GAME_FINISH";
 
+            case TURN_GO:
+                return "TURN_GO";
+
+            case TURN_CHECK:
+                return "TURN_CHECK";
+
+            case TURN_PEER_ID:
+                return "TURN_PEER_ID";
+
             default:
                 return "FAIL";
         }
@@ -172,6 +185,15 @@ public enum MessageType {
 
             case "GAME_FINISH":
                 return GAME_FINISH;
+
+            case "TURN_PEER_ID":
+                return TURN_PEER_ID;
+
+            case "TURN_GO":
+                return TURN_GO;
+
+            case "TURN_CHECK":
+                return TURN_CHECK;
 
             default:
                 throw new InvalidMessage(type);

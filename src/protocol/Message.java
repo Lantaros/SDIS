@@ -57,6 +57,10 @@ public class Message {
             
             else if(type == MessageType.fromString("WORD_TO_GUI"))
                 this.word = word;
+
+            else if(type == MessageType.fromString("TURN_CHECK"))
+                this.word = word;
+
             else {
                 this.word = word;
             }
@@ -75,6 +79,8 @@ public class Message {
             else if (type == MessageType.fromString("SEND_PORTS"))
                 this.nPorts = nPorts;
             else if (type == MessageType.fromString("PEER_INFO"))
+                this.clientID = nPorts;
+            else if (type == MessageType.fromString("TURN_PEER_ID"))
                 this.clientID = nPorts;
             else
             	this.clientID = nPorts;
@@ -179,6 +185,20 @@ public class Message {
                     else if(tokens[1] == "false")  
                         this.gameOver = false;
                     break;
+
+                case TURN_PEER_ID:
+                    this.type = MessageType.fromString("TURN_PEER_ID");
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    break;
+
+                case TURN_CHECK:
+                    this.type = MessageType.fromString("TURN_CHECK");
+                    this.word = tokens[1];
+                    break;
+
+                case TURN_GO:
+                    this.type = MessageType.fromString("TURN_GO");
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -233,7 +253,7 @@ public class Message {
                 break;
 
             case LETTER_GO:
-                message += " " + "teste";
+                message += " " + "go";
                 break;
 
             case READY_TO_START:
@@ -247,6 +267,17 @@ public class Message {
             case GAME_FINISH:
                 message += " " + gameOver;
                 break;
+
+            case TURN_PEER_ID:
+                message += " " + clientID;
+                break;
+
+            case TURN_CHECK:
+                message += " " + word;
+                break;
+
+            case TURN_GO:
+                message += " " + "go";
         }
 
         //message += CRLF;

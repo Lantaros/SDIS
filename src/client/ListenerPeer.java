@@ -51,6 +51,17 @@ class ListenerPeer implements Runnable {
                     	Client.rooms[1].setReady(message.getClientID());
                     	//if()
                         break;
+                    case TURN_PEER_ID:
+                        if(message.getClientID() == Client.clientID)
+                            Client.rooms[1].getGame().setTurn(true);
+                        Client.sendNextTurn(this.id);
+                        break;
+                    case TURN_CHECK:
+                        Client.confirmTurn++;
+                        break;
+                    case TURN_GO:
+                        //Client.handleMyTurn();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

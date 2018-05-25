@@ -45,6 +45,8 @@ public class Client {
     protected static String newLetter = "";
     protected static int requestNumber = 0;
     protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
+    protected static int numTurn = 0;
+    protected static int confirmTurn = 0;
 
     private static String[] cypherSuites;
 
@@ -137,12 +139,49 @@ public class Client {
             game.startGame(word);
             Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
             Client.sendAll(sendWord);
+            Client.handleNextTurn();
         }
         
 
 
     }
 
+    public static void handleNextTurn() {
+        int n = rooms[1].getNClients();
+        int[] id = rooms[1].getClients();
+        Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
+        if(numTurn >= n-1 ) 
+            numTurn = 0;
+        else
+            numTurn++;
+        Client.sendAll(sendTurn);
+        while(Client.confirmTurn < n) {
+            System.out.flush();
+        }
+        Client.confirmTurn = 0;
+        Message sendGo = new Message(MessageType.TURN_GO);
+        sendAll(sendGo);
+
+    }
+
+    public static void sendNextTurn(int peerID) {
+        Message msg = new Message(MessageType.LETTER_CHECK, "no");
+        
+        try {
+            peer[peerID].getOutputStream().write(msg.getBytes());
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void handleMyTurn() {
+        if(rooms[1].getGame().getTurn()) {
+            //TODO::comecar a contagem!!!
+        } else {
+            //TODO::notmyturn
+        }
+    }
     public static void guessLetter() {
         Hangman game = rooms[1].getGame();
         game.guessLetter(newLetter.charAt(0));
@@ -318,10 +357,23 @@ public class Client {
         System.out.println(socket.getPort());
         System.out.println(socket.getRemoteSocketAddress());
 
-        rooms[1].setClientId(id);
+        rooms[1].addClientId(id);
+        
 
         ListenerPeer listPeer = new ListenerPeer(id);
         new Thread(listPeer).start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Message message = new Message(MessageType.PEER_INFO, Client.clientID);
+        try {
+            peer[countPeer - 1].getOutputStream().write(message.getBytes());
+            System.out.println(message.toString());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void connectPeer(int port, String address) {
@@ -356,7 +408,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            rooms[1].setClientId(countPeer);
+            rooms[1].addClientId(countPeer);
 
             ListenerPeer listPeer = new ListenerPeer(countPeer);
             new Thread(listPeer).start();
@@ -367,6 +419,12 @@ public class Client {
             e.printStackTrace();
         }
 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
         Message message = new Message(MessageType.PEER_INFO, Client.clientID);
         try {
             peer[countPeer - 1].getOutputStream().write(message.getBytes());
@@ -378,6 +436,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
+        rooms[1].setClientId(clientID, generalID);
     }
     
     

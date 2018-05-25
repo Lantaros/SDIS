@@ -31,7 +31,7 @@ class ListenerClient implements Runnable {
                         Message messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
                         Server.server.sendMessage(messageSend, this.id);
                         if (Server.rooms[roomId].getNClients() == 0) {
-                            Server.rooms[roomId].setClientId(this.id);
+                            Server.rooms[roomId].addClientId(this.id);
                         }
                         break;
 

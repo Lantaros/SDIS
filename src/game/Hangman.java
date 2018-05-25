@@ -18,6 +18,8 @@ public class Hangman {
 
     ArrayList<Character> guessedLetters;
 
+    boolean turn = false;
+
     public Hangman(int roomID) {
         this.roomID = roomID;
     }
@@ -116,6 +118,14 @@ public class Hangman {
     public boolean gameOver() {
         return hasWon() || hasLost();
 
+    }
+
+    public boolean getTurn() {
+        return turn;
+    }
+
+    public void setTurn(boolean turn) {
+        this.turn = turn;
     }
 
     //TODO::Colocar no Array!!!!!!

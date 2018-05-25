@@ -12,9 +12,13 @@ public class Room {
 		this.id_room = id_room;
 	}
 
-	public void setClientId(int id_client) {
+	public void addClientId(int id_client) {
 		this.nClients++;
 		client_id[this.nClients] = id_client;
+	}
+
+	public void setClientId(int id_client, int id_general) {
+		client_id[id_client] = id_general;
 	}
 
 	public int getRoomId() {
