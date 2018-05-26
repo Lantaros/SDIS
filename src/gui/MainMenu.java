@@ -27,7 +27,7 @@ public class MainMenu extends JPanel {
 		JButton btnCreateLobby = new JButton("Create Room");
 		btnCreateLobby.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setpanel(frame.setWordRoom);
+				frame.setpanel(frame.createRoom);
 
 			}
 		});
