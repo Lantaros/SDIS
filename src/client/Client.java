@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class Client {
 
     public static int clientID;
+
     //conection with the server
     //protected int port;
     protected static SSLSocket sslSocket;
@@ -38,7 +39,9 @@ public class Client {
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
-    private static Room[] rooms = new Room[3];
+
+    private static int nRooms = 0;
+    protected static Room[] rooms = new Room[3];
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
@@ -123,6 +126,7 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
+        //Client.createRoom("Cenas");
         Client.connectRoom("Sala 1");
 
         //Após 5segundos começar o jogo
@@ -150,7 +154,7 @@ public class Client {
         int n = getRooms()[1].getNClients();
         int[] id = getRooms()[1].getClients();
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
-        if(numTurn >= n-1 ) 
+        if(numTurn >= n-1 )
             numTurn = 0;
         else
             numTurn++;
@@ -166,6 +170,7 @@ public class Client {
 
     public static void sendNextTurn(int peerID) {
         Message msg = new Message(MessageType.TURN_CHECK, "yes");
+
         try {
             peer[peerID].getOutputStream().write(msg.getBytes());
         } catch(IOException e) {
@@ -182,7 +187,18 @@ public class Client {
         GameThread gameThread = new GameThread("timer");
         new Thread(gameThread).start();
     }
-    
+
+    private static void createRoom(String roomName) {
+        Message message = new Message(MessageType.ROOM_CREATE, Client.clientID, roomName);
+        byte[] msgBytes = message.getBytes();
+
+        try {
+            Client.sendStream.write(msgBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void guessLetter() {
         Hangman game = getRooms()[1].getGame();
         game.guessLetter(newLetter.charAt(0));
@@ -362,8 +378,9 @@ public class Client {
         System.out.println(socket.getPort());
         System.out.println(socket.getRemoteSocketAddress());
 
-        getRooms()[1].addClientId(id);
-        
+
+        rooms[1].addClientId(id);
+
 
         ListenerPeer listPeer = new ListenerPeer(id);
         new Thread(listPeer).start();
@@ -429,7 +446,7 @@ public class Client {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         Message message = new Message(MessageType.PEER_INFO, Client.clientID);
         try {
             peer[countPeer - 1].getOutputStream().write(message.getBytes());

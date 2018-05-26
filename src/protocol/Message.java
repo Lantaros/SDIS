@@ -38,7 +38,15 @@ public class Message {
             if(type == MessageType.fromString("LETTER_TO_GUESS")){
                 this.bool = address;
                 this.clientID = port;
-            }else {
+            }else if(type == MessageType.ROOM_CREATE){
+                this.clientID = port;
+                this.address = address;
+            }
+            else if(type == MessageType.ROOM_CREATED) {
+                this.roomID = nPorts;
+                this.address = address;
+            }
+            else {
                 this.port = port;
             this.address = address;
             }
@@ -80,6 +88,7 @@ public class Message {
                 this.nPorts = nPorts;
             else if (type == MessageType.fromString("PEER_INFO"))
                 this.clientID = nPorts;
+
             else if (type == MessageType.fromString("TURN_PEER_ID"))
                 this.clientID = nPorts;
             else
@@ -93,6 +102,13 @@ public class Message {
 
     public Message(String message) {
         String[] tokens = message.split(" ");
+
+        try {
+            this.type = MessageType.fromString(tokens[0].trim());
+        } catch (InvalidMessage invalidMessage) {
+            invalidMessage.printStackTrace();
+        }
+
         try {
             switch (MessageType.fromString(tokens[0])) {
                 case ROOM_CONNECT:
@@ -102,6 +118,15 @@ public class Message {
                     break;
 
                 case ROOM_CREATE:
+                    this.type = MessageType.ROOM_CREATE;
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    this.address = tokens[2].trim();
+                    break;
+
+                case ROOM_CREATED:
+                    this.type = MessageType.ROOM_CREATED;
+                    this.roomID = Integer.parseInt(tokens[1].trim());
+                    this.address = tokens[2].trim();
                     break;
 
                 case ROOM_AVAILABLE:
@@ -185,10 +210,12 @@ public class Message {
 
                 case GAME_FINISH:
                     this.type = MessageType.fromString("GAME_FINISH");
-                    if(tokens[1].trim() == "true")
+
+                    if(tokens[1].equals("true"))
                         this.gameOver = true;
-                    else if(tokens[1].trim() == "false")  
+                    else
                         this.gameOver = false;
+
                     break;
 
                 case TURN_PEER_ID:
@@ -210,6 +237,13 @@ public class Message {
             System.out.println(m.toString());
             m.printStackTrace();
         }
+    }
+
+    public String getRoomName(){
+        if(type == MessageType.ROOM_CREATE || type == MessageType.ROOM_CREATED)
+            return address;
+
+        return "";
     }
 
     public byte[] getBytes() {
@@ -283,9 +317,20 @@ public class Message {
 
             case TURN_GO:
                 message += " " + "go";
-		default:
-			break;
+
+
+            case ROOM_CREATE:
+                message += " " + clientID + " " + address;
+                break;
+
+            case ROOM_CREATED:
+                message += " " + roomID;
+                message += " " + address;
+                break;
+            default:
+    			break;
         }
+
 
         //message += CRLF;
         return message;

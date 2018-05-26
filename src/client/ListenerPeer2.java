@@ -21,7 +21,7 @@ class ListenerPeer2 implements Runnable {
                 msg = new byte[1024];
                 Client.peer[this.id].getInputStream().read(msg, 0, msg.length);
                 System.out.println(new String(msg));
-                Client.peer[this.id].setMessage(msg);
+                //Client.peer[this.id].setMessage(msg); TODO delete this?
                 Message message = new Message(new String(msg));
                 switch (message.getType()) {
                     case PEER_INFO:

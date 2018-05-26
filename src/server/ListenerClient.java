@@ -1,5 +1,6 @@
 package server;
 
+import client.Client;
 import protocol.Message;
 import protocol.MessageType;
 
@@ -16,19 +17,23 @@ class ListenerClient implements Runnable {
 
     @Override
     public void run() {
+        Message messageSend;
 
         while (true) {
             try {
                 Arrays.fill(msg, (byte) 0);
                 Server.client[this.id].getInputStream().read(msg, 0, msg.length);
-                System.out.println(new String(msg));
-                Server.client[this.id].setMessage(msg);
+                System.out.println("RECEIVED: " + new String(msg));
+                //Server.client[this.id].setMessage(msg);
                 Message message = new Message(new String(msg));
+
+                System.out.println();
+                System.out.println(message);
                 switch (message.getType()) {
                     case ROOM_CONNECT:
                         int roomId = message.getRoomId();
                         Server.client[this.id].setRoomId(roomId);
-                        Message messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
+                        messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
                         Server.server.sendMessage(messageSend, this.id);
                         if (Server.rooms[roomId].getNClients() == 0) {
                             Server.rooms[roomId].addClientId(this.id);
@@ -38,6 +43,28 @@ class ListenerClient implements Runnable {
                     case PORT_TO_SEND:
                         Server.sendPortToClients(message.getPort(), message.getAddress(), this.id);
                         break;
+                    case ROOM_CREATE:
+                        int roomID = Server.createRoom(message.getRoomName(), message.getClientID());
+                        System.out.println("RoomID" + roomID);
+                        if(roomID >= 0) {
+                            messageSend = new Message(MessageType.ROOM_CREATED, roomID, message.getRoomName());
+                            System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + roomID);
+                        }
+
+                        else if(roomID == -1) {
+                            messageSend = new Message(MessageType.MAX_ROOMS_REACHED);
+                            System.out.println("Max number rooms reached");
+                        }
+
+                        else {
+                            messageSend = new Message(MessageType.DUP_ROOM_NAME);
+                            System.out.println("Duplicated room name '" + message.getRoomName() + "'");
+                        }
+
+                        System.out.println("SENT: " + message);
+                        Server.client[this.id].getOutputStream().write(messageSend.getBytes());
+
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
