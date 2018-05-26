@@ -80,8 +80,9 @@ public class Server {
         if(Server.nRooms + 1  == Server.MAX_NROOMS)
             return -1;
 
-        for (Room room: rooms){
-            if(room.getName().equals(roomName))
+        for (int i = 0; i < nRooms; i++){
+            System.out.println("Room name - '" + rooms[i].getName() + "'");
+            if(rooms[i].getName().equals(roomName))
                 return -2;
         }
 

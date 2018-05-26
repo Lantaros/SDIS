@@ -23,9 +23,12 @@ class ListenerClient implements Runnable {
             try {
                 Arrays.fill(msg, (byte) 0);
                 Server.client[this.id].getInputStream().read(msg, 0, msg.length);
-                System.out.println(new String(msg));
-                Server.client[this.id].setMessage(msg);
+                System.out.println("RECEIVED: " + new String(msg));
+                //Server.client[this.id].setMessage(msg);
                 Message message = new Message(new String(msg));
+
+                System.out.println();
+                System.out.println(message);
                 switch (message.getType()) {
                     case ROOM_CONNECT:
                         int roomId = message.getRoomId();
@@ -42,12 +45,13 @@ class ListenerClient implements Runnable {
                         break;
                     case ROOM_CREATE:
                         int roomID = Server.createRoom(message.getRoomName(), message.getClientID());
-
+                        System.out.println("RoomID" + roomID);
                         if(roomID >= 0) {
-                            messageSend = new Message(MessageType.ROOM_CREATED, roomID);
+                            messageSend = new Message(MessageType.ROOM_CREATED, roomID, message.getRoomName());
                             System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + roomID);
                         }
-                        if(roomID == -1) {
+
+                        else if(roomID == -1) {
                             messageSend = new Message(MessageType.MAX_ROOMS_REACHED);
                             System.out.println("Max number rooms reached");
                         }
@@ -57,6 +61,7 @@ class ListenerClient implements Runnable {
                             System.out.println("Duplicated room name '" + message.getRoomName() + "'");
                         }
 
+                        System.out.println("SENT: " + message);
                         Server.client[this.id].getOutputStream().write(messageSend.getBytes());
 
 

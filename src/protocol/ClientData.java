@@ -11,7 +11,7 @@ public class ClientData {
     private InputStream receiveStream;
     private OutputStream sendStream;
     private Socket socket;
-    private byte[] msg = new byte[1024];
+    //private byte[] msg = new byte[1024];
     
     public ClientData(int id_client) {
         this.clientId = id_client;
@@ -29,9 +29,9 @@ public class ClientData {
         this.socket = s;
     }
 
-    public void setMessage(byte[] msg) {
-        this.msg = msg;
-    }
+//    public void setMessage(byte[] msg) {
+//        this.msg = msg;
+//    }
 
     public void setRoomId(int room) {
         this.roomsId = room;
@@ -57,9 +57,10 @@ public class ClientData {
         return this.socket;
     }
 
-    public byte[] getMessage() {
-        return this.msg;
+/*    public byte[] getMessage() {
+       return this.msg;
     }
+*/
 
     public int getRoomId() {
         return this.roomsId;

@@ -21,7 +21,7 @@ class ListenerPeer implements Runnable {
                 Arrays.fill(msg, (byte) 0);
                 Client.peer[this.id].getInputStream().read(msg, 0, msg.length);
                 System.out.println(new String(msg));
-                Client.peer[this.id].setMessage(msg);
+                //Client.peer[this.id].setMessage(msg);
                 Message message = new Message(new String(msg));
                 switch (message.getType()) {
                     case PEER_INFO:

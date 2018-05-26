@@ -53,9 +53,13 @@ class ServerChannel implements Runnable {
                         break;
                     case DUP_ROOM_NAME:
                         System.out.println("Duplicated Room Name");
+                        break;
 
                     case ROOM_CREATED:
                         System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
+                        //TODO Criar o Room e metê-lo no ConcurrentHashmap
+                        break;
+
                 }
 
             } catch (IOException e) {
