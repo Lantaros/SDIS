@@ -125,26 +125,26 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
-        //Client.createRoom("Cenas");
-        Client.connectRoom("Sala 1");
-
-        //Após 5segundos começar o jogo
-        try {
-            Thread.sleep(10000); //10segundos
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-
-        if(rooms[1].getOwner()) {
-            String word = "qweasd zxc";
-             Hangman game = rooms[1].getGame();
-            game.startGame(word);
-            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-            Client.sendAll(sendWord);
-            Client.handleNextTurn();
-        }
-        
+        Client.createRoom("Cenas");
+//        Client.connectRoom("Sala 1");
+//
+//        //Após 5segundos começar o jogo
+//        try {
+//            Thread.sleep(10000); //10segundos
+//        } catch (InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+//
+//
+//        if(rooms[1].getOwner()) {
+//            String word = "qweasd zxc";
+//             Hangman game = rooms[1].getGame();
+//            game.startGame(word);
+//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+//            Client.sendAll(sendWord);
+//            Client.handleNextTurn();
+//        }
+//
 
 
     }

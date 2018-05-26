@@ -1,6 +1,5 @@
 package server;
 
-import client.Client;
 import protocol.Message;
 import protocol.MessageType;
 
@@ -18,13 +17,19 @@ class ListenerClient implements Runnable {
     @Override
     public void run() {
         Message messageSend;
-
+        int readBytes;
         while (true) {
             try {
                 Arrays.fill(msg, (byte) 0);
-                Server.client[this.id].getInputStream().read(msg, 0, msg.length);
+
+                    readBytes = Server.clients[this.id].getInputStream().read(msg, 0, msg.length);
+
+                    if(readBytes < 0) {
+                        System.out.println("Peer " + id + " has disconnected");
+                        break;
+                    }
+
                 System.out.println("RECEIVED: " + new String(msg));
-                //Server.client[this.id].setMessage(msg);
                 Message message = new Message(new String(msg));
 
                 System.out.println();
@@ -32,7 +37,7 @@ class ListenerClient implements Runnable {
                 switch (message.getType()) {
                     case ROOM_CONNECT:
                         int roomId = message.getRoomId();
-                        Server.client[this.id].setRoomId(roomId);
+                        Server.clients[this.id].setRoomId(roomId);
                         messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
                         Server.server.sendMessage(messageSend, this.id);
                         if (Server.rooms[roomId].getNClients() == 0) {
@@ -45,7 +50,7 @@ class ListenerClient implements Runnable {
                         break;
                     case ROOM_CREATE:
                         int roomID = Server.createRoom(message.getRoomName(), message.getClientID());
-                        System.out.println("RoomID" + roomID);
+                        System.out.println("RoomID " + roomID);
                         if(roomID >= 0) {
                             messageSend = new Message(MessageType.ROOM_CREATED, roomID, message.getRoomName());
                             System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + roomID);
@@ -61,8 +66,8 @@ class ListenerClient implements Runnable {
                             System.out.println("Duplicated room name '" + message.getRoomName() + "'");
                         }
 
-                        System.out.println("SENT: " + message);
-                        Server.client[this.id].getOutputStream().write(messageSend.getBytes());
+                        System.out.println("SENT: " + messageSend);
+                        Server.clients[this.id].getOutputStream().write(messageSend.getBytes());
 
 
                 }

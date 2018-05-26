@@ -17,16 +17,29 @@ class ServerChannel implements Runnable {
         return lock;
     }
 
+
     @Override
     public void run() {
+
+        int readBytes;
 
         while (true) {
             try {
                 Client.msgReceivedServer = new byte[1024];
-                Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
+
+                readBytes = Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
+
+                if(readBytes < 0) {
+                    System.out.println("Server connection has dropped");
+                    break;
+                }
+
                 System.out.println(new String(Client.msgReceivedServer));
 
+                System.out.println("RECEIVED SERVER");
+
                 Message message = new Message(new String(Client.msgReceivedServer));
+
                 switch (message.getType()) {
                     case SEND_PORTS:
                         if (message.getNPorts() == 0) {

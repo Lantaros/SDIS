@@ -110,7 +110,7 @@ public class Message {
         }
 
         try {
-            switch (MessageType.fromString(tokens[0])) {
+            switch (MessageType.fromString(tokens[0].trim())) {
                 case ROOM_CONNECT:
                     this.type = MessageType.fromString("ROOM_CONNECT");
                     this.clientID = Integer.parseInt(tokens[1].trim());

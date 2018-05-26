@@ -73,4 +73,7 @@ public class Room {
 				isReady[i] = true;
 	}
 
+    public void setName(String roomName) {
+		this.name = roomName;
+    }
 }
