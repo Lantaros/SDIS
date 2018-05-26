@@ -35,6 +35,7 @@ class ListenerPeer implements Runnable {
                         break;
                     case LETTER_TO_GUESS:
                         Client.handleLetter(this.id, message.getLetter());
+
                         break;
                     case LETTER_CHECK:
                         Client.confirmMsg.add(message.getClientID());
