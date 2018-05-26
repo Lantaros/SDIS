@@ -40,7 +40,7 @@ public class Client {
     protected static byte[] msgReceivedServer = new byte[1024];
 
 
-    private static int nRooms = 0;
+    protected static int nRooms = 0;
     protected static Room[] rooms = new Room[3];
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
@@ -127,26 +127,26 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
-        //Client.createRoom("Cenas");
-        Client.connectRoom("Sala 1");
+        Client.createRoom("Cenas");
+        //Client.connectRoom("Sala 1");
 
         //Após 5segundos começar o jogo
-        try {
-            Thread.sleep(10000); //10segundos
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-
-        if(getRooms()[1].getOwner()) {
-            String word = "qweasd zxc";
-             Hangman game = getRooms()[1].getGame();
-            game.startGame(word);
-            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-            Client.sendAll(sendWord);
-            Client.handleNextTurn();
-        }
-        
+//        try {
+//            Thread.sleep(10000); //10segundos
+//        } catch (InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+//
+//
+//        if(getRooms()[1].getOwner()) {
+//            String word = "qweasd zxc";
+//             Hangman game = getRooms()[1].getGame();
+//            game.startGame(word);
+//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+//            Client.sendAll(sendWord);
+//            Client.handleNextTurn();
+//        }
+//
 
 
     }

@@ -24,7 +24,7 @@ public class MainMenu extends JPanel {
 		JLabel lblMainmenu = new JLabel("Hangman");
 		lblMainmenu.setFont(new Font("Arial", Font.PLAIN, 18));
 
-		JButton btnCreateLobby = new JButton("Create Lobby");
+		JButton btnCreateLobby = new JButton("Create Room");
 		btnCreateLobby.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.setpanel(frame.setWordRoom);
