@@ -2,7 +2,7 @@ package game;
 
 public class Room {
 	private int id_room;
-	private int[] client_id = new int[4];
+	private int[] client_id = new int[5];
 	private int nClients = 0;
 	private String name = "";
 	private Hangman game = null;
@@ -71,6 +71,13 @@ public class Room {
 		for (int i = 0; i < nClients; i++)
 			if (client_id[i] == idClient)
 				isReady[i] = true;
+	}
+	
+	public boolean isEveryoneReady() {
+		for (int i = 0; i < nClients; i++)
+			if (isReady[i] == false)
+				return false;
+		return true;
 	}
 
     public void setName(String roomName) {

@@ -43,7 +43,7 @@ class ServerChannel implements Runnable {
                 switch (message.getType()) {
                     case SEND_PORTS:
                         if (message.getNPorts() == 0) {
-                            Client.rooms[1].setOwner(true);
+                            Client.getRooms()[1].setOwner(true);
                             break;
                         }
                         Client.requestPort(message.getNPorts());

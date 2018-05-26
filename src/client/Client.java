@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class Client {
 
-    protected static int clientID;
+    public static int clientID;
 
     //conection with the server
     //protected int port;
@@ -39,6 +39,7 @@ public class Client {
     protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
+
     private static int nRooms = 0;
     protected static Room[] rooms = new Room[3];
     protected static ClientData[] peer = new ClientData[100];
@@ -47,8 +48,9 @@ public class Client {
     protected static String newLetter = "";
     protected static int requestNumber = 0;
     protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
-    protected static int numTurn = 0;
+    protected static int numTurn = 1;
     protected static int confirmTurn = 0;
+    protected static int confirmTimerUP = 0;
 
     private static String[] cypherSuites;
 
@@ -115,7 +117,7 @@ public class Client {
             synchronized(lock) {
                 lock.wait();
             }
-            Thread.sleep(1000);
+
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -125,40 +127,60 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
-        Client.createRoom("Cenas");
-//        Client.connectRoom("Sala 1");
-//
-//        //Após 5segundos começar o jogo
-//        try {
-//            Thread.sleep(10000); //10segundos
-//        } catch (InterruptedException ex) {
-//            Thread.currentThread().interrupt();
-//        }
-//
-//
-//        if(rooms[1].getOwner()) {
-//            String word = "qweasd zxc";
-//             Hangman game = rooms[1].getGame();
-//            game.startGame(word);
-//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-//            Client.sendAll(sendWord);
-//            Client.handleNextTurn();
-//        }
-//
+        //Client.createRoom("Cenas");
+        Client.connectRoom("Sala 1");
+
+        //Após 5segundos começar o jogo
+        try {
+            Thread.sleep(10000); //10segundos
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+
+        if(getRooms()[1].getOwner()) {
+            String word = "qweasd zxc";
+             Hangman game = getRooms()[1].getGame();
+            game.startGame(word);
+            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+            Client.sendAll(sendWord);
+            Client.handleNextTurn();
+        }
+        
 
 
     }
 
+    public static void advanceTurn() {
+        Message endTurn = new Message(MessageType.TIMER_UP);
+        sendAll(endTurn);
+    }
+
+    public static void handleTimerUP() {
+        int n = getRooms()[1].getNClients();
+        Client.confirmTimerUP++;
+        if(Client.confirmTimerUP >= n-1){
+            GameThread gameThread = new GameThread("timer_up");
+            new Thread(gameThread).start();
+            System.out.println("oi");
+            Client.confirmTimerUP = 0;
+        }
+        System.out.println("oi2");
+
+    }
+
     public static void handleNextTurn() {
-        int n = rooms[1].getNClients();
-        int[] id = rooms[1].getClients();
+        int n = getRooms()[1].getNClients();//rooms[1].getNClients();
+        int[] id = getRooms()[1].getClients();
+        if(id[numTurn] == Client.clientID)
+            numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
         if(numTurn >= n-1 )
-            numTurn = 0;
+            numTurn = 1;
         else
             numTurn++;
         Client.sendAll(sendTurn);
-        while(Client.confirmTurn < n) {
+        while(Client.confirmTurn < n-1) {
             System.out.flush();
         }
         Client.confirmTurn = 0;
@@ -178,7 +200,7 @@ public class Client {
     }
 
     public static void handleMyTurn() {
-        if(rooms[1].getGame().getTurn()) {
+        if(getRooms()[1].getGame().getTurn()) {
             launcher.getFrame().gamePanel.setTurn(true);
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
@@ -199,12 +221,14 @@ public class Client {
     }
 
     public static void guessLetter() {
-        Hangman game = rooms[1].getGame();
+        Hangman game = getRooms()[1].getGame();
         game.guessLetter(newLetter.charAt(0));
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
         Client.sendAll(sendWord);
-        Client.handleNextTurn();
+        //Client.handleNextTurn();
+        GameThread gameThread = new GameThread("next_turn");
+        new Thread(gameThread).start();
         if(game.gameOver()) {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
@@ -233,7 +257,7 @@ public class Client {
 
     public static void setWord(String word) {
         System.out.println(word);
-        Hangman game = rooms[1].getGame();
+        Hangman game = getRooms()[1].getGame();
         game.startGame(word);
         setWordInGUI(game.getWord());
     }
@@ -243,14 +267,14 @@ public class Client {
     }
 
     public static String sendLetter(String letter) {
-        Hangman game = rooms[1].getGame();
+        Hangman game = getRooms()[1].getGame();
         if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
             //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
-            int i = rooms[1].getNClients();
+            int i = getRooms()[1].getNClients();
             System.out.println(i);
-            while(Client.confirmMsg.size() < i) {
+            while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }
             confirmMsg.clear();
@@ -291,10 +315,13 @@ public class Client {
             e.printStackTrace();
         }
 
-        Client.rooms[1] = new Room(1);
+        Client.getRooms()[1] = new Room(1);
         Hangman game = new Hangman(1);
-        rooms[1].addGame(game);
-        System.out.println(Client.rooms[1].getRoomId());
+        getRooms()[1].addGame(game);
+        System.out.println(Client.getRooms()[1].getRoomId());
+
+
+        getRooms()[1].addClientId(clientID);
     }
 
     public static void requestPort(int nPorts) {
@@ -425,7 +452,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            rooms[1].addClientId(countPeer);
+            getRooms()[1].addClientId(countPeer);
 
             ListenerPeer listPeer = new ListenerPeer(countPeer);
             new Thread(listPeer).start();
@@ -453,7 +480,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
-        rooms[1].setClientId(clientID, generalID);
+        getRooms()[1].setClientId(clientID+1, generalID);
     }
     
     
@@ -470,4 +497,9 @@ public class Client {
 		return null;
     	
     }
+
+	public static Room[] getRooms() {
+		return rooms;
+	}
+
 }

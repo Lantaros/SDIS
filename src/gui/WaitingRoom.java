@@ -33,6 +33,7 @@ public class WaitingRoom extends JPanel {
 		btnImReady.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.sendReadyToAll();
+				Client.getRooms()[1].setReady(Client.clientID);
 			}
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
