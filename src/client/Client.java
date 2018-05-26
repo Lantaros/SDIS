@@ -51,6 +51,9 @@ public class Client {
     protected static int numTurn = 1;
     protected static int confirmTurn = 0;
     protected static int confirmTimerUP = 0;
+    protected static boolean resetTimer = false;
+
+    protected static GameThread gameThread = new GameThread("");
 
     private static String[] cypherSuites;
 
@@ -127,26 +130,26 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
-        Client.createRoom("Cenas");
-        //Client.connectRoom("Sala 1");
+        //Client.createRoom("Cenas");
+        Client.connectRoom("Sala 1");
 
         //Após 5segundos começar o jogo
-//        try {
-//            Thread.sleep(10000); //10segundos
-//        } catch (InterruptedException ex) {
-//            Thread.currentThread().interrupt();
-//        }
-//
-//
-//        if(getRooms()[1].getOwner()) {
-//            String word = "qweasd zxc";
-//             Hangman game = getRooms()[1].getGame();
-//            game.startGame(word);
-//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-//            Client.sendAll(sendWord);
-//            Client.handleNextTurn();
-//        }
-//
+        try {
+            Thread.sleep(10000); //10segundos
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+
+        if(getRooms()[1].getOwner()) {
+            String word = "qweasd zxc";
+             Hangman game = getRooms()[1].getGame();
+            game.startGame(word);
+            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+            Client.sendAll(sendWord);
+            Client.handleNextTurn();
+        }
+
 
 
     }
@@ -162,11 +165,10 @@ public class Client {
         if(Client.confirmTimerUP >= n-1){
             GameThread gameThread = new GameThread("timer_up");
             new Thread(gameThread).start();
-            System.out.println("oi");
             Client.confirmTimerUP = 0;
         }
         System.out.println("oi2");
-
+        
     }
 
     public static void handleNextTurn() {
@@ -205,7 +207,12 @@ public class Client {
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
         }
-        GameThread gameThread = new GameThread("timer");
+        Client.resetTimer = true;
+        //TODO!!!! RESET
+        if(gameThread.getCountdown() < 11) {
+            gameThread.resetTimer();
+        }
+        gameThread = new GameThread("timer");
         new Thread(gameThread).start();
     }
 
@@ -319,8 +326,8 @@ public class Client {
         Hangman game = new Hangman(1);
         getRooms()[1].addGame(game);
         System.out.println(Client.getRooms()[1].getRoomId());
-
-
+        
+        
         getRooms()[1].addClientId(clientID);
     }
 
@@ -400,6 +407,7 @@ public class Client {
         System.out.println(socket.getLocalAddress().getHostAddress());
         System.out.println(socket.getPort());
         System.out.println(socket.getRemoteSocketAddress());
+
 
         rooms[1].addClientId(id);
 

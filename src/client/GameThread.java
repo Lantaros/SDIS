@@ -9,7 +9,9 @@ import java.util.TimerTask;
 
 class GameThread implements Runnable {
     private String toDo;
-    private int countdown = 10;
+    private int countdown = 11;
+    private Timer t;
+    private TimerTask tt;
     public GameThread(String toDo) {
         this.toDo = toDo;
     }
@@ -19,16 +21,15 @@ class GameThread implements Runnable {
         
         if(this.toDo.equals("timer")) {
 
-            Timer t = new Timer();
-            TimerTask tt = new TimerTask() {
+            t = new Timer();
+            tt = new TimerTask() {
 
                 @Override
                 public void run() {
                     countdown=countdown - 1;
-                    System.out.println(countdown);
                     Client.launcher.getFrame().gamePanel.setTimeRemaining(countdown);
+
                     if(countdown == 0) {
-                        //TODO::acabar
                         Client.advanceTurn();
                         t.cancel();
                         t.purge();
@@ -45,5 +46,15 @@ class GameThread implements Runnable {
         if(this.toDo.equals("next_turn")){
              Client.handleNextTurn();
         }
+    }
+
+    public void resetTimer() {
+        t.cancel();
+        t.purge();
+        Client.resetTimer = false;
+    }
+
+    public int getCountdown() {
+        return this.countdown;
     }
 }
