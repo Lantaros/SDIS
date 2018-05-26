@@ -38,7 +38,11 @@ public class Message {
             if(type == MessageType.fromString("LETTER_TO_GUESS")){
                 this.bool = address;
                 this.clientID = port;
-            }else {
+            }else if(type == MessageType.ROOM_CREATE){
+                this.clientID = port;
+                this.address = address;
+            }
+            else {
                 this.port = port;
             this.address = address;
             }
@@ -80,6 +84,10 @@ public class Message {
                 this.nPorts = nPorts;
             else if (type == MessageType.fromString("PEER_INFO"))
                 this.clientID = nPorts;
+
+            else if(type == MessageType.ROOM_CREATED)
+                this.roomID = nPorts;
+
             else if (type == MessageType.fromString("TURN_PEER_ID"))
                 this.clientID = nPorts;
             else
@@ -180,9 +188,9 @@ public class Message {
 
                 case GAME_FINISH:
                     this.type = MessageType.fromString("GAME_FINISH");
-                    if(tokens[1] == "true")
+                    if(tokens[1].equals("true"))
                         this.gameOver = true;
-                    else if(tokens[1] == "false")  
+                    else if(tokens[1].equals("false"))
                         this.gameOver = false;
                     break;
 
@@ -205,6 +213,13 @@ public class Message {
             System.out.println(m.toString());
             m.printStackTrace();
         }
+    }
+
+    public String getRoomName(){
+        if(type == MessageType.ROOM_CREATE)
+            return address;
+
+        return "";
     }
 
     public byte[] getBytes() {
@@ -278,6 +293,14 @@ public class Message {
 
             case TURN_GO:
                 message += " " + "go";
+
+            case ROOM_CREATE:
+                message += " " + clientID + " " + address;
+                break;
+
+            case ROOM_CREATED:
+                message += " " + roomID;
+                break;
         }
 
         //message += CRLF;

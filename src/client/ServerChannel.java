@@ -28,7 +28,7 @@ class ServerChannel implements Runnable {
 
                 Message message = new Message(new String(Client.msgReceivedServer));
                 switch (message.getType()) {
-                    case SEND_PORTS://
+                    case SEND_PORTS:
                         if (message.getNPorts() == 0) {
                             Client.rooms[1].setOwner(true);
                             break;
@@ -47,6 +47,15 @@ class ServerChannel implements Runnable {
                     case PORT_TO_CONNECT:
                         Client.connectPeer(message.getPort(), message.getAddress());
                         break;
+
+                    case MAX_ROOMS_REACHED:
+                        System.out.println("Max Server Rooms reached");
+                        break;
+                    case DUP_ROOM_NAME:
+                        System.out.println("Duplicated Room Name");
+
+                    case ROOM_CREATED:
+                        System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
                 }
 
             } catch (IOException e) {

@@ -1,5 +1,6 @@
 package server;
 
+import client.Client;
 import game.Room;
 import protocol.ClientData;
 import protocol.Message;
@@ -14,14 +15,18 @@ import java.net.Socket;
 
 public class Server {
 
+    private static int MAX_NROOMS = 25;
+    private static int MAX_NCLIENTS = 100;
     protected static SSLServerSocket sslSocket;
     private Socket socket;
     //protected KeyStore keystore;
 
     static Server server = new Server();
 
-    protected static ClientData[] client = new ClientData[100];
-    protected static Room[] rooms = new Room[25];
+    protected static ClientData[] client = new ClientData[MAX_NCLIENTS];
+
+    private static int nRooms = 0;
+    protected static Room[] rooms = new Room[MAX_NROOMS];
 
     private Server() {
 
@@ -61,6 +66,32 @@ public class Server {
         new Thread(listConnection).start();
 
 
+    }
+
+    /**
+     * Creates a new room and joining
+     * @param roomName name of the new room
+     * @param clientID clientID from the request maker
+     * @return roomID if successful
+     *  -1 if there is no space for a new room
+     * -2 if the name is a duplicated one
+     */
+    public static int createRoom(String roomName, int clientID){
+        if(Server.nRooms + 1  == Server.MAX_NROOMS)
+            return -1;
+
+        for (Room room: rooms){
+            if(room.getName().equals(roomName))
+                return -2;
+        }
+
+        int roomID = Server.nRooms;
+        Server.rooms[roomID] = new Room(roomID);
+        Server.rooms[roomID].addClientId(clientID);
+
+        Server.nRooms ++;
+
+        return roomID;
     }
 
     public static void saveClient(Socket socket, InputStream receiveStream,

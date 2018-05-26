@@ -1,5 +1,6 @@
 package server;
 
+import client.Client;
 import protocol.Message;
 import protocol.MessageType;
 
@@ -16,6 +17,7 @@ class ListenerClient implements Runnable {
 
     @Override
     public void run() {
+        Message messageSend;
 
         while (true) {
             try {
@@ -28,7 +30,7 @@ class ListenerClient implements Runnable {
                     case ROOM_CONNECT:
                         int roomId = message.getRoomId();
                         Server.client[this.id].setRoomId(roomId);
-                        Message messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
+                        messageSend = new Message(MessageType.SEND_PORTS, Server.rooms[roomId].getNClients());
                         Server.server.sendMessage(messageSend, this.id);
                         if (Server.rooms[roomId].getNClients() == 0) {
                             Server.rooms[roomId].addClientId(this.id);
@@ -38,6 +40,26 @@ class ListenerClient implements Runnable {
                     case PORT_TO_SEND:
                         Server.sendPortToClients(message.getPort(), message.getAddress(), this.id);
                         break;
+                    case ROOM_CREATE:
+                        int roomID = Server.createRoom(message.getRoomName(), message.getClientID());
+
+                        if(roomID >= 0) {
+                            messageSend = new Message(MessageType.ROOM_CREATED, roomID);
+                            System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + roomID);
+                        }
+                        if(roomID == -1) {
+                            messageSend = new Message(MessageType.MAX_ROOMS_REACHED);
+                            System.out.println("Max number rooms reached");
+                        }
+
+                        else {
+                            messageSend = new Message(MessageType.DUP_ROOM_NAME);
+                            System.out.println("Duplicated room name '" + message.getRoomName() + "'");
+                        }
+
+                        Server.client[this.id].getOutputStream().write(messageSend.getBytes());
+
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

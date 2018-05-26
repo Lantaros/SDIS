@@ -4,6 +4,7 @@ public class Room {
 	private int id_room;
 	private int[] client_id = new int[4];
 	private int nClients = 0;
+	private String name;
 	private Hangman game = null;
 	private boolean owner = false;
 	private boolean[] isReady = { false, false, false, false };
@@ -48,6 +49,10 @@ public class Room {
 	public boolean getOwner() {
 		return this.owner;
 	}
+
+	public String getName(){
+	    return name;
+    }
 
 	public boolean isReady(int idClient) {
 		for (int i = 0; i < nClients; i++)

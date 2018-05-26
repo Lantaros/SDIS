@@ -4,7 +4,11 @@ public enum MessageType {
     ROOM_AVAILABLE,
     ROOM_CONNECT,
     ROOM_CREATE,
-    PEERS_INFO,
+
+    ROOM_CREATED,
+    MAX_ROOMS_REACHED,
+    DUP_ROOM_NAME,
+
     REQUEST_PORTS,
     SEND_PORTS,
     OWN_CLIENT_ID,
@@ -31,7 +35,7 @@ public enum MessageType {
     TURN_PEER_ID,
     TURN_CHECK,
     TURN_GO,
-    
+
     READY_TO_START;
 
 
@@ -112,6 +116,15 @@ public enum MessageType {
 
             case TURN_PEER_ID:
                 return "TURN_PEER_ID";
+
+            case ROOM_CREATED:
+                return "ROOM_CREATED";
+
+            case DUP_ROOM_NAME:
+                return  "DUP_ROOM_NAME";
+
+            case MAX_ROOMS_REACHED:
+                return  "MAX_ROOMS_REACHED";
 
             default:
                 return "FAIL";
@@ -194,6 +207,15 @@ public enum MessageType {
 
             case "TURN_CHECK":
                 return TURN_CHECK;
+
+            case "ROOM_CREATED":
+                return ROOM_CREATED;
+
+            case "DUP_ROOM_NAME":
+                return  DUP_ROOM_NAME;
+
+            case "MAX_ROOMS_REACHED":
+                return  MAX_ROOMS_REACHED;
 
             default:
                 throw new InvalidMessage(type);
