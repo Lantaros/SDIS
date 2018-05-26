@@ -143,7 +143,7 @@ public class Message {
                     this.type = MessageType.fromString("WORD_TO_GUESS");
                     this.word = "";
                     for(int i = 1; i < tokens.length; i++)  {                      
-                        this.word += tokens[i];
+                        this.word += tokens[i].trim();
                         if(i != tokens.length)
                             this.word += " ";
                     }
@@ -151,12 +151,12 @@ public class Message {
 
                 case LETTER_TO_GUESS:
                     this.type = MessageType.fromString("LETTER_TO_GUESS");
-                    this.letter = tokens[1];
+                    this.letter = tokens[1].trim();
                     break;
 
                 case LETTER_CHECK:
                     this.type = MessageType.fromString("LETTER_CHECK");
-                    this.bool = tokens[2];
+                    this.bool = tokens[2].trim();
                     this.clientID = Integer.parseInt(tokens[1].trim());
                     break;
 
@@ -172,7 +172,7 @@ public class Message {
                     this.type = MessageType.fromString("WORD_TO_GUI");
                     this.word = "";
                     for(int i = 1; i < tokens.length; i++)  {                      
-                        this.word += tokens[i];
+                        this.word += tokens[i].trim();
                         if(i != tokens.length)
                             this.word += " ";
                     }
@@ -180,9 +180,9 @@ public class Message {
 
                 case GAME_FINISH:
                     this.type = MessageType.fromString("GAME_FINISH");
-                    if(tokens[1] == "true")
+                    if(tokens[1].trim() == "true")
                         this.gameOver = true;
-                    else if(tokens[1] == "false")  
+                    else if(tokens[1].trim() == "false")  
                         this.gameOver = false;
                     break;
 
@@ -193,7 +193,7 @@ public class Message {
 
                 case TURN_CHECK:
                     this.type = MessageType.fromString("TURN_CHECK");
-                    this.word = tokens[1];
+                    this.word = tokens[1].trim();
                     break;
 
                 case TURN_GO:
