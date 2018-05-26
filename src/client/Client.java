@@ -51,6 +51,9 @@ public class Client {
     protected static int numTurn = 1;
     protected static int confirmTurn = 0;
     protected static int confirmTimerUP = 0;
+    protected static boolean resetTimer = false;
+
+    protected static GameThread gameThread = new GameThread("");
 
     private static String[] cypherSuites;
 
@@ -162,10 +165,8 @@ public class Client {
         if(Client.confirmTimerUP >= n-1){
             GameThread gameThread = new GameThread("timer_up");
             new Thread(gameThread).start();
-            System.out.println("oi");
             Client.confirmTimerUP = 0;
         }
-        System.out.println("oi2");
         
     }
 
@@ -205,7 +206,12 @@ public class Client {
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
         }
-        GameThread gameThread = new GameThread("timer");
+        Client.resetTimer = true;
+        //TODO!!!! RESET
+        if(gameThread.getCountdown() < 11) {
+            gameThread.resetTimer();
+        }
+        gameThread = new GameThread("timer");
         new Thread(gameThread).start();
     }
 
@@ -240,7 +246,6 @@ public class Client {
                 return;
             }
         }
-       System.out.println("oi");
     }
 
     public static void sendAll(Message message) {
@@ -273,7 +278,6 @@ public class Client {
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
             int i = getRooms()[1].getNClients();
-            System.out.println(i);
             while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }
