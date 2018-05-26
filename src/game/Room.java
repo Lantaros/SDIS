@@ -7,7 +7,7 @@ public class Room {
 	private String name = "";
 	private Hangman game = null;
 	private boolean owner = false;
-	private boolean[] isReady = { false, false, false, false };
+	private boolean[] isReady = { false, false, false, false, false };
 
 	public Room(int id_room) {
 		this.id_room = id_room;
@@ -55,26 +55,26 @@ public class Room {
     }
 
 	public boolean isReady(int idClient) {
-		for (int i = 0; i < nClients; i++)
+		for (int i = 0; i <= nClients; i++)
 			if (client_id[i] == idClient)
 				return true;
 		return false;
 	}
 
 	public void setAllReadyToFalse() {
-		for (int i = 0; i < nClients; i++)
+		for (int i = 0; i <= nClients; i++)
 			isReady[i] = false;
 
 	}
 
 	public void setReady(int idClient) {
-		for (int i = 0; i < nClients; i++)
+		for (int i = 0; i <= nClients; i++)
 			if (client_id[i] == idClient)
 				isReady[i] = true;
 	}
 	
 	public boolean isEveryoneReady() {
-		for (int i = 0; i < nClients; i++)
+		for (int i = 1; i <= nClients; i++)
 			if (isReady[i] == false)
 				return false;
 		return true;

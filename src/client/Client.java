@@ -138,14 +138,14 @@ public class Client {
         }
 
 
-        if(getRooms()[1].getOwner()) {
-            String word = "qweasd zxc";
-             Hangman game = getRooms()[1].getGame();
-            game.startGame(word);
-            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-            Client.sendAll(sendWord);
-            Client.handleNextTurn();
-        }
+//        if(getRooms()[1].getOwner()) {
+//            String word = "qweasd zxc";
+//             Hangman game = getRooms()[1].getGame();
+//            game.startGame(word);
+//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+//            Client.sendAll(sendWord);
+//            Client.handleNextTurn();
+//        }
         
 
 

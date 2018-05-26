@@ -10,6 +10,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import client.Client;
+import protocol.Message;
+import protocol.MessageType;
 
 public class WaitingRoom extends JPanel {
 
@@ -34,6 +36,10 @@ public class WaitingRoom extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Client.sendReadyToAll();
 				Client.getRooms()[1].setReady(Client.clientID);
+				if(Client.getRooms()[1].isEveryoneReady() && Client.getRooms()[1].getOwner()){
+            		System.out.println("num cli: " + Client.getRooms()[1].getNClients());
+            		Client.sendAll(new Message(MessageType.START_GAME));
+            	}
 			}
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
