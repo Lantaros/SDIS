@@ -65,6 +65,7 @@ class ListenerPeer2 implements Runnable {
                         Client.handleMyTurn();
                         break;
                 }
+                aux = false;
             } catch (IOException e) {
                 e.printStackTrace();
             }

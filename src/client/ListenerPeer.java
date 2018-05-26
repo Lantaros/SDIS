@@ -42,8 +42,8 @@ class ListenerPeer implements Runnable {
                         break;
                     case LETTER_GO:
                         if(Client.getRooms()[1].getOwner()) {
-                            ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
-                            new Thread(listPeer2).start();
+                            //ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
+                            //new Thread(listPeer2).start();
                             Client.guessLetter();                            
                         }
                         break;
@@ -72,6 +72,10 @@ class ListenerPeer implements Runnable {
                         break;
                     case TURN_GO:
                         Client.handleMyTurn();
+                        break;
+                    case TIMER_UP:
+                        if(Client.getRooms()[1].getOwner()) 
+                            Client.handleTimerUP();
                         break;
                 }
             } catch (IOException e) {

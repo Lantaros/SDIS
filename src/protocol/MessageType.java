@@ -36,6 +36,8 @@ public enum MessageType {
     TURN_CHECK,
     TURN_GO,
 
+    TIMER_UP,
+
     READY_TO_START;
 
 
@@ -125,6 +127,9 @@ public enum MessageType {
 
             case MAX_ROOMS_REACHED:
                 return  "MAX_ROOMS_REACHED";
+
+            case TIMER_UP:
+                return "TIMER_UP";
 
             default:
                 return "FAIL";
@@ -217,6 +222,9 @@ public enum MessageType {
 
             case "MAX_ROOMS_REACHED":
                 return  MAX_ROOMS_REACHED;
+
+            case "TIMER_UP":
+                return TIMER_UP;
 
             default:
                 throw new InvalidMessage(type);

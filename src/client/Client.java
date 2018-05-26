@@ -48,8 +48,9 @@ public class Client {
     protected static String newLetter = "";
     protected static int requestNumber = 0;
     protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
-    protected static int numTurn = 0;
+    protected static int numTurn = 1;
     protected static int confirmTurn = 0;
+    protected static int confirmTimerUP = 0;
 
     private static String[] cypherSuites;
 
@@ -116,7 +117,7 @@ public class Client {
             synchronized(lock) {
                 lock.wait();
             }
-            Thread.sleep(1000);
+            //Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -150,16 +151,36 @@ public class Client {
 
     }
 
-    public static void handleNextTurn() {
+    public static void advanceTurn() {
+        Message endTurn = new Message(MessageType.TIMER_UP);
+        sendAll(endTurn);
+    }
+
+    public static void handleTimerUP() {
         int n = getRooms()[1].getNClients();
+        Client.confirmTimerUP++;
+        if(Client.confirmTimerUP >= n-1){
+            GameThread gameThread = new GameThread("timer_up");
+            new Thread(gameThread).start();
+            System.out.println("oi");
+            Client.confirmTimerUP = 0;
+        }
+        System.out.println("oi2");
+        
+    }
+
+    public static void handleNextTurn() {
+        int n = getRooms()[1].getNClients();//rooms[1].getNClients();
         int[] id = getRooms()[1].getClients();
+        if(id[numTurn] == Client.clientID)
+            numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
         if(numTurn >= n-1 )
-            numTurn = 0;
+            numTurn = 1;
         else
             numTurn++;
         Client.sendAll(sendTurn);
-        while(Client.confirmTurn < n) {
+        while(Client.confirmTurn < n-1) {
             System.out.flush();
         }
         Client.confirmTurn = 0;
@@ -205,7 +226,9 @@ public class Client {
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
         Client.sendAll(sendWord);
-        Client.handleNextTurn();
+        //Client.handleNextTurn();
+        GameThread gameThread = new GameThread("next_turn");
+        new Thread(gameThread).start();
         if(game.gameOver()) {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
@@ -251,7 +274,7 @@ public class Client {
             sendAll(letterToSend);
             int i = getRooms()[1].getNClients();
             System.out.println(i);
-            while(Client.confirmMsg.size() < i) {
+            while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }
             confirmMsg.clear();
@@ -458,7 +481,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
-        getRooms()[1].setClientId(clientID, generalID);
+        getRooms()[1].setClientId(clientID+1, generalID);
     }
     
     

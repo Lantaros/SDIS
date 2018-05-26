@@ -231,6 +231,10 @@ public class Message {
                 case TURN_GO:
                     this.type = MessageType.fromString("TURN_GO");
                     break;
+
+                case TIMER_UP:
+                    this.type = MessageType.fromString("TIMER_UP");
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -317,7 +321,7 @@ public class Message {
 
             case TURN_GO:
                 message += " " + "go";
-
+                break;
 
             case ROOM_CREATE:
                 message += " " + clientID + " " + address;
@@ -327,6 +331,11 @@ public class Message {
                 message += " " + roomID;
                 message += " " + address;
                 break;
+
+            case TIMER_UP:
+                message += " " + "go";
+                break;
+
             default:
     			break;
         }
