@@ -23,6 +23,7 @@ public class GamePanel extends JPanel {
 	private JLabel lblHagmanWord;
 	private JLabel lblTimeRemaining;
 	private JTextField textFieldGuessWord;
+	private JButton btnGuessLetter;
 	JLabel lblWarning;
 
 	/**
@@ -45,7 +46,8 @@ public class GamePanel extends JPanel {
 		textFieldGuessLetter = new JTextField();
 		textFieldGuessLetter.setColumns(10);
 
-		JButton btnGuessLetter = new JButton("Guess Letter");
+		btnGuessLetter = new JButton("Guess Letter");
+		btnGuessLetter.setEnabled(false);
 		btnGuessLetter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String letterGuessed = textFieldGuessLetter.getText();
@@ -186,5 +188,12 @@ public class GamePanel extends JPanel {
 	
 	public void setWarning(String warning) {
 		lblWarning.setText(warning);
+	}
+
+	public void setTurn(boolean check) {
+		if(check) 
+			btnGuessLetter.setEnabled(true);
+		else
+			btnGuessLetter.setEnabled(false);
 	}
 }

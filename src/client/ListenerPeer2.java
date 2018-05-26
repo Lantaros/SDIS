@@ -5,18 +5,18 @@ import protocol.Message;
 import java.io.IOException;
 import java.util.Arrays;
 
-class ListenerPeer implements Runnable {
+class ListenerPeer2 implements Runnable {
     private int id;
     private byte[] msg = new byte[1024];
 
-    public ListenerPeer(int id) {
+    public ListenerPeer2(int id) {
         this.id = id;
     }
 
     @Override
     public void run() {
-
-        while (true) {
+        boolean aux = true;
+        while (aux) {
             try {
                 Arrays.fill(msg, (byte) 0);
                 Client.peer[this.id].getInputStream().read(msg, 0, msg.length);
@@ -38,11 +38,8 @@ class ListenerPeer implements Runnable {
                         
                         break;
                     case LETTER_GO:
-                        if(Client.rooms[1].getOwner()) {
-                            ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
-                            new Thread(listPeer2).start();
-                            Client.guessLetter();                            
-                        }
+                        if(Client.rooms[1].getOwner())
+                            Client.guessLetter();
                         break;
                     case WORD_TO_GUI:
                         Client.setWordInGUI(message.getWord());

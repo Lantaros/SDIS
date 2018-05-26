@@ -165,9 +165,10 @@ public class Client {
     }
 
     public static void sendNextTurn(int peerID) {
-        Message msg = new Message(MessageType.LETTER_CHECK, "no");
-        
+        Message msg = new Message(MessageType.TURN_CHECK, "yes");
+        System.out.println("ENTREI E ENVIEI");
         try {
+            System.out.println(msg.toString());
             peer[peerID].getOutputStream().write(msg.getBytes());
         } catch(IOException e) {
             e.printStackTrace();
@@ -177,9 +178,9 @@ public class Client {
 
     public static void handleMyTurn() {
         if(rooms[1].getGame().getTurn()) {
-            //TODO::comecar a contagem!!!
+            launcher.getFrame().gamePanel.setTurn(true);
         } else {
-            //TODO::notmyturn
+            launcher.getFrame().gamePanel.setTurn(false);
         }
     }
     public static void guessLetter() {
@@ -188,6 +189,7 @@ public class Client {
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
         Client.sendAll(sendWord);
+        Client.handleNextTurn();
         if(game.gameOver()) {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
@@ -199,7 +201,7 @@ public class Client {
                 return;
             }
         }
-       
+       System.out.println("oi");
     }
 
     public static void sendAll(Message message) {
