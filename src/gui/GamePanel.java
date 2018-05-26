@@ -183,11 +183,14 @@ public class GamePanel extends JPanel {
 	}
 	
 	public void setTimeRemaining(int timeRemain) {
+		System.out.println(lblTimeRemaining.getText());
 		System.out.println("ENTROU" + timeRemain);
 		String a = Integer.toString(timeRemain);
 		System.out.println(a);	
 		lblTimeRemaining.setText(a);
-		lblTimeRemaining.paintImmediately(lblTimeRemaining.getVisibleRect());
+		//lblTimeRemaining.paintImmediately(lblTimeRemaining.getVisibleRect());
+		//lblTimeRemaining.setEnabled(true);
+		
 	}
 	
 	public void setWarning(String warning) {

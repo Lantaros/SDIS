@@ -22,7 +22,7 @@ class ServerChannel implements Runnable {
 
         while (true) {
             try {
-                Arrays.fill(Client.msgReceivedServer, (byte) 0);
+                Client.msgReceivedServer = new byte[1024];
                 Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
                 System.out.println(new String(Client.msgReceivedServer));
 
