@@ -72,7 +72,7 @@ public enum MessageType {
                 return "START_CHECK";
 
             case START_GAME:
-                return "START_GAME";
+                return "START_GAME ";
 
             case WORD_REQUEST:
                 return "WORD_REQUEST";
@@ -194,6 +194,7 @@ public enum MessageType {
 
             case "TURN_CHECK":
                 return TURN_CHECK;
+        
 
             default:
                 throw new InvalidMessage(type);

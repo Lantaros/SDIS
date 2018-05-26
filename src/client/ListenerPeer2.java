@@ -38,7 +38,7 @@ class ListenerPeer2 implements Runnable {
                         
                         break;
                     case LETTER_GO:
-                        if(Client.rooms[1].getOwner())
+                        if(Client.getRooms()[1].getOwner())
                             Client.guessLetter();
                         break;
                     case WORD_TO_GUI:
@@ -48,14 +48,14 @@ class ListenerPeer2 implements Runnable {
                         //TODO::receber a mensagem!
                         break;
                     case READY_TO_START:
-                    	Client.rooms[1].setReady(message.getClientID());
+                    	Client.getRooms()[1].setReady(message.getClientID());
                     	//if()
                         break;
                     case TURN_PEER_ID:
                         if(message.getClientID() == Client.clientID)
-                            Client.rooms[1].getGame().setTurn(true);
+                            Client.getRooms()[1].getGame().setTurn(true);
                         else
-                            Client.rooms[1].getGame().setTurn(false);
+                            Client.getRooms()[1].getGame().setTurn(false);
                         Client.sendNextTurn(this.id);
                         break;
                     case TURN_CHECK:

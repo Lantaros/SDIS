@@ -106,6 +106,10 @@ public class Message {
 
                 case ROOM_AVAILABLE:
                     break;
+                    
+                case START_GAME:
+                	this.type = MessageType.fromString("START_GAME");
+                    break;    
 
                 case SEND_PORTS:
                     this.type = MessageType.fromString("SEND_PORTS");
@@ -166,6 +170,7 @@ public class Message {
 
                 case READY_TO_START:
                     this.type = MessageType.fromString("READY_TO_START");
+                    this.clientID = Integer.parseInt(tokens[1].trim());
                     break;
 
                 case WORD_TO_GUI:
@@ -278,6 +283,8 @@ public class Message {
 
             case TURN_GO:
                 message += " " + "go";
+		default:
+			break;
         }
 
         //message += CRLF;

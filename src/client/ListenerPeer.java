@@ -1,9 +1,12 @@
 package client;
 
 import protocol.Message;
+import protocol.MessageType;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import game.Room;
 
 class ListenerPeer implements Runnable {
     private int id;
@@ -38,7 +41,7 @@ class ListenerPeer implements Runnable {
                         
                         break;
                     case LETTER_GO:
-                        if(Client.rooms[1].getOwner()) {
+                        if(Client.getRooms()[1].getOwner()) {
                             ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
                             new Thread(listPeer2).start();
                             Client.guessLetter();                            
@@ -51,14 +54,17 @@ class ListenerPeer implements Runnable {
                         //TODO::receber a mensagem e fazer alguma coisa!
                         break;
                     case READY_TO_START:
-                    	Client.rooms[1].setReady(message.getClientID());
+                    	Client.getRooms()[1].setReady(message.getClientID());
+
+                    	if(Client.getRooms()[1].isEveryoneReady())
+                    		Client.sendAll(new Message(MessageType.START_GAME));
                     	
                         break;
                     case TURN_PEER_ID:
                         if(message.getClientID() == Client.clientID)
-                            Client.rooms[1].getGame().setTurn(true);
+                            Client.getRooms()[1].getGame().setTurn(true);
                         else
-                            Client.rooms[1].getGame().setTurn(false);
+                            Client.getRooms()[1].getGame().setTurn(false);
                         Client.sendNextTurn(this.id);
                         break;
                     case TURN_CHECK:
@@ -72,5 +78,11 @@ class ListenerPeer implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public static void main(String[] args) {
+    	Message message = new Message("READY_TO_START 1    ");
+    	System.out.println(message.getClientID());
+    	
     }
 }

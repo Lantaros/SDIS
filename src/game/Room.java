@@ -67,5 +67,12 @@ public class Room {
 			if (client_id[i] == idClient)
 				isReady[i] = true;
 	}
+	
+	public boolean isEveryoneReady() {
+		for (int i = 0; i < nClients; i++)
+			if (isReady[i] == false)
+				return false;
+		return true;
+	}
 
 }
