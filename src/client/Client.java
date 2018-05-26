@@ -166,14 +166,11 @@ public class Client {
 
     public static void sendNextTurn(int peerID) {
         Message msg = new Message(MessageType.TURN_CHECK, "yes");
-        System.out.println("ENTREI E ENVIEI");
         try {
-            System.out.println(msg.toString());
             peer[peerID].getOutputStream().write(msg.getBytes());
         } catch(IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public static void handleMyTurn() {
@@ -182,7 +179,10 @@ public class Client {
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
         }
+        GameThread gameThread = new GameThread("timer");
+        new Thread(gameThread).start();
     }
+    
     public static void guessLetter() {
         Hangman game = rooms[1].getGame();
         game.guessLetter(newLetter.charAt(0));

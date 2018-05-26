@@ -48,11 +48,11 @@ class ListenerPeer implements Runnable {
                         Client.setWordInGUI(message.getWord());
                         break;
                     case GAME_FINISH:
-                        //TODO::receber a mensagem!
+                        //TODO::receber a mensagem e fazer alguma coisa!
                         break;
                     case READY_TO_START:
                     	Client.rooms[1].setReady(message.getClientID());
-                    	//if()
+                    	
                         break;
                     case TURN_PEER_ID:
                         if(message.getClientID() == Client.clientID)
