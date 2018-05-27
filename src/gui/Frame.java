@@ -11,6 +11,7 @@ public class Frame extends JFrame {
 	public JoinLobby createLobby;
 	public SetWordRoom setWordRoom;
 	public WaitingRoom waitingRoom;
+	public CreateRoom createRoom;
 
 	/**
 	 * Create the frame.
@@ -24,6 +25,7 @@ public class Frame extends JFrame {
 		createLobby = new JoinLobby(this);
 		setWordRoom = new SetWordRoom(this);
 		waitingRoom = new WaitingRoom(this);
+		createRoom = new CreateRoom(this);
 
 		setpanel(mainMenu);
 		setVisible(true);

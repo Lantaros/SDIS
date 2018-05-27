@@ -1,6 +1,5 @@
 package server;
 
-import client.Client;
 import game.Room;
 import protocol.ClientData;
 import protocol.Message;
@@ -23,7 +22,7 @@ public class Server {
 
     static Server server = new Server();
 
-    protected static ClientData[] client = new ClientData[MAX_NCLIENTS];
+    protected static ClientData[] clients = new ClientData[MAX_NCLIENTS];
 
     private static int nRooms = 0;
     protected static Room[] rooms = new Room[MAX_NROOMS];
@@ -88,6 +87,7 @@ public class Server {
 
         int roomID = Server.nRooms;
         Server.rooms[roomID] = new Room(roomID);
+        Server.rooms[roomID].setName(roomName);
         Server.rooms[roomID].addClientId(clientID);
 
         Server.nRooms ++;
@@ -97,10 +97,10 @@ public class Server {
 
     public static void saveClient(Socket socket, InputStream receiveStream,
                                   OutputStream sendStream, int id) {
-        client[id] = new ClientData(id);
-        client[id].setSocket(socket);
-        client[id].setOutputStream(sendStream);
-        client[id].setInputStream(receiveStream);
+        clients[id] = new ClientData(id);
+        clients[id].setSocket(socket);
+        clients[id].setOutputStream(sendStream);
+        clients[id].setInputStream(receiveStream);
 
         System.out.println("*********DATA********");
         System.out.println(socket.getLocalPort());
@@ -116,16 +116,16 @@ public class Server {
     }
 
     public static void sendPortToClients(int port, String address, int id) {
-        int roomsId = Server.client[id].getRoomId();
+        int roomsId = Server.clients[id].getRoomId();
         int n = rooms[roomsId].getNClients();
         int[] clients = rooms[roomsId].getClients();
 
-        System.out.println(Server.client[id].getSocket().getInetAddress().getHostAddress());
+        System.out.println(Server.clients[id].getSocket().getInetAddress().getHostAddress());
         Message messageSend = new Message(MessageType.PORT_TO_CONNECT, port, address);
         for (int i = 1; i <= n; i++) {
             int clientId = clients[i];
             try {
-                Server.client[clientId].getOutputStream().write(messageSend.getBytes());
+                Server.clients[clientId].getOutputStream().write(messageSend.getBytes());
                 System.out.println(messageSend);
             } catch (IOException | NumberFormatException e) {
                 e.printStackTrace();
@@ -136,7 +136,7 @@ public class Server {
 
     public void sendMessage(Message message, int clientId) {
         try {
-            client[clientId].getOutputStream().write(message.getBytes());
+            clients[clientId].getOutputStream().write(message.getBytes());
             System.out.println(message);
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();

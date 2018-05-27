@@ -1,5 +1,7 @@
 package client;
 
+import game.Hangman;
+import game.Room;
 import protocol.Message;
 
 import java.io.IOException;
@@ -17,16 +19,30 @@ class ServerChannel implements Runnable {
         return lock;
     }
 
+
     @Override
     public void run() {
+
+        int readBytes;
 
         while (true) {
             try {
                 Client.msgReceivedServer = new byte[1024];
-                Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
-                System.out.println(new String(Client.msgReceivedServer));
 
-                Message message = new Message(new String(Client.msgReceivedServer));
+                readBytes = Client.receiveStream.read(Client.msgReceivedServer, 0, Client.msgReceivedServer.length);
+
+                if(readBytes < 0) {
+                    System.out.println("Server connection has dropped");
+                    break;
+                }
+
+                String msgStr = new String(Client.msgReceivedServer);
+                System.out.println();
+
+                System.out.println("RECEIVED SERVER: " + msgStr);
+
+                Message message = new Message(msgStr);
+
                 switch (message.getType()) {
                     case SEND_PORTS:
                         if (message.getNPorts() == 0) {
@@ -57,7 +73,17 @@ class ServerChannel implements Runnable {
 
                     case ROOM_CREATED:
                         System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
-                        //TODO Criar o Room e metê-lo no ConcurrentHashmap
+                        Client.rooms[Client.nRooms] = new Room(message.getRoomId());
+
+                        Room newRoom = Client.rooms[Client.nRooms];
+
+                        Client.nRooms++;
+
+                        newRoom.setOwner(true);
+                        newRoom.addClientId(Client.clientID);
+
+                        newRoom.addGame(new Hangman(newRoom.getRoomId()));
+
                         break;
 
                 }

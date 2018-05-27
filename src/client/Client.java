@@ -40,7 +40,7 @@ public class Client {
     protected static byte[] msgReceivedServer = new byte[1024];
 
 
-    private static int nRooms = 0;
+    protected static int nRooms = 0;
     protected static Room[] rooms = new Room[3];
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
@@ -124,7 +124,7 @@ public class Client {
             synchronized(lock) {
                 lock.wait();
             }
-            //Thread.sleep(1000);
+
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -134,26 +134,26 @@ public class Client {
         launcher.main(null);
 
         //TODO::create the looby properly
-        //Client.createRoom("Cenas");
-        Client.connectRoom("Sala 1");
-
-        //Após 5segundos começar o jogo
-        try {
-            Thread.sleep(10000); //10segundos
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-
-        if(getRooms()[1].getOwner()) {
-            String word = "qweasd zxc";
-             Hangman game = getRooms()[1].getGame();
-            game.startGame(word);
-            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-            Client.sendAll(sendWord);
-            Client.handleNextTurn();
-        }
         
+//        Client.connectRoom("Sala 1");
+//
+//        //Após 5segundos começar o jogo
+//        try {
+//            Thread.sleep(10000); //10segundos
+//        } catch (InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+//
+//
+//        if(getRooms()[1].getOwner()) {
+//            String word = "qweasd zxc";
+//             Hangman game = getRooms()[1].getGame();
+//            game.startGame(word);
+//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+//            Client.sendAll(sendWord);
+//            Client.handleNextTurn();
+//        }
+
 
 
     }
@@ -171,6 +171,7 @@ public class Client {
             new Thread(gameThrea).start();
             Client.confirmTimerUP = 0;
         }
+        System.out.println("oi2");
         
     }
 
@@ -218,7 +219,7 @@ public class Client {
         new Thread(gameThread).start();
     }
 
-    private static void createRoom(String roomName) {
+    public static void createRoom(String roomName) {
         Message message = new Message(MessageType.ROOM_CREATE, Client.clientID, roomName);
         byte[] msgBytes = message.getBytes();
 
@@ -305,6 +306,7 @@ public class Client {
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
             int i = getRooms()[1].getNClients();
+            System.out.println(i);
             while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }

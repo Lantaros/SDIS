@@ -81,9 +81,11 @@ class ListenerPeer implements Runnable {
 
                     case READY_TO_START:
                     	Client.getRooms()[1].setReady(message.getClientID());
-
-                    	if(Client.getRooms()[1].isEveryoneReady())
+                    	Room a = Client.getRooms()[1];
+                    	if(Client.getRooms()[1].isEveryoneReady() && Client.getRooms()[1].getOwner()){
+                    		System.out.println("num cli: " + Client.getRooms()[1].getNClients());
                     		Client.sendAll(new Message(MessageType.START_GAME));
+                    	}
                     	
                         break;
 
