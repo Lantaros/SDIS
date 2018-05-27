@@ -89,7 +89,7 @@ public class Room {
     		nClients--;
     		return;
     	}
-    	for(int i = idPos+1; i < nClients; i++) {
+    	for(int i = idPos+1; i <= nClients; i++) {
     		client_id[i-1] = client_id[i];
     	}
     	nClients--;
@@ -103,5 +103,11 @@ public class Room {
 	public String toString() {
 		return name + " - " + nClients + " players";
 	}
+
+	public void print() {
+		for(int i = 1; i<=nClients; i++) {
+            System.out.println(client_id[i]);
+        }
+    }
 
 }

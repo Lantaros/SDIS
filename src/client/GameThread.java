@@ -73,17 +73,15 @@ class GameThread implements Runnable {
                 public void run() {
                     time = time - 1;                   
                     if(Client.cancel) {
-                        System.out.println("OIOI");
                         Client.cancel = false;
                         ti.cancel();
                         ti.purge();
                         return;
                     }
                     if(time == 0) {
-                        //3seconds passed 
-                        System.out.println("OIOI2");                       
+                        //3seconds passed                       
                         Client.removeClient();
-                        
+                        //Client.confirmMsg.add(0);
                         ti.cancel();
                         ti.purge();
                         return;

@@ -275,13 +275,8 @@ public class Client {
 			int[] ids = currentRoom.getClients();
 			int n = currentRoom.getNClients();
 			
-			if(numTurn >= n )
-	            numTurn = 1;
-	        else
-	            numTurn++;
-	        if(ids[numTurn] == Client.clientID)
-	            numTurn++;
-	        
+			if (ids[numTurn] == Client.clientID)
+				numTurn++;
 	
 			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
 			sendAll(message);
@@ -344,6 +339,9 @@ public class Client {
         Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
         Client.sendAll(sendWord);
         Client.handleNextTurn();
+        if(Client.gameThread.getCountdown() < 11) {
+            Client.gameThread.resetTimer();
+        }
     }
 
     public static void setWord(String word) {
@@ -352,6 +350,9 @@ public class Client {
         game.startGame(word);
         setWordInGUI(game.getWord());
         launcher.getFrame().gamePanel.setButtonWord(true);
+        if(gameThread.getCountdown() < 11) {
+            gameThread.resetTimer();
+        }
     }
 
     public static void setWordInGUI(String word) {
@@ -641,7 +642,7 @@ public class Client {
     public static void removeClient() {
         boolean check = false;
         int[] clients = currentRoom.getClients();
-        for(int j=1; j< currentRoom.getNClients();j++) {
+        for(int j=2; j <= currentRoom.getNClients();j++) {
 
             for(int i = 0; i<confirmMsg.size(); i++) {
                 if(clients[j] == confirmMsg.get(i))
@@ -659,15 +660,45 @@ public class Client {
 
     public static void removeClientInformation(int idPos) {
         idPos--; //retirar um porque ele começa a 0 aqui
+        idPos--;
+        System.out.println("***DATA***");
+        print();
         if(idPos == countPeer) {
             countPeer--;
+            print();
+            System.out.println("***DATA***");
             return;
         }
         for(int i = idPos+1; i < countPeer; i++) {
             peer[i-1] = peer[i];
         }
         countPeer--;
+        System.out.println("***DATA***");
+        print();
     }
+    public static void removePeer(int id) {
+                
+        currentRoom.print();
+        int n = currentRoom.getNClients();
+        int[] clients = currentRoom.getClients();
+        for(int j = 2; j<=n;j++) {
+            if(id == clients[j]) {
+                currentRoom.removeClient(j);
+                removeClientInformation(id);
+            }
+        }
+        System.out.println("---");
+        currentRoom.print();
+        
+        
+    }
+
+    public static void print() {
+        for(int i = 0; i<countPeer; i++) {
+            System.out.println(peer[i].getClientID());
+        }
+    }
+
     
 	public static void sendMsgToPeer(Message message, int peerToSend) {
 		try {

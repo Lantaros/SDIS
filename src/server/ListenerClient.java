@@ -26,6 +26,7 @@ class ListenerClient implements Runnable {
 
                     if(readBytes < 0) {
                         System.out.println("Client " + id + " has disconnected");
+                        Server.removeClient(id);
                         break;
                     }
 

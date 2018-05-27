@@ -11,6 +11,7 @@ import gui.Launcher;
 class ListenerPeer implements Runnable {
 	private int roomID;
 	private int peerID;
+	private int serverPeerID = -1;
 	private byte[] msg = new byte[1024];
 
 	public ListenerPeer(int peerID) {
@@ -24,12 +25,18 @@ class ListenerPeer implements Runnable {
 		while (true) {
 			try {
 				msg = new byte[1024];
-				Client.peer[this.peerID].getInputStream().read(msg, 0, msg.length);
+				int readBytes = Client.peer[this.peerID].getInputStream().read(msg, 0, msg.length);
+				if(readBytes < 0) {
+					Client.removePeer(this.serverPeerID);
+                    System.out.println("Peer " + serverPeerID + " has disconnected");
+                    break;
+                }
 				System.out.println(new String(msg));
 				// Client.peer[this.peerID].setMessage(msg);
 				Message message = new Message(new String(msg));
 				switch (message.getType()) {
 				case PEER_INFO:
+					serverPeerID = message.getClientID();
 					Client.addPeer(this.peerID, message.getClientID());
 					break;
 				case WORD_TO_GUESS:
@@ -112,6 +119,7 @@ class ListenerPeer implements Runnable {
 						Client.currentRoom.setOwner(true);
 						Client.currentRoom.setAllReadyToFalse();
 						Launcher.getFrame().setpanel(Launcher.getFrame().setWordRoom);
+						
 					}
 					break;
 				}
