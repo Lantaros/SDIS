@@ -141,4 +141,19 @@ public class Server {
             e.printStackTrace();
         }
     }
+
+    public static void removeClient(int id) {
+        
+        for(int i = 0; i<nRooms; i++) {
+            int n = rooms[i].getNClients();
+            int[] clients = rooms[i].getClients();
+            for(int j = 1; j<=n;j++) {
+                if(id == clients[j]) {
+                    rooms[i].removeClient(j);
+                    
+                }
+            }
+        }
+        
+    }
 }

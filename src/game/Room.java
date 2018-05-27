@@ -104,4 +104,10 @@ public class Room {
 		return name + " - " + nClients + " players";
 	}
 
+	public void print() {
+		for(int i = 1; i<=nClients; i++) {
+            System.out.println(client_id[i]);
+        }
+    }
+
 }

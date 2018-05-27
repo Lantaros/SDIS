@@ -616,7 +616,7 @@ public class Client {
     public static void removeClient() {
         boolean check = false;
         int[] clients = currentRoom.getClients();
-        for(int j=1; j< currentRoom.getNClients();j++) {
+        for(int j=2; j <= currentRoom.getNClients();j++) {
 
             for(int i = 0; i<confirmMsg.size(); i++) {
                 if(clients[j] == confirmMsg.get(i))
@@ -642,6 +642,23 @@ public class Client {
             peer[i-1] = peer[i];
         }
         countPeer--;
+    }
+
+    public static void removePeer(int id) {
+                
+        currentRoom.print();
+        int n = currentRoom.getNClients();
+        int[] clients = currentRoom.getClients();
+        for(int j = 1; j<=n;j++) {
+            if(id == clients[j]) {
+                currentRoom.removeClient(j);
+                removeClientInformation(j);
+            }
+        }
+        System.out.println("---");
+        currentRoom.print();
+        
+        
     }
 
 
