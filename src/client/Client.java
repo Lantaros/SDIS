@@ -274,14 +274,19 @@ public class Client {
             
 			int[] ids = currentRoom.getClients();
 			int n = currentRoom.getNClients();
-			if (ids[numTurn] == Client.clientID)
-				numTurn++;
-			if (numTurn >= n)
-				numTurn = 1;
-			 else
-		            numTurn++;
+			
+			if(numTurn >= n )
+	            numTurn = 1;
+	        else
+	            numTurn++;
+	        if(ids[numTurn] == Client.clientID)
+	            numTurn++;
+	        
+	
 			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
 			sendAll(message);
+			Client.currentRoom.setOwner(false);
+			Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
 			return;
         }
 
@@ -305,15 +310,17 @@ public class Client {
                 Client.sendAll(message);
             }
             
-            Message message = new Message(MessageType.PASS_OWNERSHIP);
-            int n = currentRoom.getNClients();
-            int[] ids = currentRoom.getClients();
-            if(ids[numTurn] == Client.clientID)
-                numTurn++;
-            if(numTurn >= n )
-                numTurn = 1;
-           
-            sendMsgToPeer(message,ids[numTurn]);
+    		int[] ids = currentRoom.getClients();
+			int n = currentRoom.getNClients();
+//			if (ids[numTurn] == Client.clientID)
+//				numTurn++;
+//			if (numTurn >= n)
+//				numTurn = 1;
+//			 else
+//		            numTurn++;
+			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
+			sendAll(message);
+			Client.currentRoom.setOwner(true);
         }
        
     }
