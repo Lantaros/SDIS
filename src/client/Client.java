@@ -275,13 +275,8 @@ public class Client {
 			int[] ids = currentRoom.getClients();
 			int n = currentRoom.getNClients();
 			
-			if(numTurn >= n )
-	            numTurn = 1;
-	        else
-	            numTurn++;
-	        if(ids[numTurn] == Client.clientID)
-	            numTurn++;
-	        
+			if (ids[numTurn] == Client.clientID)
+				numTurn++;
 	
 			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
 			sendAll(message);
@@ -344,6 +339,9 @@ public class Client {
         Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
         Client.sendAll(sendWord);
         Client.handleNextTurn();
+        if(Client.gameThread.getCountdown() < 11) {
+            Client.gameThread.resetTimer();
+        }
     }
 
     public static void setWord(String word) {
@@ -352,6 +350,9 @@ public class Client {
         game.startGame(word);
         setWordInGUI(game.getWord());
         launcher.getFrame().gamePanel.setButtonWord(true);
+        if(gameThread.getCountdown() < 11) {
+            gameThread.resetTimer();
+        }
     }
 
     public static void setWordInGUI(String word) {

@@ -119,6 +119,7 @@ class ListenerPeer implements Runnable {
 						Client.currentRoom.setOwner(true);
 						Client.currentRoom.setAllReadyToFalse();
 						Launcher.getFrame().setpanel(Launcher.getFrame().setWordRoom);
+						
 					}
 					break;
 				}
