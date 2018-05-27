@@ -425,6 +425,7 @@ public class Client {
 
 
         Client.currentRoom.addClientId(clientID);
+        //countPeer++;
     }
 
     public static void requestPort(int nPorts) {
@@ -590,7 +591,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
-        currentRoom.setClientId(clientID+1, generalID);
+        currentRoom.setClientId(clientID+2, generalID);
     }
     
     
