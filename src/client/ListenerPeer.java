@@ -88,6 +88,10 @@ class ListenerPeer implements Runnable {
 					if (Client.currentRoom.getOwner())
 						Client.handleTimerUP();
 					break;
+				case PASS_OWNERSHIP:
+					if (message.getClientID() == Client.clientID)
+						System.out.println("Im the one who owns");					
+					break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

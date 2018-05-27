@@ -52,13 +52,14 @@ public class Message {
                 this.address = address;
             } else if(type == MessageType.LETTER_CHECK) {
                 this.clientID = port;
-                this.bool = address;
-            } else if(type == MessageType.WORD_CHECK) {
-                this.clientID = port;
-                this.bool = address;
-            }
-            else {
-                this.port = port;
+				this.bool = address;
+			} else if (type == MessageType.WORD_CHECK) {
+				this.clientID = port;
+				this.bool = address;
+			}
+
+			else {
+				this.port = port;
             this.address = address;
             }
         } catch (InvalidMessage m) {
@@ -280,6 +281,11 @@ public class Message {
                         room.setNClients(Integer.parseInt(tokens[i + 2].trim()));
                         availableRooms.add(room);
                     }
+                    break;
+                case PASS_OWNERSHIP:
+                    this.type = MessageType.fromString("PASS_OWNERSHIP");
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -400,6 +406,9 @@ public class Message {
 //                            + " " + availableRoom.getNClients();
 //                }
             break;
+            case PASS_OWNERSHIP:
+                message += " " + clientID;
+                break;
 
             default:
     			break;

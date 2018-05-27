@@ -205,7 +205,7 @@ public class Client {
         if(id[numTurn] == Client.clientID)
             numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
-        if(numTurn >= n-1 )
+        if(numTurn >= n )
             numTurn = 1;
         else
             numTurn++;
@@ -267,12 +267,22 @@ public class Client {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
                 Client.sendAll(message);
-                return;
             }   else if (game.hasWon()) {
                 Message message = new Message(MessageType.GAME_FINISH, true);
                 Client.sendAll(message);
-                return;
             }
+            
+			int[] ids = currentRoom.getClients();
+			int n = currentRoom.getNClients();
+			if (ids[numTurn] == Client.clientID)
+				numTurn++;
+			if (numTurn >= n)
+				numTurn = 1;
+			 else
+		            numTurn++;
+			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
+			sendAll(message);
+			return;
         }
 
         GameThread gameThrea = new GameThread("next_turn");
@@ -290,12 +300,20 @@ public class Client {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
                 Client.sendAll(message);
-                return;
             }   else if (game.hasWon()) {
                 Message message = new Message(MessageType.GAME_FINISH, true);
                 Client.sendAll(message);
-                return;
             }
+            
+            Message message = new Message(MessageType.PASS_OWNERSHIP);
+            int n = currentRoom.getNClients();
+            int[] ids = currentRoom.getClients();
+            if(ids[numTurn] == Client.clientID)
+                numTurn++;
+            if(numTurn >= n )
+                numTurn = 1;
+           
+            sendMsgToPeer(message,ids[numTurn]);
         }
        
     }
@@ -640,6 +658,21 @@ public class Client {
         }
         countPeer--;
     }
-
+    
+	public static void sendMsgToPeer(Message message, int peerToSend) {
+		try {
+			System.out.println(message.toString());
+			for (int i = 0; i < countPeer; i++)
+				if (peer[i].getClientID() == peerToSend){
+					peer[i].getOutputStream().write(message.getBytes());
+					return;
+					}
+			System.out.println("PEer does not exist");
+			
+			//peer[peerToSend].getOutputStream().write(message.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

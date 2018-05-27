@@ -41,7 +41,8 @@ public enum MessageType {
 
     TIMER_UP,
 
-    READY_TO_START;
+    READY_TO_START,
+    PASS_OWNERSHIP;
 
 
     @Override
@@ -142,6 +143,9 @@ public enum MessageType {
 
             case WORD_TO_GUESS_PEER:
                 return "WORD_TO_GUESS_PEER";
+                
+            case PASS_OWNERSHIP:
+                return "PASS_OWNERSHIP";
 
             default:
                 return "FAIL";
@@ -246,6 +250,9 @@ public enum MessageType {
 
             case "WORD_TO_GUESS_PEER":
                 return WORD_TO_GUESS_PEER;
+                
+            case "PASS_OWNERSHIP":
+                return PASS_OWNERSHIP;
 
             default:
                 throw new InvalidMessage(type);
