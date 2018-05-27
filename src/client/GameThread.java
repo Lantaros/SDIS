@@ -39,11 +39,11 @@ class GameThread implements Runnable {
         }
 
         if(this.toDo.equals("timer_up")) {
-            Client.handleNextTurn(roomID);
+            Client.handleNextTurn();
         }
 
         if(this.toDo.equals("next_turn")){
-             Client.handleNextTurn(roomID);
+             Client.handleNextTurn();
         }
     }
 

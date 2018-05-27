@@ -53,7 +53,7 @@ class ServerChannel implements Runnable {
                 switch (message.getType()) {
                     case SEND_PORTS:
                         if (message.getNPorts() == 0) {
-                            Client.getRooms()[1].setOwner(true);
+                            Client.currentRoom.setOwner(true);
                             break;
                         }
                         Client.requestPort(message.getNPorts());
@@ -80,16 +80,13 @@ class ServerChannel implements Runnable {
 
                     case ROOM_CREATED:
                         System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
-                        Client.rooms[Client.nRooms] = new Room(message.getRoomId());
+                        Client.currentRoom = new Room(message.getRoomId());
 
-                        Room newRoom = Client.rooms[Client.nRooms];
 
-                        Client.nRooms++;
+                        Client.currentRoom.setOwner(true);
+                        Client.currentRoom.addClientId(Client.clientID);
 
-                        newRoom.setOwner(true);
-                        newRoom.addClientId(Client.clientID);
-
-                        newRoom.addGame(new Hangman(newRoom.getRoomId()));
+                        Client.currentRoom.addGame(new Hangman(Client.currentRoom.getRoomId()));
 
                     break;
                     case ROOMS_AVAILABLE:

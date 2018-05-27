@@ -35,9 +35,9 @@ public class WaitingRoom extends JPanel {
 		btnImReady.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.sendReadyToAll();
-				Client.getRooms()[Client.getNRooms() - 1].setReady(Client.clientID);
-				if(Client.getRooms()[Client.getNRooms() - 1].isEveryoneReady() && Client.getRooms()[Client.getNRooms() - 1].getOwner() && Client.getRooms()[Client.getNRooms() - 1].getNClients()>1){
-            		System.out.println("num cli: " + Client.getRooms()[Client.getNRooms() - 1].getNClients());
+				Client.currentRoom.setReady(Client.clientID);
+				if(Client.currentRoom.isEveryoneReady() && Client.currentRoom.getOwner() && Client.currentRoom.getNClients()>1){
+            		System.out.println("num cli: " + Client.currentRoom.getNClients());
             		Client.sendAll(new Message(MessageType.START_GAME));
             		Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
             	}

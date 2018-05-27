@@ -31,17 +31,10 @@ public class Client {
 
     protected static Launcher launcher;
 
-    //To Thread SendServer use
-    protected static boolean toSendServer = false;
-    protected static byte[] msgSendServer = new byte[1024];
-
-    //To Thread client.ServerChannel use
-    protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
 
-    protected static int nRooms = 0;
-    protected static Room[] rooms = new Room[3];
+    public static Room currentRoom;
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
@@ -173,7 +166,7 @@ public class Client {
     }
 
     public static void handleTimerUP() {
-        int n = getRooms()[1].getNClients();
+        int n = Client.currentRoom.getNClients();
         Client.confirmTimerUP++;
         if(Client.confirmTimerUP >= n-1){
             GameThread gameThread = new GameThread("timer_up");
@@ -184,9 +177,9 @@ public class Client {
         
     }
 
-    public static void handleNextTurn(int roomID) {
-        int n = getRooms()[roomID].getNClients();//rooms[1].getNClients();
-        int[] id = getRooms()[roomID].getClients();
+    public static void handleNextTurn() {
+        int n = currentRoom.getNClients();
+        int[] id = currentRoom.getClients();
 
         if(id[numTurn] == Client.clientID)
             numTurn++;
@@ -218,7 +211,7 @@ public class Client {
     public static void handleMyTurn(int roomID) {
         GameThread gameThread;
 
-        if(getRooms()[roomID].getGame().getTurn()) {
+        if(Client.currentRoom.getGame().getTurn()) {
             launcher.getFrame().gamePanel.setTurn(true);
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
@@ -242,7 +235,7 @@ public class Client {
     }
 
     public static void guessLetter() {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = Client.currentRoom.getGame();
         game.guessLetter(newLetter.charAt(0));
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
@@ -278,16 +271,16 @@ public class Client {
 
     public static void chooseWord(String word){
 
-        Hangman game = rooms[nRooms - 1].getGame();
+        Hangman game = currentRoom.getGame();
         game.startGame(word);
         Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
         Client.sendAll(sendWord);
-        Client.handleNextTurn(nRooms - 1);
+        Client.handleNextTurn();
     }
 
     public static void setWord(String word) {
         System.out.println(word);
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = Client.currentRoom.getGame();
         game.startGame(word);
         setWordInGUI(game.getWord());
     }
@@ -297,12 +290,12 @@ public class Client {
     }
 
     public static String sendLetter(String letter) {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = currentRoom.getGame();
         if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
             //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
-            int i = getRooms()[1].getNClients();
+            int i = currentRoom.getNClients();
             System.out.println(i);
             while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
@@ -346,14 +339,12 @@ public class Client {
         }
 
 
-        Client.getRooms()[nRooms] = new Room(roomID);
+        Client.currentRoom = new Room(roomID);
         Hangman game = new Hangman(roomID);
-        getRooms()[nRooms].addGame(game);
+        Client.currentRoom.addGame(game);
 
-        
-        rooms[nRooms].addClientId(clientID);
 
-        nRooms++;
+        Client.currentRoom.addClientId(clientID);
     }
 
     public static void requestPort(int nPorts) {
@@ -417,6 +408,12 @@ public class Client {
         }
     }
 
+    /**
+     * Saves new peer info in currentRoom
+     * @param socket
+     * @param receiveStream
+     * @param sendStream
+     */
     public static void saveClient(Socket socket, InputStream receiveStream,
                                   OutputStream sendStream) {
         int id = countPeer;
@@ -434,7 +431,7 @@ public class Client {
         System.out.println(socket.getRemoteSocketAddress());
 
 
-        rooms[1].addClientId(id);
+        currentRoom.addClientId(id);
 
 
         ListenerPeer listPeer = new ListenerPeer(id);
@@ -485,7 +482,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            getRooms()[1].addClientId(countPeer);
+            currentRoom.addClientId(countPeer);
 
             ListenerPeer listPeer = new ListenerPeer(countPeer);
             new Thread(listPeer).start();
@@ -513,7 +510,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
-        getRooms()[1].setClientId(clientID+1, generalID);
+        currentRoom.setClientId(clientID+1, generalID);
     }
     
     
@@ -530,13 +527,5 @@ public class Client {
 		return null;
     	
     }
-
-	public static Room[] getRooms() {
-		return rooms;
-	}
-	
-	public static int getNRooms() {
-		return nRooms;
-	}
 
 }

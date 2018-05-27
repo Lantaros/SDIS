@@ -43,7 +43,7 @@ class ListenerPeer implements Runnable {
 
 					break;
 				case LETTER_GO:
-					if (Client.getRooms()[1].getOwner()) {
+					if (Client.currentRoom.getOwner()) {
 						// ListenerPeer2 listPeer2 = new
 						// ListenerPeer2(this.peerID);
 						// new Thread(listPeer2).start();
@@ -57,10 +57,10 @@ class ListenerPeer implements Runnable {
 					// TODO::receber a mensagem e fazer alguma coisa!
 					break;
 				case READY_TO_START:
-					Client.getRooms()[1].setReady(message.getClientID());
-					Room a = Client.getRooms()[1];
-					if (Client.getRooms()[1].isEveryoneReady() && Client.getRooms()[1].getOwner()) {
-						System.out.println("num cli: " + Client.getRooms()[1].getNClients());
+					Client.currentRoom.setReady(message.getClientID());
+					Room a = Client.currentRoom;
+					if (Client.currentRoom.isEveryoneReady() && Client.currentRoom.getOwner()) {
+						System.out.println("num cli: " + Client.currentRoom.getNClients());
 						Client.sendAll(new Message(MessageType.START_GAME));
 						Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
 					}
@@ -72,9 +72,9 @@ class ListenerPeer implements Runnable {
 					break;
 				case TURN_PEER_ID:
 					if (message.getClientID() == Client.clientID)
-						Client.getRooms()[1].getGame().setTurn(true);
+						Client.currentRoom.getGame().setTurn(true);
 					else
-						Client.getRooms()[1].getGame().setTurn(false);
+						Client.currentRoom.getGame().setTurn(false);
 					Client.sendNextTurn(this.peerID);
 					break;
 				case TURN_CHECK:
@@ -84,7 +84,7 @@ class ListenerPeer implements Runnable {
 					Client.handleMyTurn(roomID);
 					break;
 				case TIMER_UP:
-					if (Client.getRooms()[1].getOwner())
+					if (Client.currentRoom.getOwner())
 						Client.handleTimerUP();
 					break;
 				}
@@ -94,9 +94,4 @@ class ListenerPeer implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) {
-		Message message = new Message("READY_TO_START 1    ");
-		System.out.println(message.getClientID());
-
-	}
 }
