@@ -6,6 +6,7 @@ import protocol.MessageType;
 import java.io.IOException;
 
 import game.Room;
+import gui.Launcher;
 
 class ListenerPeer implements Runnable {
     private int roomID;
@@ -62,6 +63,7 @@ class ListenerPeer implements Runnable {
                     	if(Client.getRooms()[1].isEveryoneReady() && Client.getRooms()[1].getOwner()){
                     		System.out.println("num cli: " + Client.getRooms()[1].getNClients());
                     		Client.sendAll(new Message(MessageType.START_GAME));
+                    		Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
                     	}
                     	
                         break;

@@ -39,7 +39,7 @@ public class SetWordRoom extends JPanel {
 				
 				textField.setText("");
 				
-				frame.setpanel(frame.gamePanel);
+				frame.setpanel(frame.waitingRoom);
 				
 			}
 		});
