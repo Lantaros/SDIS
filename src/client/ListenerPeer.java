@@ -27,7 +27,7 @@ class ListenerPeer implements Runnable {
 				msg = new byte[1024];
 				int readBytes = Client.peer[this.peerID].getInputStream().read(msg, 0, msg.length);
 				if(readBytes < 0) {
-					Client.removePeer(this.peerID);
+					Client.removePeer(this.serverPeerID);
                     System.out.println("Peer " + serverPeerID + " has disconnected");
                     break;
                 }

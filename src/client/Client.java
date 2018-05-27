@@ -634,14 +634,21 @@ public class Client {
 
     public static void removeClientInformation(int idPos) {
         idPos--; //retirar um porque ele começa a 0 aqui
+        idPos--;
+        System.out.println("***DATA***");
+        print();
         if(idPos == countPeer) {
             countPeer--;
+            print();
+            System.out.println("***DATA***");
             return;
         }
         for(int i = idPos+1; i < countPeer; i++) {
             peer[i-1] = peer[i];
         }
         countPeer--;
+        System.out.println("***DATA***");
+        print();
     }
 
     public static void removePeer(int id) {
@@ -649,10 +656,10 @@ public class Client {
         currentRoom.print();
         int n = currentRoom.getNClients();
         int[] clients = currentRoom.getClients();
-        for(int j = 1; j<=n;j++) {
+        for(int j = 2; j<=n;j++) {
             if(id == clients[j]) {
                 currentRoom.removeClient(j);
-                removeClientInformation(j);
+                removeClientInformation(id);
             }
         }
         System.out.println("---");
@@ -661,5 +668,10 @@ public class Client {
         
     }
 
+    public static void print() {
+        for(int i = 0; i<countPeer; i++) {
+            System.out.println(peer[i].getClientID());
+        }
+    }
 
 }
