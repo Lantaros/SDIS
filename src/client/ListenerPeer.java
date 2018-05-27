@@ -80,7 +80,7 @@ class ListenerPeer implements Runnable {
 					Client.setWordInGUI(message.getWord());
 					break;
 				case GAME_FINISH:
-					// TODO::receber a mensagem e fazer alguma coisa!
+					Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
 					break;
 				case READY_TO_START:
 					Client.currentRoom.setReady(message.getClientID());
@@ -112,6 +112,14 @@ class ListenerPeer implements Runnable {
 				case TIMER_UP:
 					if (Client.currentRoom.getOwner())
 						Client.handleTimerUP();
+					break;
+				case PASS_OWNERSHIP:
+					if (message.getClientID() == Client.clientID) {
+						System.out.println("Im the one who owns");
+						Client.currentRoom.setOwner(true);
+						Client.currentRoom.setAllReadyToFalse();
+						Launcher.getFrame().setpanel(Launcher.getFrame().setWordRoom);
+					}
 					break;
 				}
 			} catch (IOException e) {
