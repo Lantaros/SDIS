@@ -45,6 +45,12 @@ public class Message {
             else if(type == MessageType.ROOM_CREATED) {
                 this.roomID = nPorts;
                 this.address = address;
+            } else if(type == MessageType.LETTER_CHECK) {
+                this.clientID = port;
+                this.bool = address;
+            } else if(type == MessageType.WORD_CHECK) {
+                this.clientID = port;
+                this.bool = address;
             }
             else {
                 this.port = port;

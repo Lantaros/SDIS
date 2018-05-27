@@ -54,7 +54,7 @@ public class Client {
     protected static int confirmTimerUP = 0;
     protected static boolean resetTimer = false;
     protected static int confirmWord = 0;
-
+    protected static boolean cancel = false;
 
 
     protected static GameThread gameThread = new GameThread("");
@@ -135,24 +135,24 @@ public class Client {
 
         //TODO::create the looby properly
         
-//        Client.connectRoom("Sala 1");
-//
-//        //Após 5segundos começar o jogo
-//        try {
-//            Thread.sleep(10000); //10segundos
-//        } catch (InterruptedException ex) {
-//            Thread.currentThread().interrupt();
-//        }
-//
-//
-//        if(getRooms()[1].getOwner()) {
-//            String word = "qweasd zxc";
-//             Hangman game = getRooms()[1].getGame();
-//            game.startGame(word);
-//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-//            Client.sendAll(sendWord);
-//            Client.handleNextTurn();
-//        }
+        Client.connectRoom("Sala 1");
+
+       //Após 5segundos começar o jogo
+       try {
+           Thread.sleep(10000); //10segundos
+       } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+
+        if(getRooms()[1].getOwner()) {
+            String word = "qweasd zxc";
+             Hangman game = getRooms()[1].getGame();
+            game.startGame(word);
+            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+            Client.sendAll(sendWord);
+            Client.handleNextTurn();
+        }
 
 
 
@@ -171,7 +171,6 @@ public class Client {
             new Thread(gameThrea).start();
             Client.confirmTimerUP = 0;
         }
-        System.out.println("oi2");
         
     }
 
@@ -271,9 +270,7 @@ public class Client {
                 return;
             }
         }
-
-        GameThread gameThrea = new GameThread("next_turn");
-        new Thread(gameThrea).start();
+       
     }
 
     public static void sendAll(Message message) {
@@ -293,6 +290,7 @@ public class Client {
         Hangman game = getRooms()[1].getGame();
         game.startGame(word);
         setWordInGUI(game.getWord());
+        launcher.getFrame().gamePanel.setButtonWord(true);
     }
 
     public static void setWordInGUI(String word) {
@@ -307,9 +305,13 @@ public class Client {
             sendAll(letterToSend);
             int i = getRooms()[1].getNClients();
             System.out.println(i);
+            GameThread gameThrea = new GameThread("unblock_letter");
+            new Thread(gameThrea).start();
             while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }
+            //gameThrea = new GameThread("");
+            cancel = true;
             confirmMsg.clear();
             Message message = new Message(MessageType.LETTER_GO);
             sendAll(message);
@@ -336,6 +338,9 @@ public class Client {
         confirmWord = 0;
         Message message = new Message(MessageType.WORD_GO);
         sendAll(message);
+        Client.launcher.getFrame().gamePanel.setButtonWord(false);
+        GameThread gameThrea = new GameThread("block_3seconds");
+        new Thread(gameThrea).start();
         return "ok";
     }
 
@@ -562,5 +567,36 @@ public class Client {
 	public static Room[] getRooms() {
 		return rooms;
 	}
+
+    public static void removeClient() {
+        boolean check = false;
+        int[] clients = getRooms()[1].getClients();
+        for(int j=1; j<getRooms()[1].getNClients();j++) {
+
+            for(int i = 0; i<confirmMsg.size(); i++) {
+                if(clients[j] == confirmMsg.get(i))
+                    check = true;
+            }
+            if(check)
+                check = false;
+            else {
+                getRooms()[1].removeClient(j);
+                removeClientInformation(j);
+                Client.confirmMsg.add(0);
+            }
+        }
+    }
+
+    public static void removeClientInformation(int idPos) {
+        idPos--; //retirar um porque ele começa a 0 aqui
+        if(idPos == countPeer) {
+            countPeer--;
+            return;
+        }
+        for(int i = idPos+1; i < countPeer; i++) {
+            peer[i-1] = peer[i];
+        }
+        countPeer--;
+    }
 
 }

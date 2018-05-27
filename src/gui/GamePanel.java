@@ -24,6 +24,7 @@ public class GamePanel extends JPanel {
 	private JLabel lblTimeRemaining;
 	private JTextField textFieldGuessWord;
 	private JButton btnGuessLetter;
+	private JButton btnGuessWord;
 	JLabel lblWarning;
 
 	/**
@@ -81,7 +82,8 @@ public class GamePanel extends JPanel {
 		textFieldGuessWord = new JTextField();
 		textFieldGuessWord.setColumns(10);
 		
-		JButton btnGuessWord = new JButton("Guess Word");
+		btnGuessWord = new JButton("Guess Word");
+		btnGuessWord.setEnabled(false);
 		btnGuessWord.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String wordGuessed = textFieldGuessWord.getText();
@@ -199,5 +201,12 @@ public class GamePanel extends JPanel {
 			btnGuessLetter.setEnabled(true);
 		else
 			btnGuessLetter.setEnabled(false);
+	}
+
+	public void setButtonWord(boolean check) {
+		if(check) 
+			btnGuessWord.setEnabled(true);
+		else
+			btnGuessWord.setEnabled(false);
 	}
 }
