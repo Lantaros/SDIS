@@ -24,7 +24,7 @@ public class Server {
 
     protected static ClientData[] clients = new ClientData[MAX_NCLIENTS];
 
-    private static int nRooms = 0;
+    protected static int nRooms = 0;
     protected static Room[] rooms = new Room[MAX_NROOMS];
 
     private Server() {

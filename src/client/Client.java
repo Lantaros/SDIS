@@ -52,6 +52,7 @@ public class Client {
     protected static int confirmTurn = 0;
     protected static int confirmTimerUP = 0;
     protected static boolean resetTimer = false;
+    private static Object srvChannelLock;
 
 
     public Client(String host, int port) {
@@ -111,11 +112,12 @@ public class Client {
 
         ServerChannel listServer = new ServerChannel();
         new Thread(listServer).start();
-        Object lock = listServer.getLock();
+
+        srvChannelLock = listServer.getLock();
 
         try {
-            synchronized(lock) {
-                lock.wait();
+            synchronized(srvChannelLock) {
+                srvChannelLock.wait();
             }
 
         } catch (InterruptedException ex) {
@@ -143,10 +145,26 @@ public class Client {
 
     }
 
-    public static void requestAvailableRooms(){
-        ArrayList<Room> av = new ArrayList<>();
+    public static ArrayList<Room> requestAvailableRooms(){
+        Message msg = new Message(MessageType.GET_ROOMS_AVAILABLE);
 
-        Message msg = new Message(MessageType.ROOM_AVAILABLE);
+        try {
+            sendStream.write(msg.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            synchronized (srvChannelLock){
+                srvChannelLock.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Room> avRooms = ServerChannel.getAvailableRooms();
+        System.out.println(avRooms);
+        return ServerChannel.getAvailableRooms();
     }
 
     public static void advanceTurn() {

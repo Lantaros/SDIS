@@ -1,7 +1,8 @@
 package protocol;
 
 public enum MessageType {
-    ROOM_AVAILABLE,
+    GET_ROOMS_AVAILABLE,
+    ROOMS_AVAILABLE,
     ROOM_CONNECT,
     ROOM_CREATE,
 
@@ -44,8 +45,11 @@ public enum MessageType {
     @Override
     public String toString() {
         switch (this) {
-            case ROOM_AVAILABLE:
-                return "ROOM_AVAILABLE";
+            case GET_ROOMS_AVAILABLE:
+                return "GET_ROOMS_AVAILABLE";
+
+            case ROOMS_AVAILABLE:
+                return "ROOMS_AVAILABLE";
 
             case ROOM_CONNECT:
                 return "ROOM_CONNECT";
@@ -138,8 +142,11 @@ public enum MessageType {
 
     public static MessageType fromString(String type) throws InvalidMessage {
         switch (type) {
-            case "ROOM_AVAILABLE":
-                return ROOM_AVAILABLE;
+            case "GET_ROOMS_AVAILABLE":
+                return GET_ROOMS_AVAILABLE;
+
+            case "ROOMS_AVAILABLE":
+                return ROOMS_AVAILABLE;
 
             case "ROOM_CONNECT":
                 return ROOM_CONNECT;

@@ -5,15 +5,22 @@ import game.Room;
 import protocol.Message;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 class ServerChannel implements Runnable {
 
+    private static ArrayList<Room> availableRooms;
     private Object lock;
 
     public ServerChannel(){
         this.lock = new Object();
     }
+
+    public static ArrayList<Room> getAvailableRooms() {
+        return availableRooms;
+    }
+
 
     public Object getLock() {
         return lock;
@@ -85,6 +92,8 @@ class ServerChannel implements Runnable {
                         newRoom.addGame(new Hangman(newRoom.getRoomId()));
 
                         break;
+                    case ROOMS_AVAILABLE:
+                        availableRooms = message.getAvailableRooms();
 
                 }
 

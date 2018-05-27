@@ -83,4 +83,8 @@ public class Room {
     public void setName(String roomName) {
 		this.name = roomName;
     }
+
+    public void setNClients(int nClients) {
+	    this.nClients = nClients;
+    }
 }

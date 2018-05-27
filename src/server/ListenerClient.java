@@ -47,7 +47,7 @@ class ListenerClient implements Runnable {
 
                     case PORT_TO_SEND:
                         Server.sendPortToClients(message.getPort(), message.getAddress(), this.id);
-                        break;
+                    break;
                     case ROOM_CREATE:
                         int roomID = Server.createRoom(message.getRoomName(), message.getClientID());
                         System.out.println("RoomID " + roomID);
@@ -68,6 +68,22 @@ class ListenerClient implements Runnable {
 
                         System.out.println("SENT: " + messageSend);
                         Server.clients[this.id].getOutputStream().write(messageSend.getBytes());
+                    break;
+
+                    case GET_ROOMS_AVAILABLE:
+                        String roomsInfo = "";
+
+                        for (int i = 0; i < Server.nRooms; i ++){
+                            roomsInfo += Server.rooms[i].getRoomId() + " " +
+                                    Server.rooms[i].getName() + " " +
+                                    Server.rooms[i].getNClients();
+                        }
+
+                        Message roomsAvailable = new Message(MessageType.ROOMS_AVAILABLE, roomsInfo);
+
+                        Server.clients[this.id].getOutputStream().write(roomsAvailable.getBytes());
+                    break;
+
 
 
                 }
