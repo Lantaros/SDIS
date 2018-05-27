@@ -514,5 +514,9 @@ public class Client {
 	public static Room[] getRooms() {
 		return rooms;
 	}
+	
+	public static int getNRooms() {
+		return nRooms;
+	}
 
 }
