@@ -1,5 +1,8 @@
 package gui;
 
+import client.Client;
+import game.Room;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.GroupLayout;
@@ -13,6 +16,7 @@ import javax.swing.DefaultListModel;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class JoinLobby extends JPanel {
@@ -20,8 +24,8 @@ public class JoinLobby extends JPanel {
 	@SuppressWarnings("unused")
 	private Frame frame;
 
-	JList<String> listofIDs;
-	DefaultListModel<String> listModel;
+	JList<Room> listofIDs;
+	DefaultListModel<Room> listModel;
 
 	/**
 	 * Create the panel.
@@ -41,17 +45,19 @@ public class JoinLobby extends JPanel {
 
 		JScrollPane scrollPane = new JScrollPane();
 
-		listofIDs = new JList<String>();
+		listofIDs = new JList<Room>();
 
 		
-		listModel = new DefaultListModel<String>();
+		listModel = new DefaultListModel<Room>();
 		listofIDs.setModel(listModel);
 		
 		//TODO Just TEmp
-		
-		String[] items = { "A", "B", "C", "D" };
-		for (int i = 0; i < items.length; i++) {
-			listModel.add(i, items[i]);
+		ArrayList<Room> rooms = Client.requestAvailableRooms();
+		System.out.println(rooms.toString());
+
+		//String[] items = { "A", "B", "C", "D" };
+		for (int i = 0; i < rooms.size(); i++) {
+			listModel.add(0, rooms.get(i));
 
 		}
 
@@ -63,7 +69,9 @@ public class JoinLobby extends JPanel {
 				//TODO Just TEmp
 				//String[] items2 = { "A", "B", "C", "D" };
 				//setRooms(items2);
-
+                int roomID = listofIDs.getSelectedValue().getRoomId();
+                System.out.println("Selected RoomID " + roomID);
+                Client.connectRoom(roomID);
 //				int index =  listofIDs.getSelectedIndex();
 //				String valueSelected = listModel.get(index);
 //				listModel.add(0, valueSelected);
@@ -101,10 +109,10 @@ public class JoinLobby extends JPanel {
 	void setRooms(String[] roomsIDs) {
 		//clearRooms();
 		
-		for (int i = 0; i < roomsIDs.length; i++) {
-			listModel.add(i, "Room " + roomsIDs[i]);
-
-		}
+//		for (int i = 0; i < roomsIDs.length; i++) {
+//			listModel.add(i, "Room " + roomsIDs[i]);
+//
+//		}
 
 	}
 

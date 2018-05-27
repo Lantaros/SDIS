@@ -32,8 +32,7 @@ class ListenerClient implements Runnable {
                 System.out.println("RECEIVED: " + new String(msg));
                 Message message = new Message(new String(msg));
 
-                System.out.println();
-                System.out.println(message);
+
                 switch (message.getType()) {
                     case ROOM_CONNECT:
                         int roomId = message.getRoomId();
@@ -74,6 +73,9 @@ class ListenerClient implements Runnable {
                         String roomsInfo = "";
 
                         for (int i = 0; i < Server.nRooms; i ++){
+                            if(i > 0)
+                                roomsInfo += " ";
+
                             roomsInfo += Server.rooms[i].getRoomId() + " " +
                                     Server.rooms[i].getName() + " " +
                                     Server.rooms[i].getNClients();

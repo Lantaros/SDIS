@@ -331,11 +331,11 @@ public class Client {
         }
     }
 
-    public static void connectRoom(String roomsName) {
+    public static void connectRoom(int roomID) {
         //roomsID -> roomsID, neste caso 1
 
         //send to server to connect to rooms
-        Message connectRequest = new Message(MessageType.ROOM_CONNECT, clientID, 1);
+        Message connectRequest = new Message(MessageType.ROOM_CONNECT, clientID, roomID);
 
         System.out.println(connectRequest);
 
@@ -345,13 +345,15 @@ public class Client {
             e.printStackTrace();
         }
 
-        Client.getRooms()[1] = new Room(1);
-        Hangman game = new Hangman(1);
-        getRooms()[1].addGame(game);
-        System.out.println(Client.getRooms()[1].getRoomId());
+
+        Client.getRooms()[nRooms] = new Room(roomID);
+        Hangman game = new Hangman(roomID);
+        getRooms()[nRooms].addGame(game);
+
         
-        
-        getRooms()[1].addClientId(clientID);
+        rooms[nRooms].addClientId(clientID);
+
+        nRooms++;
     }
 
     public static void requestPort(int nPorts) {

@@ -57,7 +57,7 @@ class ServerChannel implements Runnable {
                             break;
                         }
                         Client.requestPort(message.getNPorts());
-                        break;
+                    break;
                     case OWN_CLIENT_ID:
                         Client.clientID = message.getClientID();
                         System.out.println("Received ID - notified Client");
@@ -66,17 +66,17 @@ class ServerChannel implements Runnable {
                             this.lock.notify();
                         }
 
-                        break;
+                    break;
                     case PORT_TO_CONNECT:
                         Client.connectPeer(message.getPort(), message.getAddress());
-                        break;
+                    break;
 
                     case MAX_ROOMS_REACHED:
                         System.out.println("Max Server Rooms reached");
                         break;
                     case DUP_ROOM_NAME:
                         System.out.println("Duplicated Room Name");
-                        break;
+                    break;
 
                     case ROOM_CREATED:
                         System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
@@ -91,9 +91,14 @@ class ServerChannel implements Runnable {
 
                         newRoom.addGame(new Hangman(newRoom.getRoomId()));
 
-                        break;
+                    break;
                     case ROOMS_AVAILABLE:
                         availableRooms = message.getAvailableRooms();
+                        synchronized (this.lock) {
+                            this.lock.notify();
+                        }
+
+                    break;
 
                 }
 

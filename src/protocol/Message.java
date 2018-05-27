@@ -64,6 +64,9 @@ public class Message {
 
     public Message(MessageType type, String word) {
         this.type = type;
+
+        availableRooms = new ArrayList<>();
+
         try {
             if(type == MessageType.fromString("LETTER_TO_GUESS"))
                 this.letter = word;
@@ -348,13 +351,19 @@ public class Message {
             case TIMER_UP:
                 message += " " + "go";
                 break;
+            case ROOMS_AVAILABLE:
+                message += " " + word;
+//                for (Room availableRoom : availableRooms) {
+//                    message += " " + availableRoom.getRoomId()
+//                            + " " + availableRoom.getName()
+//                            + " " + availableRoom.getNClients();
+//                }
+            break;
 
             default:
     			break;
         }
 
-
-        //message += CRLF;
         return message;
     }
 

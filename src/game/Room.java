@@ -87,4 +87,9 @@ public class Room {
     public void setNClients(int nClients) {
 	    this.nClients = nClients;
     }
+
+	@Override
+	public String toString() {
+		return name + " - " + nClients + " players";
+	}
 }
