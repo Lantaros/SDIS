@@ -89,7 +89,7 @@ public class Room {
     		nClients--;
     		return;
     	}
-    	for(int i = idPos+1; i < nClients; i++) {
+    	for(int i = idPos+1; i <= nClients; i++) {
     		client_id[i-1] = client_id[i];
     	}
     	nClients--;
