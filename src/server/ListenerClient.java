@@ -25,7 +25,7 @@ class ListenerClient implements Runnable {
                     readBytes = Server.clients[this.id].getInputStream().read(msg, 0, msg.length);
 
                     if(readBytes < 0) {
-                        System.out.println("Peer " + id + " has disconnected");
+                        System.out.println("Client " + id + " has disconnected");
                         break;
                     }
 

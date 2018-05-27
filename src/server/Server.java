@@ -64,7 +64,6 @@ public class Server {
         ListenerConnection listConnection = new ListenerConnection();
         new Thread(listConnection).start();
 
-
     }
 
     /**

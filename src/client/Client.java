@@ -386,12 +386,15 @@ public class Client {
         Message wordToSend = new Message(MessageType.WORD_TO_GUESS_PEER, word);
         sendAll(wordToSend);
         int i = currentRoom.getNClients();
+        System.out.println(i);
         while(Client.confirmWord < i-1) {
             System.out.flush();
         }
+        System.out.println("OI");
         confirmWord = 0;
         Message message = new Message(MessageType.WORD_GO);
         sendAll(message);
+        System.out.println("OI");
         Client.launcher.getFrame().gamePanel.setButtonWord(false);
         GameThread gameThrea = new GameThread("block_3seconds");
         new Thread(gameThrea).start();
