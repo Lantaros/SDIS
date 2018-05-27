@@ -31,17 +31,10 @@ public class Client {
 
     protected static Launcher launcher;
 
-    //To Thread SendServer use
-    protected static boolean toSendServer = false;
-    protected static byte[] msgSendServer = new byte[1024];
-
-    //To Thread client.ServerChannel use
-    protected static boolean toReceiveServer = false;
     protected static byte[] msgReceivedServer = new byte[1024];
 
 
-    protected static int nRooms = 0;
-    protected static Room[] rooms = new Room[3];
+    public static Room currentRoom;
     protected static ClientData[] peer = new ClientData[100];
     protected static int countPeer = 0;
 
@@ -56,10 +49,11 @@ public class Client {
     protected static int confirmWord = 0;
     protected static boolean cancel = false;
 
+    private static Object srvChannelLock;
+    private static Object rcvRoomsLock;
 
     protected static GameThread gameThread = new GameThread("");
 
-    private static String[] cypherSuites;
 
     public Client(String host, int port) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -118,11 +112,13 @@ public class Client {
 
         ServerChannel listServer = new ServerChannel();
         new Thread(listServer).start();
-        Object lock = listServer.getLock();
+
+        srvChannelLock = listServer.getLock();
+        rcvRoomsLock = listServer.getRcvRoomslock();
 
         try {
-            synchronized(lock) {
-                lock.wait();
+            synchronized(srvChannelLock) {
+                srvChannelLock.wait();
             }
 
         } catch (InterruptedException ex) {
@@ -135,27 +131,55 @@ public class Client {
 
         //TODO::create the looby properly
         
-        Client.connectRoom("Sala 1");
 
-       //Após 5segundos começar o jogo
        try {
-           Thread.sleep(10000); //10segundos
+           synchronized (srvChannelLock){
+               srvChannelLock.wait();
+
+            }
        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
 
 
-        if(getRooms()[1].getOwner()) {
-            String word = "qweasd zxc";
-             Hangman game = getRooms()[1].getGame();
-            game.startGame(word);
-            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-            Client.sendAll(sendWord);
-            Client.handleNextTurn();
+//        if(getRooms()[1].getOwner()) {
+//            String word = "qweasd zxc";
+//             Hangman game = getRooms()[1].getGame();
+//            game.startGame(word);
+//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+//            Client.sendAll(sendWord);
+//            Client.handleNextTurn();
+
+
+
+
+    }
+
+    public static ArrayList<Room> requestAvailableRooms(){
+        Message msg = new Message(MessageType.GET_ROOMS_AVAILABLE);
+
+        try {
+            sendStream.write(msg.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        System.out.println("Antes do lock");
+
+        try {
+            synchronized (rcvRoomsLock){
+                rcvRoomsLock.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Passou");
 
 
+        ArrayList<Room> avRooms = ServerChannel.getAvailableRooms();
+        System.out.println(avRooms);
+        return ServerChannel.getAvailableRooms();
     }
 
     public static void advanceTurn() {
@@ -164,7 +188,7 @@ public class Client {
     }
 
     public static void handleTimerUP() {
-        int n = getRooms()[1].getNClients();
+        int n = Client.currentRoom.getNClients();
         Client.confirmTimerUP++;
         if(Client.confirmTimerUP >= n-1){
             GameThread gameThrea = new GameThread("timer_up");
@@ -175,8 +199,9 @@ public class Client {
     }
 
     public static void handleNextTurn() {
-        int n = getRooms()[1].getNClients();//rooms[1].getNClients();
-        int[] id = getRooms()[1].getClients();
+        int n = currentRoom.getNClients();
+        int[] id = currentRoom.getClients();
+
         if(id[numTurn] == Client.clientID)
             numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
@@ -205,7 +230,8 @@ public class Client {
     }
 
     public static void handleMyTurn() {
-        if(getRooms()[1].getGame().getTurn()) {
+
+        if(Client.currentRoom.getGame().getTurn()) {
             launcher.getFrame().gamePanel.setTurn(true);
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
@@ -214,6 +240,7 @@ public class Client {
         if(gameThread.getCountdown() < 11) {
             gameThread.resetTimer();
         }
+
         gameThread = new GameThread("timer");
         new Thread(gameThread).start();
     }
@@ -230,7 +257,7 @@ public class Client {
     }
 
     public static void guessLetter() {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = Client.currentRoom.getGame();
         game.guessLetter(newLetter.charAt(0));
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
@@ -253,7 +280,7 @@ public class Client {
     }
 
     public static void guessWord() {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = Client.currentRoom.getGame();
         game.guessWord(newWord);
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
@@ -285,9 +312,18 @@ public class Client {
         }
     }
 
+    public static void chooseWord(String word){
+
+        Hangman game = currentRoom.getGame();
+        game.startGame(word);
+        Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+        Client.sendAll(sendWord);
+        Client.handleNextTurn();
+    }
+
     public static void setWord(String word) {
         System.out.println(word);
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = Client.currentRoom.getGame();
         game.startGame(word);
         setWordInGUI(game.getWord());
         launcher.getFrame().gamePanel.setButtonWord(true);
@@ -298,12 +334,12 @@ public class Client {
     }
 
     public static String sendLetter(String letter) {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = currentRoom.getGame();
         if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
             //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
-            int i = getRooms()[1].getNClients();
+            int i = currentRoom.getNClients();
             System.out.println(i);
             GameThread gameThrea = new GameThread("unblock_letter");
             new Thread(gameThrea).start();
@@ -326,12 +362,12 @@ public class Client {
     }
 
     public static String sendWord(String word) {
-        Hangman game = getRooms()[1].getGame();
+        Hangman game = currentRoom.getGame();
         //TODO::protocolos
         
         Message wordToSend = new Message(MessageType.WORD_TO_GUESS_PEER, word);
         sendAll(wordToSend);
-        int i = getRooms()[1].getNClients();
+        int i = currentRoom.getNClients();
         while(Client.confirmWord < i-1) {
             System.out.flush();
         }
@@ -355,6 +391,7 @@ public class Client {
         }
     }
 
+
     public static void handleWord(int id, String word) {
         newWord = word;
         Message message = new Message(MessageType.WORD_CHECK, Client.clientID, "yes");
@@ -366,11 +403,12 @@ public class Client {
         }
     }
 
-    public static void connectRoom(String roomsName) {
+
+    public static void connectRoom(int roomID) {
         //roomsID -> roomsID, neste caso 1
 
         //send to server to connect to rooms
-        Message connectRequest = new Message(MessageType.ROOM_CONNECT, clientID, 1);
+        Message connectRequest = new Message(MessageType.ROOM_CONNECT, clientID, roomID);
 
         System.out.println(connectRequest);
 
@@ -380,13 +418,13 @@ public class Client {
             e.printStackTrace();
         }
 
-        Client.getRooms()[1] = new Room(1);
-        Hangman game = new Hangman(1);
-        getRooms()[1].addGame(game);
-        System.out.println(Client.getRooms()[1].getRoomId());
-        
-        
-        getRooms()[1].addClientId(clientID);
+
+        Client.currentRoom = new Room(roomID);
+        Hangman game = new Hangman(roomID);
+        Client.currentRoom.addGame(game);
+
+
+        Client.currentRoom.addClientId(clientID);
     }
 
     public static void requestPort(int nPorts) {
@@ -450,6 +488,12 @@ public class Client {
         }
     }
 
+    /**
+     * Saves new peer info in currentRoom
+     * @param socket
+     * @param receiveStream
+     * @param sendStream
+     */
     public static void saveClient(Socket socket, InputStream receiveStream,
                                   OutputStream sendStream) {
         int id = countPeer;
@@ -467,7 +511,7 @@ public class Client {
         System.out.println(socket.getRemoteSocketAddress());
 
 
-        rooms[1].addClientId(id);
+        currentRoom.addClientId(id);
 
 
         ListenerPeer listPeer = new ListenerPeer(id);
@@ -518,7 +562,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            getRooms()[1].addClientId(countPeer);
+            currentRoom.addClientId(countPeer);
 
             ListenerPeer listPeer = new ListenerPeer(countPeer);
             new Thread(listPeer).start();
@@ -546,7 +590,7 @@ public class Client {
 
     public static void addPeer(int clientID, int generalID) {
         peer[clientID].setClientID(generalID);
-        getRooms()[1].setClientId(clientID+1, generalID);
+        currentRoom.setClientId(clientID+1, generalID);
     }
     
     
@@ -564,14 +608,11 @@ public class Client {
     	
     }
 
-	public static Room[] getRooms() {
-		return rooms;
-	}
 
     public static void removeClient() {
         boolean check = false;
-        int[] clients = getRooms()[1].getClients();
-        for(int j=1; j<getRooms()[1].getNClients();j++) {
+        int[] clients = currentRoom.getClients();
+        for(int j=1; j< currentRoom.getNClients();j++) {
 
             for(int i = 0; i<confirmMsg.size(); i++) {
                 if(clients[j] == confirmMsg.get(i))
@@ -580,7 +621,7 @@ public class Client {
             if(check)
                 check = false;
             else {
-                getRooms()[1].removeClient(j);
+                currentRoom.removeClient(j);
                 removeClientInformation(j);
                 Client.confirmMsg.add(0);
             }
@@ -598,5 +639,6 @@ public class Client {
         }
         countPeer--;
     }
+
 
 }

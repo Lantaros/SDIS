@@ -1,5 +1,9 @@
 package protocol;
 
+import game.Room;
+
+import java.util.ArrayList;
+
 public class Message {
     private MessageType type;
     private int clientID;
@@ -16,6 +20,7 @@ public class Message {
     public static String LF = "\n";
     public static String CRLF = CR + LF;
     public static String TAB = "\t";
+    private ArrayList<Room> availableRooms;
 
     public Message(MessageType type, int clientID, int roomID) {
         this.type = type;
@@ -65,6 +70,9 @@ public class Message {
 
     public Message(MessageType type, String word) {
         this.type = type;
+
+        availableRooms = new ArrayList<>();
+
         try {
             if(type == MessageType.fromString("LETTER_TO_GUESS"))
                 this.letter = word;
@@ -138,7 +146,7 @@ public class Message {
                     this.address = tokens[2].trim();
                     break;
 
-                case ROOM_AVAILABLE:
+                case GET_ROOMS_AVAILABLE:
                     break;
                     
                 case START_GAME:
@@ -264,6 +272,14 @@ public class Message {
                 case TIMER_UP:
                     this.type = MessageType.fromString("TIMER_UP");
                     break;
+                case ROOMS_AVAILABLE:
+                    availableRooms = new ArrayList<>();
+                    for(int i = 1; i < tokens.length; i+=3){
+                        Room room = new Room(Integer.parseInt(tokens[i].trim()));
+                        room.setName(tokens[i + 1].trim());
+                        room.setNClients(Integer.parseInt(tokens[i + 2].trim()));
+                        availableRooms.add(room);
+                    }
             }
 
         } catch (InvalidMessage m) {
@@ -376,13 +392,19 @@ public class Message {
             case TIMER_UP:
                 message += " " + "go";
                 break;
+            case ROOMS_AVAILABLE:
+                message += " " + word;
+//                for (Room availableRoom : availableRooms) {
+//                    message += " " + availableRoom.getRoomId()
+//                            + " " + availableRoom.getName()
+//                            + " " + availableRoom.getNClients();
+//                }
+            break;
 
             default:
     			break;
         }
 
-
-        //message += CRLF;
         return message;
     }
 
@@ -428,5 +450,9 @@ public class Message {
 
     public boolean getGameOver() {
         return this.gameOver;
+    }
+
+    public ArrayList<Room> getAvailableRooms() {
+        return  availableRooms;
     }
 }

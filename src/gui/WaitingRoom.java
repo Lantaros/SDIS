@@ -20,7 +20,7 @@ public class WaitingRoom extends JPanel {
 	 */
 	public WaitingRoom(Frame frame) {
 		
-		JLabel lblWaitingForUser = new JLabel("Waiting for User to choose a Word...");
+		JLabel lblWaitingForUser = new JLabel("Waiting for Other Users...");
 		lblWaitingForUser.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton btnLeaveRoom = new JButton("Leave Room");
@@ -35,10 +35,11 @@ public class WaitingRoom extends JPanel {
 		btnImReady.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.sendReadyToAll();
-				Client.getRooms()[1].setReady(Client.clientID);
-				if(Client.getRooms()[1].isEveryoneReady() && Client.getRooms()[1].getOwner()){
-            		System.out.println("num cli: " + Client.getRooms()[1].getNClients());
+				Client.currentRoom.setReady(Client.clientID);
+				if(Client.currentRoom.isEveryoneReady() && Client.currentRoom.getOwner() && Client.currentRoom.getNClients()>1){
+            		System.out.println("num cli: " + Client.currentRoom.getNClients());
             		Client.sendAll(new Message(MessageType.START_GAME));
+            		Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
             	}
 			}
 		});

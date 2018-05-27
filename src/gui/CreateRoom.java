@@ -32,6 +32,7 @@ public class CreateRoom extends JPanel {
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.createRoom(roomNameInput.getText());
+				roomNameInput.setText("");
 				frame.setpanel(frame.setWordRoom);
 				
 			}

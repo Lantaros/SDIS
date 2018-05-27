@@ -5,15 +5,29 @@ import game.Room;
 import protocol.Message;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 class ServerChannel implements Runnable {
 
+    private static ArrayList<Room> availableRooms;
     private Object lock;
+
+    public Object getRcvRoomslock() {
+        return rcvRoomslock;
+    }
+
+    private Object rcvRoomslock;
 
     public ServerChannel(){
         this.lock = new Object();
+        this.rcvRoomslock = new Object();
     }
+
+    public static ArrayList<Room> getAvailableRooms() {
+        return availableRooms;
+    }
+
 
     public Object getLock() {
         return lock;
@@ -46,11 +60,11 @@ class ServerChannel implements Runnable {
                 switch (message.getType()) {
                     case SEND_PORTS:
                         if (message.getNPorts() == 0) {
-                            Client.getRooms()[1].setOwner(true);
+                            Client.currentRoom.setOwner(true);
                             break;
                         }
                         Client.requestPort(message.getNPorts());
-                        break;
+                    break;
                     case OWN_CLIENT_ID:
                         Client.clientID = message.getClientID();
                         System.out.println("Received ID - notified Client");
@@ -59,32 +73,36 @@ class ServerChannel implements Runnable {
                             this.lock.notify();
                         }
 
-                        break;
+                    break;
                     case PORT_TO_CONNECT:
                         Client.connectPeer(message.getPort(), message.getAddress());
-                        break;
+                    break;
 
                     case MAX_ROOMS_REACHED:
                         System.out.println("Max Server Rooms reached");
                         break;
                     case DUP_ROOM_NAME:
                         System.out.println("Duplicated Room Name");
-                        break;
+                    break;
 
                     case ROOM_CREATED:
                         System.out.println("Created Room " + "'" + message.getRoomName() + "'" + " ID " + message.getRoomId());
-                        Client.rooms[Client.nRooms] = new Room(message.getRoomId());
+                        Client.currentRoom = new Room(message.getRoomId());
 
-                        Room newRoom = Client.rooms[Client.nRooms];
 
-                        Client.nRooms++;
+                        Client.currentRoom.setOwner(true);
+                        Client.currentRoom.addClientId(Client.clientID);
 
-                        newRoom.setOwner(true);
-                        newRoom.addClientId(Client.clientID);
+                        Client.currentRoom.addGame(new Hangman(Client.currentRoom.getRoomId()));
 
-                        newRoom.addGame(new Hangman(newRoom.getRoomId()));
-
-                        break;
+                    break;
+                    case ROOMS_AVAILABLE:
+                        availableRooms = message.getAvailableRooms();
+                        synchronized (this.rcvRoomslock) {
+                            this.rcvRoomslock.notify();
+                        }
+                        System.out.println("Server channel passed");
+                    break;
 
                 }
 
