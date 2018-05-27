@@ -249,10 +249,7 @@ public class Message {
                 case GAME_FINISH:
                     this.type = MessageType.fromString("GAME_FINISH");
 
-                    if(tokens[1].equals("true"))
-                        this.gameOver = true;
-                    else
-                        this.gameOver = false;
+                    this.gameOver = tokens[1].trim().equals("true");
 
                     break;
 

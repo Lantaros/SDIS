@@ -14,6 +14,8 @@ import protocol.Message;
 import protocol.MessageType;
 
 public class WaitingRoom extends JPanel {
+	
+	public JLabel lblWinOrLose;
 
 	/**
 	 * Create the panel.
@@ -43,28 +45,35 @@ public class WaitingRoom extends JPanel {
             	}
 			}
 		});
+		
+		lblWinOrLose = new JLabel("");
+		lblWinOrLose.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(56)
-					.addComponent(lblWaitingForUser, GroupLayout.PREFERRED_SIZE, 339, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(55, Short.MAX_VALUE))
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap(322, Short.MAX_VALUE)
 					.addComponent(btnLeaveRoom)
 					.addGap(37))
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(170)
 					.addComponent(btnImReady)
-					.addContainerGap(191, Short.MAX_VALUE))
+					.addContainerGap(199, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(56)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblWaitingForUser, GroupLayout.PREFERRED_SIZE, 339, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblWinOrLose))
+					.addContainerGap(55, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(130)
+					.addGap(34)
+					.addComponent(lblWinOrLose)
+					.addGap(61)
 					.addComponent(lblWaitingForUser, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(32)
 					.addComponent(btnImReady)
 					.addPreferredGap(ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
 					.addComponent(btnLeaveRoom)
@@ -73,5 +82,20 @@ public class WaitingRoom extends JPanel {
 		setLayout(groupLayout);
 
 	}
+	
+	public void setVictory(boolean hasWon) {
+		if (hasWon)
+			lblWinOrLose.setText("Your team won the last game");
+		else
+			lblWinOrLose.setText("Your team lost the last game");
 
+	}
+	
+	public void setWordGuessed(boolean wordGuessed) {
+		if (wordGuessed)
+			lblWinOrLose.setText("Someone has guessed your word");
+		else
+			lblWinOrLose.setText("No one has guessed your word");
+
+	}
 }

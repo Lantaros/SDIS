@@ -81,6 +81,7 @@ class ListenerPeer implements Runnable {
 					break;
 				case GAME_FINISH:
 					Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
+					Launcher.getFrame().waitingRoom.setVictory(message.getGameOver());
 					break;
 				case READY_TO_START:
 					Client.currentRoom.setReady(message.getClientID());
@@ -119,6 +120,7 @@ class ListenerPeer implements Runnable {
 						Client.currentRoom.setOwner(true);
 						Client.currentRoom.setAllReadyToFalse();
 						Launcher.getFrame().setpanel(Launcher.getFrame().setWordRoom);
+						Launcher.getFrame().gamePanel.setButtons(false);
 						
 					}
 					break;

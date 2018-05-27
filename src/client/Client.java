@@ -267,9 +267,11 @@ public class Client {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
                 Client.sendAll(message);
+                Launcher.getFrame().waitingRoom.setWordGuessed(false);
             }   else if (game.hasWon()) {
                 Message message = new Message(MessageType.GAME_FINISH, true);
                 Client.sendAll(message);
+                Launcher.getFrame().waitingRoom.setWordGuessed(true);
             }
             
 			int[] ids = currentRoom.getClients();
@@ -300,22 +302,24 @@ public class Client {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
                 Client.sendAll(message);
+                Launcher.getFrame().waitingRoom.setWordGuessed(false);
             }   else if (game.hasWon()) {
                 Message message = new Message(MessageType.GAME_FINISH, true);
                 Client.sendAll(message);
+                Launcher.getFrame().waitingRoom.setWordGuessed(true);
             }
             
-    		int[] ids = currentRoom.getClients();
+            int[] ids = currentRoom.getClients();
 			int n = currentRoom.getNClients();
-//			if (ids[numTurn] == Client.clientID)
-//				numTurn++;
-//			if (numTurn >= n)
-//				numTurn = 1;
-//			 else
-//		            numTurn++;
+			
+			if (ids[numTurn] == Client.clientID)
+				numTurn++;
+	
 			Message message = new Message(MessageType.PASS_OWNERSHIP, ids[numTurn]);
 			sendAll(message);
-			Client.currentRoom.setOwner(true);
+			Client.currentRoom.setOwner(false);
+			Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
+			return;
         }
        
     }
@@ -339,6 +343,7 @@ public class Client {
         Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
         Client.sendAll(sendWord);
         Client.handleNextTurn();
+        Launcher.getFrame().gamePanel.setWordToGuess(game.getWord());
         if(Client.gameThread.getCountdown() < 11) {
             Client.gameThread.resetTimer();
         }
