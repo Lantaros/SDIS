@@ -53,9 +53,6 @@ public class Client {
     protected static int confirmTimerUP = 0;
     protected static boolean resetTimer = false;
 
-    protected static GameThread gameThread = new GameThread("");
-
-    private static String[] cypherSuites;
 
     public Client(String host, int port) {
         SSLSocketFactory serverSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -141,17 +138,15 @@ public class Client {
 //        }
 //
 //
-//        if(getRooms()[1].getOwner()) {
-//            String word = "qweasd zxc";
-//             Hangman game = getRooms()[1].getGame();
-//            game.startGame(word);
-//            Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
-//            Client.sendAll(sendWord);
-//            Client.handleNextTurn();
-//        }
 
 
 
+    }
+
+    public static void requestAvailableRooms(){
+        ArrayList<Room> av = new ArrayList<>();
+
+        Message msg = new Message(MessageType.ROOM_AVAILABLE);
     }
 
     public static void advanceTurn() {
@@ -171,9 +166,10 @@ public class Client {
         
     }
 
-    public static void handleNextTurn() {
-        int n = getRooms()[1].getNClients();//rooms[1].getNClients();
-        int[] id = getRooms()[1].getClients();
+    public static void handleNextTurn(int roomID) {
+        int n = getRooms()[roomID].getNClients();//rooms[1].getNClients();
+        int[] id = getRooms()[roomID].getClients();
+
         if(id[numTurn] == Client.clientID)
             numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
@@ -201,18 +197,18 @@ public class Client {
         }
     }
 
-    public static void handleMyTurn() {
-        if(getRooms()[1].getGame().getTurn()) {
+    public static void handleMyTurn(int roomID) {
+        GameThread gameThread;
+
+        if(getRooms()[roomID].getGame().getTurn()) {
             launcher.getFrame().gamePanel.setTurn(true);
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
         }
         Client.resetTimer = true;
-        //TODO!!!! RESET
-        if(gameThread.getCountdown() < 11) {
-            gameThread.resetTimer();
-        }
+
         gameThread = new GameThread("timer");
+        gameThread.setRoomID(roomID);
         new Thread(gameThread).start();
     }
 
@@ -260,6 +256,15 @@ public class Client {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void chooseWord(String word){
+
+        Hangman game = rooms[nRooms - 1].getGame();
+        game.startGame(word);
+        Message sendWord = new Message(MessageType.WORD_TO_GUESS, word);
+        Client.sendAll(sendWord);
+        Client.handleNextTurn(nRooms - 1);
     }
 
     public static void setWord(String word) {

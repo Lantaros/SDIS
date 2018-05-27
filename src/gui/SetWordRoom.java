@@ -8,6 +8,9 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import client.Client;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -29,7 +32,10 @@ public class SetWordRoom extends JPanel {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String wordToGuess = textField.getText();
-				//TODO do smt with it
+				//TODO do verify if theres more than one peer connected
+				//TODO display room creation error 
+				
+				Client.chooseWord(textField.getText());
 				
 				textField.setText("");
 				

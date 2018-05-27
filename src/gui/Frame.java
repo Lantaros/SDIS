@@ -8,7 +8,6 @@ public class Frame extends JFrame {
 
 	public MainMenu mainMenu;
 	public GamePanel gamePanel;
-	public JoinLobby createLobby;
 	public SetWordRoom setWordRoom;
 	public WaitingRoom waitingRoom;
 	public CreateRoom createRoom;
@@ -22,7 +21,6 @@ public class Frame extends JFrame {
 
 		mainMenu = new MainMenu(this);
 		gamePanel = new GamePanel(this);
-		createLobby = new JoinLobby(this);
 		setWordRoom = new SetWordRoom(this);
 		waitingRoom = new WaitingRoom(this);
 		createRoom = new CreateRoom(this);

@@ -35,7 +35,7 @@ public class MainMenu extends JPanel {
 		JButton btnFindRoom = new JButton("Find Room");
 		btnFindRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setpanel(frame.createLobby);
+				frame.setpanel(new JoinLobby(frame));
 			}
 		});
 		

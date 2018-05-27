@@ -1,13 +1,12 @@
 package client;
 
-import protocol.Message;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 class GameThread implements Runnable {
+
+    private int roomID;
     private String toDo;
     private int countdown = 11;
     private Timer t;
@@ -40,11 +39,11 @@ class GameThread implements Runnable {
         }
 
         if(this.toDo.equals("timer_up")) {
-            Client.handleNextTurn();
+            Client.handleNextTurn(roomID);
         }
 
         if(this.toDo.equals("next_turn")){
-             Client.handleNextTurn();
+             Client.handleNextTurn(roomID);
         }
     }
 
@@ -56,5 +55,13 @@ class GameThread implements Runnable {
 
     public int getCountdown() {
         return this.countdown;
+    }
+
+    public int getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(int roomID) {
+        this.roomID = roomID;
     }
 }
