@@ -23,6 +23,8 @@ public enum MessageType {
     WORD_REQUEST,
     WORD_CHECK,
     WORD_TO_GUESS,
+    WORD_TO_GUESS_PEER,
+    WORD_GO,
     WORD_TO_GUI,
 
     LETTER_TO_GUESS,
@@ -131,6 +133,12 @@ public enum MessageType {
             case TIMER_UP:
                 return "TIMER_UP";
 
+            case WORD_GO:
+                return "WORD_GO";
+
+            case WORD_TO_GUESS_PEER:
+                return "WORD_TO_GUESS_PEER";
+
             default:
                 return "FAIL";
         }
@@ -225,6 +233,12 @@ public enum MessageType {
 
             case "TIMER_UP":
                 return TIMER_UP;
+
+            case "WORD_GO":
+                return WORD_GO;
+
+            case "WORD_TO_GUESS_PEER":
+                return WORD_TO_GUESS_PEER;
 
             default:
                 throw new InvalidMessage(type);

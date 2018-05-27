@@ -86,10 +86,12 @@ public class GamePanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				String wordGuessed = textFieldGuessWord.getText();
 				
-				//TODO Delete tests
-//				setWarning("work pls");
-//				int i = Integer.parseInt(lblTimeRemaining.getText())+1;
-//				setTimeRemaining(i);
+				String aswner = Client.sendWord(wordGuessed);
+				if(aswner == "ok") {
+					textFieldGuessLetter.setText("");
+				} else {
+					textFieldGuessLetter.setText(aswner);
+				}
 				
 			}
 		});

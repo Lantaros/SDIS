@@ -16,6 +16,8 @@ public class Hangman {
 
     ArrayList<Character> wrongLetters;
 
+    ArrayList<String> wrongWords;
+
     ArrayList<Character> guessedLetters;
 
     boolean turn = false;
@@ -33,6 +35,7 @@ public class Hangman {
         this.wordToGuess = wordToGuess.toLowerCase();
         wrongLetters = new ArrayList<Character>();
         guessedLetters = new ArrayList<Character>();
+        wrongWords = new ArrayList<String>();
         this.currentWord = wordToGuess.replaceAll(" ", "  ");
         this.currentWord = this.currentWord.replaceAll("[a-zA-Z]", "_ ");
 
@@ -111,7 +114,7 @@ public class Hangman {
     }
 
     public boolean hasLost() {
-        return wrongLetters.size() >= NUMBER_MAX_ERRORS;
+        return (wrongLetters.size() + wrongWords.size()) >= NUMBER_MAX_ERRORS;
 
     }
 
@@ -126,6 +129,16 @@ public class Hangman {
 
     public void setTurn(boolean turn) {
         this.turn = turn;
+    }
+
+    public void guessWord(String word) {
+        String tokens = new String(word.replaceAll("\\s+",""));
+        String tokens2 = new String(wordToGuess.replaceAll("\\s+",""));
+        if(tokens.equals(tokens2)) {
+            currentWord = tokens;
+        } else {
+            wrongWords.add(tokens);
+        }
     }
 
     //TODO::Colocar no Array!!!!!!

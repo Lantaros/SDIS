@@ -63,6 +63,9 @@ public class Message {
             if(type == MessageType.fromString("LETTER_TO_GUESS"))
                 this.letter = word;
             
+            else if(type == MessageType.fromString("WORD_TO_GUESS_PEER"))
+                this.word = word;
+
             else if(type == MessageType.fromString("WORD_TO_GUI"))
                 this.word = word;
 
@@ -193,6 +196,26 @@ public class Message {
                     this.type = MessageType.fromString("LETTER_GO");
                     break;
 
+                case WORD_TO_GUESS_PEER:
+                    this.type = MessageType.fromString("WORD_TO_GUESS_PEER");
+                    this.word = "";
+                    for(int i = 1; i < tokens.length; i++)  {                      
+                        this.word += tokens[i].trim();
+                        if(i != tokens.length)
+                            this.word += " ";
+                    }
+                    break;
+
+                case WORD_CHECK:
+                    this.type = MessageType.fromString("WORD_CHECK");
+                    this.bool = tokens[2].trim();
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    break;
+
+                case WORD_GO:
+                    this.type = MessageType.fromString("WORD_GO");
+                    break;
+
                 case READY_TO_START:
                     this.type = MessageType.fromString("READY_TO_START");
                     this.clientID = Integer.parseInt(tokens[1].trim());
@@ -296,6 +319,18 @@ public class Message {
                 break;
 
             case LETTER_GO:
+                message += " " + "go";
+                break;
+
+            case WORD_TO_GUESS_PEER:
+                message += " " + word;
+                break;
+
+            case WORD_CHECK:
+                message += " " + clientID + " " + bool;
+                break;
+
+            case WORD_GO:
                 message += " " + "go";
                 break;
 

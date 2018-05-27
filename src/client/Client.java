@@ -46,12 +46,16 @@ public class Client {
     protected static int countPeer = 0;
 
     protected static String newLetter = "";
+    protected static String newWord = "";
     protected static int requestNumber = 0;
     protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
     protected static int numTurn = 1;
     protected static int confirmTurn = 0;
     protected static int confirmTimerUP = 0;
     protected static boolean resetTimer = false;
+    protected static int confirmWord = 0;
+
+
 
     protected static GameThread gameThread = new GameThread("");
 
@@ -163,8 +167,8 @@ public class Client {
         int n = getRooms()[1].getNClients();
         Client.confirmTimerUP++;
         if(Client.confirmTimerUP >= n-1){
-            GameThread gameThread = new GameThread("timer_up");
-            new Thread(gameThread).start();
+            GameThread gameThrea = new GameThread("timer_up");
+            new Thread(gameThrea).start();
             Client.confirmTimerUP = 0;
         }
         
@@ -206,8 +210,7 @@ public class Client {
         } else {
             launcher.getFrame().gamePanel.setTurn(false);
         }
-        Client.resetTimer = true;
-        //TODO!!!! RESET
+
         if(gameThread.getCountdown() < 11) {
             gameThread.resetTimer();
         }
@@ -232,9 +235,7 @@ public class Client {
         String word = game.getWord();
         Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
         Client.sendAll(sendWord);
-        //Client.handleNextTurn();
-        GameThread gameThread = new GameThread("next_turn");
-        new Thread(gameThread).start();
+        
         if(game.gameOver()) {
             if(game.hasLost()) {
                 Message message = new Message(MessageType.GAME_FINISH, false);
@@ -246,6 +247,32 @@ public class Client {
                 return;
             }
         }
+
+        GameThread gameThrea = new GameThread("next_turn");
+        new Thread(gameThrea).start();
+    }
+
+    public static void guessWord() {
+        Hangman game = getRooms()[1].getGame();
+        game.guessWord(newWord);
+        String word = game.getWord();
+        Message sendWord = new Message(MessageType.WORD_TO_GUI, word);
+        Client.sendAll(sendWord);
+        
+        if(game.gameOver()) {
+            if(game.hasLost()) {
+                Message message = new Message(MessageType.GAME_FINISH, false);
+                Client.sendAll(message);
+                return;
+            }   else if (game.hasWon()) {
+                Message message = new Message(MessageType.GAME_FINISH, true);
+                Client.sendAll(message);
+                return;
+            }
+        }
+
+        GameThread gameThrea = new GameThread("next_turn");
+        new Thread(gameThrea).start();
     }
 
     public static void sendAll(Message message) {
@@ -294,9 +321,36 @@ public class Client {
         }
     }
 
+    public static String sendWord(String word) {
+        Hangman game = getRooms()[1].getGame();
+        //TODO::protocolos
+        
+        Message wordToSend = new Message(MessageType.WORD_TO_GUESS_PEER, word);
+        sendAll(wordToSend);
+        int i = getRooms()[1].getNClients();
+        while(Client.confirmWord < i-1) {
+            System.out.flush();
+        }
+        confirmWord = 0;
+        Message message = new Message(MessageType.WORD_GO);
+        sendAll(message);
+        return "ok";
+    }
+
     public static void handleLetter(int id, String letter) {
         newLetter = letter;
         Message message = new Message(MessageType.LETTER_CHECK, Client.clientID, "yes");
+        try {
+            System.out.println(message.toString());
+            peer[id].getOutputStream().write(message.getBytes());
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void handleWord(int id, String word) {
+        newWord = word;
+        Message message = new Message(MessageType.WORD_CHECK, Client.clientID, "yes");
         try {
             System.out.println(message.toString());
             peer[id].getOutputStream().write(message.getBytes());
