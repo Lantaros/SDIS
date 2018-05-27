@@ -35,6 +35,24 @@ class ListenerPeer implements Runnable {
 				case WORD_TO_GUESS:
 					Client.setWord(message.getWord());
 					break;
+
+				case WORD_TO_GUESS_PEER:
+                    Client.handleWord(this.peerID, message.getWord());
+                    break;
+
+                case WORD_CHECK:
+                    Client.confirmWord++;
+                    
+                    break;
+
+               case WORD_GO:
+                    if(Client.currentRoom.getOwner()) {
+                        //ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
+                        //new Thread(listPeer2).start();
+                        Client.guessWord();                            
+                    }
+                  break;
+
 				case LETTER_TO_GUESS:
 					Client.handleLetter(this.peerID, message.getLetter());
 
