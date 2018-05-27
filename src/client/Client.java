@@ -205,7 +205,7 @@ public class Client {
         if(id[numTurn] == Client.clientID)
             numTurn++;
         Message sendTurn = new Message(MessageType.TURN_PEER_ID, id[numTurn]);
-        if(numTurn >= n-1 )
+        if(numTurn >= n )
             numTurn = 1;
         else
             numTurn++;

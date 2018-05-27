@@ -64,7 +64,13 @@ public class Server {
         ListenerConnection listConnection = new ListenerConnection();
         new Thread(listConnection).start();
 
+        //CheckConnection checkConnection = new CheckConnection("timer");
+        //new Thread(checkConnection).start();
 
+    }
+
+    public static void sendPeriodicMessage() {
+        
     }
 
     /**
