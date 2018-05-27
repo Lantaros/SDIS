@@ -90,6 +90,32 @@ class GameThread implements Runnable {
                 };
             };ti.schedule(tti, 0, 1000);
         }
+        
+        if(this.toDo.equals("unblock_word")) {
+            Timer ti = new Timer();
+            TimerTask tti = new TimerTask() {
+            int time = 3;            
+                @Override
+                public void run() {
+                    time = time - 1;                   
+                    if(Client.cancel) {
+                        Client.cancel = false;
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    if(time == 0) {
+                        //3seconds passed                       
+                        Client.removeClientWord();
+                        
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    
+                };
+            };ti.schedule(tti, 0, 1000);
+        }
     }
 
     public void resetTimer() {

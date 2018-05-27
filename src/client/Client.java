@@ -42,6 +42,8 @@ public class Client {
     protected static String newWord = "";
     protected static int requestNumber = 0;
     protected static ArrayList<Integer> confirmMsg = new ArrayList<Integer>();
+    protected static ArrayList<Integer> confirmTurnMsg = new ArrayList<Integer>();
+    protected static ArrayList<Integer> confirmWordMsg = new ArrayList<Integer>();
     protected static int numTurn = 1;
     protected static int confirmTurn = 0;
     protected static int confirmTimerUP = 0;
@@ -210,10 +212,10 @@ public class Client {
         else
             numTurn++;
         Client.sendAll(sendTurn);
-        while(Client.confirmTurn < n-1) {
+        while(Client.confirmTurnMsg.size() < n-1) {
             System.out.flush();
         }
-        Client.confirmTurn = 0;
+        Client.confirmTurnMsg.clear();
         Message sendGo = new Message(MessageType.TURN_GO);
         sendAll(sendGo);
 
@@ -395,11 +397,13 @@ public class Client {
         sendAll(wordToSend);
         int i = currentRoom.getNClients();
         System.out.println(i);
-        while(Client.confirmWord < i-1) {
+        GameThread gameThre = new GameThread("unblock_word");
+        new Thread(gameThre).start();
+        while(Client.confirmWordMsg.size() < i-1) {
             System.out.flush();
         }
         System.out.println("OI");
-        confirmWord = 0;
+        confirmWordMsg.clear();
         Message message = new Message(MessageType.WORD_GO);
         sendAll(message);
         System.out.println("OI");
@@ -654,6 +658,25 @@ public class Client {
                 currentRoom.removeClient(j);
                 removeClientInformation(j);
                 Client.confirmMsg.add(0);
+            }
+        }
+    }
+    
+    public static void removeClientWord() {
+        boolean check = false;
+        int[] clients = currentRoom.getClients();
+        for(int j=2; j <= currentRoom.getNClients();j++) {
+
+            for(int i = 0; i<confirmWordMsg.size(); i++) {
+                if(clients[j] == confirmWordMsg.get(i))
+                    check = true;
+            }
+            if(check)
+                check = false;
+            else {
+                currentRoom.removeClient(j);
+                removeClientInformation(j);
+                Client.confirmWordMsg.add(0);
             }
         }
     }
