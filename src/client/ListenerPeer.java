@@ -98,6 +98,7 @@ class ListenerPeer implements Runnable {
 
 					break;
 				case START_GAME:
+					Launcher.getFrame().gamePanel.resetNumberOfErrors();
 					Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
 
 					break;
