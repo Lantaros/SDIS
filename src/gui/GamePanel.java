@@ -25,6 +25,7 @@ public class GamePanel extends JPanel {
 	private JTextField textFieldGuessWord;
 	private JButton btnGuessLetter;
 	private JButton btnGuessWord;
+	JLabel lblNumberOfErrors;
 	JLabel lblWarning;
 
 	/**
@@ -73,9 +74,9 @@ public class GamePanel extends JPanel {
 		
 		lblTimeRemaining = new JLabel("10");
 		
-		JLabel lblNumberOfErrors = new JLabel("Number of Errors: ");
+		JLabel NumberOfErrorslbl = new JLabel("Number of Errors: ");
 		
-		JLabel label_1 = new JLabel("0");
+		lblNumberOfErrors = new JLabel("0");
 		
 		lblWarning = new JLabel("");
 		
@@ -124,9 +125,9 @@ public class GamePanel extends JPanel {
 									.addComponent(btnLeaveRoom)))
 							.addGap(29))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNumberOfErrors)
+							.addComponent(NumberOfErrorslbl)
 							.addGap(18)
-							.addComponent(label_1))
+							.addComponent(lblNumberOfErrors))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
@@ -150,8 +151,8 @@ public class GamePanel extends JPanel {
 							.addComponent(lblGamepanel, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 							.addGap(9)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNumberOfErrors)
-								.addComponent(label_1))
+								.addComponent(NumberOfErrorslbl)
+								.addComponent(lblNumberOfErrors))
 							.addGap(46)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblWordToGuess)
@@ -186,6 +187,10 @@ public class GamePanel extends JPanel {
 		lblHagmanWord.setText(wordToGuess);
 	}
 	
+	public String getWordToGuess() {
+		return lblHagmanWord.getText();
+	}
+	
 	public void setTimeRemaining(int timeRemain) {
 		String a = Integer.toString(timeRemain);	
 		lblTimeRemaining.setText(a);
@@ -208,5 +213,32 @@ public class GamePanel extends JPanel {
 			btnGuessWord.setEnabled(true);
 		else
 			btnGuessWord.setEnabled(false);
+	}
+	
+	public void setButtons(boolean check) {
+		btnGuessWord.setEnabled(false);
+		btnGuessLetter.setEnabled(false);
+	}
+	
+	public void incrementNumberOfErrors() {
+		int numberOfErrors = Integer.parseInt(lblNumberOfErrors.getText());
+		numberOfErrors++;
+		lblNumberOfErrors.setText(Integer.toString(numberOfErrors));
+		
+	}
+	public void resetNumberOfErrors() {
+		lblNumberOfErrors.setText("0");
+		
+	}
+	
+	public void resetValues() {
+		lblNumberOfErrors.setText("0");
+		lblTimeRemaining.setText("0");
+		
+	}
+	public int getNumberOfErrors() {
+		return Integer.parseInt(lblNumberOfErrors.getText());
+		
+		
 	}
 }

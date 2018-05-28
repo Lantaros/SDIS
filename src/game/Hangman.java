@@ -1,6 +1,7 @@
 package game;
 
 import client.Client;
+import gui.Launcher;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,7 @@ public class Hangman {
         wrongWords = new ArrayList<String>();
         this.currentWord = wordToGuess.replaceAll(" ", "  ");
         this.currentWord = this.currentWord.replaceAll("[a-zA-Z]", "_ ");
+        this.currentWord = this.currentWord.trim();
 
     }
 
@@ -57,8 +59,11 @@ public class Hangman {
         char letter = Character.toLowerCase(letterArg);
         boolean wordHasLetter = false;
 
-        if (wrongLetters.contains(letter) || guessedLetters.contains(letter))
-            return false;
+        if (wrongLetters.contains(letter) || guessedLetters.contains(letter)) {
+        	Client.incrementErrors();
+        	return false;
+        }
+            
 
         for (int i = 0; i < wordToGuess.length(); i++)
             if (wordToGuess.charAt(i) == letter) {
@@ -72,8 +77,11 @@ public class Hangman {
 
         if (wordHasLetter)
             guessedLetters.add(letter);
-        else
-            wrongLetters.add(letter);
+        else{
+        	wrongLetters.add(letter);
+        	Client.incrementErrors();
+        }
+            
 
         return wordHasLetter;
     }
@@ -114,7 +122,8 @@ public class Hangman {
     }
 
     public boolean hasLost() {
-        return (wrongLetters.size() + wrongWords.size()) >= NUMBER_MAX_ERRORS;
+       // return (wrongLetters.size() + wrongWords.size()) >= NUMBER_MAX_ERRORS;
+    	return Launcher.getFrame().gamePanel.getNumberOfErrors() == 8;
 
     }
 

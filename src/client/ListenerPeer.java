@@ -79,10 +79,15 @@ class ListenerPeer implements Runnable {
 					}
 					break;
 				case WORD_TO_GUI:
+					System.out.println("First WOrd: |"+ message.getWord()+  "|");
+					System.out.println("Sec WOrd: |"+Launcher.getFrame().gamePanel.getWordToGuess()+ "|");
+					if(message.getWord().trim().equals(Launcher.getFrame().gamePanel.getWordToGuess()))
+						Launcher.getFrame().gamePanel.incrementNumberOfErrors();
 					Client.setWordInGUI(message.getWord());
 					break;
 				case GAME_FINISH:
 					Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
+					Launcher.getFrame().waitingRoom.setVictory(message.getGameOver());
 					break;
 				case READY_TO_START:
 					Client.currentRoom.setReady(message.getClientID());
@@ -95,6 +100,7 @@ class ListenerPeer implements Runnable {
 
 					break;
 				case START_GAME:
+					Launcher.getFrame().gamePanel.resetNumberOfErrors();
 					Launcher.getFrame().setpanel(Launcher.getFrame().gamePanel);
 
 					break;
@@ -121,10 +127,12 @@ class ListenerPeer implements Runnable {
 					break;
 				case PASS_OWNERSHIP:
 					if (message.getClientID() == Client.clientID) {
+						Launcher.getFrame().gamePanel.resetValues();
 						System.out.println("Im the one who owns");
 						Client.currentRoom.setOwner(true);
 						Client.currentRoom.setAllReadyToFalse();
 						Launcher.getFrame().setpanel(Launcher.getFrame().setWordRoom);
+						Launcher.getFrame().gamePanel.setButtons(false);
 						
 					}
 					break;
