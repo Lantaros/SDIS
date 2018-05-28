@@ -27,10 +27,10 @@ class GameThread implements Runnable {
                     countdown=countdown - 1;
                     Client.launcher.getFrame().gamePanel.setTimeRemaining(countdown);
 
-                    if(countdown == 0) {
-                        Client.advanceTurn();
+                    if(countdown == 0) {                        
                         t.cancel();
                         t.purge();
+                        Client.advanceTurn();
                         return;
                     }
                 };
@@ -38,7 +38,33 @@ class GameThread implements Runnable {
         }
 
         if(this.toDo.equals("timer_up")) {
-            Client.handleNextTurn();
+            
+            Timer ti = new Timer();
+            TimerTask tti = new TimerTask() {
+            int time = 4;            
+                @Override
+                public void run() {
+                    time = time - 1;                   
+                    if(Client.cancel) {
+                    	
+                        Client.cancel = false;
+                        Client.confirmTimerUP = 0;
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    if(time == 0) {
+                        //3seconds passed  
+                    	//Client.handleNextTurn();
+                        //Client.confirmMsg.add(0);
+                    	Client.confirmTimerUP = 0;
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    
+                };
+            };ti.schedule(tti, 0, 1000);
         }
 
         if(this.toDo.equals("next_turn")){
@@ -49,7 +75,7 @@ class GameThread implements Runnable {
             
             Timer ti = new Timer();
             TimerTask tti = new TimerTask() {
-            int time = 3;
+            int time = 4;
             
                 @Override
                 public void run() {
@@ -68,20 +94,47 @@ class GameThread implements Runnable {
         if(this.toDo.equals("unblock_letter")) {
             Timer ti = new Timer();
             TimerTask tti = new TimerTask() {
-            int time = 3;            
+            int time = 4;            
                 @Override
                 public void run() {
                     time = time - 1;                   
-                    if(Client.cancel) {
-                        Client.cancel = false;
+                    if(Client.cancelLetter) {
+                        Client.cancelLetter = false;
                         ti.cancel();
                         ti.purge();
                         return;
                     }
                     if(time == 0) {
-                        //3seconds passed                       
+                        //3seconds passed  
+                    	Client.cancelLetter = true;
                         Client.removeClient();
                         //Client.confirmMsg.add(0);
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    
+                };
+            };ti.schedule(tti, 0, 1000);
+        }
+        
+        if(this.toDo.equals("unblock_turn")) {
+            Timer ti = new Timer();
+            TimerTask tti = new TimerTask() {
+            int time = 4;            
+                @Override
+                public void run() {
+                    time = time - 1;                   
+                    if(Client.cancelTurn) {
+                        Client.cancelTurn = false;
+                        ti.cancel();
+                        ti.purge();
+                        return;
+                    }
+                    if(time == 0) {
+                        //3seconds passed   
+                    	Client.cancelTurn = true;
+                        Client.removeClientTurn();
                         ti.cancel();
                         ti.purge();
                         return;
@@ -94,18 +147,19 @@ class GameThread implements Runnable {
         if(this.toDo.equals("unblock_word")) {
             Timer ti = new Timer();
             TimerTask tti = new TimerTask() {
-            int time = 3;            
+            int time = 4;            
                 @Override
                 public void run() {
                     time = time - 1;                   
-                    if(Client.cancel) {
-                        Client.cancel = false;
+                    if(Client.cancelWord) {
+                        Client.cancelWord = false;
                         ti.cancel();
                         ti.purge();
                         return;
                     }
                     if(time == 0) {
-                        //3seconds passed                       
+                        //3seconds passed  
+                    	Client.cancelWord = true;
                         Client.removeClientWord();
                         
                         ti.cancel();
