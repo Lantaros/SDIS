@@ -27,7 +27,8 @@ class GameThread implements Runnable {
                     countdown=countdown - 1;
                     Client.launcher.getFrame().gamePanel.setTimeRemaining(countdown);
 
-                    if(countdown == 0) {                        
+                    if(countdown == 0) {  
+                    	System.out.println("SAI");
                         t.cancel();
                         t.purge();
                         Client.advanceTurn();
@@ -54,6 +55,7 @@ class GameThread implements Runnable {
                         return;
                     }
                     if(time == 0) {
+                    	System.out.println("SAI2");
                         //3seconds passed  
                     	//Client.handleNextTurn();
                         //Client.confirmMsg.add(0);
@@ -82,6 +84,7 @@ class GameThread implements Runnable {
                     time = time - 1;                   
 
                     if(time == 0) {
+                    	System.out.println("SAI3");
                         Client.launcher.getFrame().gamePanel.setButtonWord(true);
                         ti.cancel();
                         ti.purge();
@@ -105,8 +108,10 @@ class GameThread implements Runnable {
                         return;
                     }
                     if(time == 0) {
+                    	System.out.println("SAI4");
                         //3seconds passed  
                     	Client.cancelLetter = true;
+                    	
                         Client.removeClient();
                         //Client.confirmMsg.add(0);
                         ti.cancel();
@@ -132,6 +137,7 @@ class GameThread implements Runnable {
                         return;
                     }
                     if(time == 0) {
+                    	System.out.println("SAI5");
                         //3seconds passed   
                     	Client.cancelTurn = true;
                         Client.removeClientTurn();
@@ -158,7 +164,8 @@ class GameThread implements Runnable {
                         return;
                     }
                     if(time == 0) {
-                        //3seconds passed  
+                        //3seconds passed
+                    	System.out.println("SAI6");
                     	Client.cancelWord = true;
                         Client.removeClientWord();
                         

@@ -286,6 +286,10 @@ public class Message {
                     this.type = MessageType.fromString("PASS_OWNERSHIP");
                     this.clientID = Integer.parseInt(tokens[1].trim());
                     break;
+                case PEER_DISCONNECTED:
+                    this.type = MessageType.fromString("PASS_OWNERSHIP");
+                    this.clientID = Integer.parseInt(tokens[1].trim());
+                    break;
             }
 
         } catch (InvalidMessage m) {
@@ -407,6 +411,10 @@ public class Message {
 //                }
             break;
             case PASS_OWNERSHIP:
+                message += " " + clientID;
+                break;
+                
+            case PEER_DISCONNECTED:
                 message += " " + clientID;
                 break;
 
