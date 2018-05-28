@@ -4,6 +4,7 @@ import protocol.Message;
 import protocol.MessageType;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import game.Room;
 import gui.Launcher;
@@ -13,6 +14,9 @@ class ListenerPeer implements Runnable {
 	private int peerID;
 	private int serverPeerID = -1;
 	private byte[] msg = new byte[1024];
+	private ReentrantLock lock = new ReentrantLock();
+	private ReentrantLock lockWord = new ReentrantLock();
+	private ReentrantLock lockLetter = new ReentrantLock();
 
 	public ListenerPeer(int peerID) {
 		this.peerID = peerID;
@@ -27,7 +31,7 @@ class ListenerPeer implements Runnable {
 				msg = new byte[1024];
 				int readBytes = Client.peer[this.peerID].getInputStream().read(msg, 0, msg.length);
 				if(readBytes < 0) {
-					Client.removePeer(this.serverPeerID);
+					//Client.removePeer(this.serverPeerID);
                     System.out.println("Peer " + serverPeerID + " has disconnected");
                     break;
                 }
@@ -48,7 +52,9 @@ class ListenerPeer implements Runnable {
                     break;
 
                 case WORD_CHECK:
+                	lockWord.lock();
                     Client.confirmWordMsg.add(this.serverPeerID);
+                    lockWord.unlock();
                     
                     break;
 
@@ -63,7 +69,9 @@ class ListenerPeer implements Runnable {
 
 					break;
 				case LETTER_CHECK:
+					lockLetter.lock();
 					Client.confirmMsg.add(message.getClientID());
+					lockLetter.unlock();
 
 					break;
 				case LETTER_GO:
@@ -108,8 +116,12 @@ class ListenerPeer implements Runnable {
 					Client.handleMyTurn();
 					break;
 				case TIMER_UP:
-					if (Client.currentRoom.getOwner())
+					if (Client.currentRoom.getOwner()){
+						lock.lock();
 						Client.handleTimerUP();
+						lock.unlock();
+					}
+						
 					break;
 				case PASS_OWNERSHIP:
 					if (message.getClientID() == Client.clientID) {

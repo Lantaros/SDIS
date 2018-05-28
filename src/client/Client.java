@@ -50,6 +50,9 @@ public class Client {
     protected static boolean resetTimer = false;
     protected static int confirmWord = 0;
     protected static boolean cancel = false;
+    protected static boolean cancelTurn = false;
+    protected static boolean cancelWord = false;
+    protected static boolean cancelLetter = false;
 
     private static Object srvChannelLock;
     private static Object rcvRoomsLock;
@@ -190,12 +193,18 @@ public class Client {
     }
 
     public static void handleTimerUP() {
-        int n = Client.currentRoom.getNClients();
+        int n = Client.currentRoom.getNClients(); 
+        
+        if(Client.confirmTimerUP == 0) {
+        	Client.cancel = false;
+	    	GameThread gameThrea = new GameThread("timer_up");
+	        new Thread(gameThrea).start();
+        }
         Client.confirmTimerUP++;
         if(Client.confirmTimerUP >= n-1){
-            GameThread gameThrea = new GameThread("timer_up");
-            new Thread(gameThrea).start();
-            Client.confirmTimerUP = 0;
+            confirmTimerUP = 0;
+            Client.cancel = true;
+            Client.handleNextTurn();
         }
         
     }
@@ -212,9 +221,16 @@ public class Client {
         else
             numTurn++;
         Client.sendAll(sendTurn);
+        Client.cancelTurn = false;
+        GameThread gameThrea = new GameThread("unblock_turn");
+        new Thread(gameThrea).start();
         while(Client.confirmTurnMsg.size() < n-1) {
             System.out.flush();
         }
+        if(cancelTurn)
+        	cancelTurn = false;
+        else
+        	Client.cancelTurn = true;
         Client.confirmTurnMsg.clear();
         Message sendGo = new Message(MessageType.TURN_GO);
         sendAll(sendGo);
@@ -222,13 +238,16 @@ public class Client {
     }
 
     public static void sendNextTurn(int peerID) {
+    	System.out.println("OI");
         Message msg = new Message(MessageType.TURN_CHECK, "yes");
-
+        System.out.println("OI2");
         try {
             peer[peerID].getOutputStream().write(msg.getBytes());
+            System.out.println("OI4");
         } catch(IOException e) {
             e.printStackTrace();
         }
+        System.out.println("OI3");
     }
 
     public static void handleMyTurn() {
@@ -287,8 +306,7 @@ public class Client {
 			return;
         }
 
-        GameThread gameThrea = new GameThread("next_turn");
-        new Thread(gameThrea).start();
+        Client.handleNextTurn();
     }
 
     public static void guessWord() {
@@ -369,13 +387,16 @@ public class Client {
             sendAll(letterToSend);
             int i = currentRoom.getNClients();
             System.out.println(i);
+            Client.cancelLetter = false;
             GameThread gameThrea = new GameThread("unblock_letter");
             new Thread(gameThrea).start();
             while(Client.confirmMsg.size() < i-1) {
                 System.out.flush();
             }
-            //gameThrea = new GameThread("");
-            cancel = true;
+            if(cancelLetter)
+            	cancelLetter = false;
+            else
+            	cancelLetter = true;
             confirmMsg.clear();
             Message message = new Message(MessageType.LETTER_GO);
             sendAll(message);
@@ -397,16 +418,19 @@ public class Client {
         sendAll(wordToSend);
         int i = currentRoom.getNClients();
         System.out.println(i);
+        Client.cancelWord = false;
         GameThread gameThre = new GameThread("unblock_word");
         new Thread(gameThre).start();
         while(Client.confirmWordMsg.size() < i-1) {
             System.out.flush();
         }
-        System.out.println("OI");
+        if(cancelWord)
+        	cancelWord = false;
+        else
+        	Client.cancelWord = true;
         confirmWordMsg.clear();
         Message message = new Message(MessageType.WORD_GO);
         sendAll(message);
-        System.out.println("OI");
         Client.launcher.getFrame().gamePanel.setButtonWord(false);
         GameThread gameThrea = new GameThread("block_3seconds");
         new Thread(gameThrea).start();
@@ -657,9 +681,10 @@ public class Client {
             else {
                 currentRoom.removeClient(j);
                 removeClientInformation(j);
-                Client.confirmMsg.add(0);
+               
             }
         }
+        Client.confirmMsg.add(0);
     }
     
     public static void removeClientWord() {
@@ -676,9 +701,30 @@ public class Client {
             else {
                 currentRoom.removeClient(j);
                 removeClientInformation(j);
-                Client.confirmWordMsg.add(0);
+                
             }
         }
+        Client.confirmWordMsg.add(0);
+    }
+    
+    public static void removeClientTurn() {
+        boolean check = false;
+        int[] clients = currentRoom.getClients();
+        for(int j=2; j <= currentRoom.getNClients();j++) {
+
+            for(int i = 0; i<confirmTurnMsg.size(); i++) {
+                if(clients[j] == confirmTurnMsg.get(i))
+                    check = true;
+            }
+            if(check)
+                check = false;
+            else {
+                currentRoom.removeClient(j);
+                removeClientInformation(j);
+                
+            }
+        }
+        Client.confirmTurnMsg.add(0);
     }
 
     public static void removeClientInformation(int idPos) {
@@ -686,19 +732,39 @@ public class Client {
         idPos--;
         System.out.println("***DATA***");
         print();
-        if(idPos == countPeer) {
+        if(idPos + 1 == countPeer) {
             countPeer--;
             print();
             System.out.println("***DATA***");
             return;
         }
-        for(int i = idPos+1; i < countPeer; i++) {
+        for(int i = idPos + 1; i < countPeer; i++) {
             peer[i-1] = peer[i];
         }
         countPeer--;
         System.out.println("***DATA***");
         print();
     }
+    
+    public static void removeClientInformationn(int idPos) {
+        idPos--; //retirar um porque ele começa a 0 aqui
+        idPos--;
+        System.out.println("***DATA***");
+        print();
+        if(idPos + 1 == countPeer) {
+            countPeer--;
+            print();
+            System.out.println("***DATA***");
+            return;
+        }
+        for(int i = idPos + 1; i < countPeer; i++) {
+            peer[i-1] = peer[i];
+        }
+        countPeer--;
+        System.out.println("***DATA***");
+        print();
+    }
+    
     public static void removePeer(int id) {
                 
         currentRoom.print();
@@ -707,7 +773,7 @@ public class Client {
         for(int j = 2; j<=n;j++) {
             if(id == clients[j]) {
                 currentRoom.removeClient(j);
-                removeClientInformation(id);
+                removeClientInformation(j);
             }
         }
         System.out.println("---");

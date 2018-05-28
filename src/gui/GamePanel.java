@@ -90,9 +90,9 @@ public class GamePanel extends JPanel {
 				
 				String aswner = Client.sendWord(wordGuessed);
 				if(aswner == "ok") {
-					textFieldGuessLetter.setText("");
+					textFieldGuessWord.setText("");
 				} else {
-					textFieldGuessLetter.setText(aswner);
+					textFieldGuessWord.setText(aswner);
 				}
 				
 			}
