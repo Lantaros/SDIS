@@ -14,9 +14,7 @@ class ListenerPeer implements Runnable {
 	private int peerID;
 	private int serverPeerID = -1;
 	private byte[] msg = new byte[1024];
-	private ReentrantLock lock = new ReentrantLock();
-	private ReentrantLock lockWord = new ReentrantLock();
-	private ReentrantLock lockLetter = new ReentrantLock();
+
 
 	public ListenerPeer(int peerID) {
 		this.peerID = peerID;
@@ -51,12 +49,10 @@ class ListenerPeer implements Runnable {
                     Client.handleWord(this.peerID, message.getWord());
                     break;
 
-                case WORD_CHECK:
-                	lockWord.lock();
-                    Client.confirmWordMsg.add(this.serverPeerID);
-                    lockWord.unlock();
-                    
-                    break;
+				case WORD_CHECK:
+					Client.confirmWordMsg.add(this.serverPeerID);
+
+					break;
 
                case WORD_GO:
                     if(Client.currentRoom.getOwner()) {
@@ -69,9 +65,9 @@ class ListenerPeer implements Runnable {
 
 					break;
 				case LETTER_CHECK:
-					lockLetter.lock();
+					
 					Client.confirmMsg.add(message.getClientID());
-					lockLetter.unlock();
+					
 
 					break;
 				case LETTER_GO:
@@ -123,9 +119,9 @@ class ListenerPeer implements Runnable {
 					break;
 				case TIMER_UP:
 					if (Client.currentRoom.getOwner()){
-						lock.lock();
+						
 						Client.handleTimerUP();
-						lock.unlock();
+						
 					}
 						
 					break;
@@ -140,7 +136,12 @@ class ListenerPeer implements Runnable {
 						
 					}
 					break;
+				case PEER_DISCONNECTED:
+					Client.removePeer(message.getClientID());
+					break;
 				}
+				
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

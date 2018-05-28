@@ -204,7 +204,8 @@ public class Client {
         if(Client.confirmTimerUP >= n-1){
             confirmTimerUP = 0;
             Client.cancel = true;
-            Client.handleNextTurn();
+            GameThread gameThre = new GameThread("next_turn");
+	        new Thread(gameThre).start();
         }
         
     }
@@ -222,8 +223,8 @@ public class Client {
             numTurn++;
         Client.sendAll(sendTurn);
         Client.cancelTurn = false;
-        GameThread gameThrea = new GameThread("unblock_turn");
-        new Thread(gameThrea).start();
+        //GameThread gameThrea = new GameThread("unblock_turn");
+       // new Thread(gameThrea).start();
         while(Client.confirmTurnMsg.size() < n-1) {
             System.out.flush();
         }
@@ -307,8 +308,9 @@ public class Client {
 			Launcher.getFrame().setpanel(Launcher.getFrame().waitingRoom);
 			return;
         }
-
-        Client.handleNextTurn();
+        gameThread = new GameThread("next_turn");
+        new Thread(gameThread).start();
+        //Client.handleNextTurn();
     }
     public static void incrementErrors() {
     	Launcher.getFrame().gamePanel.incrementNumberOfErrors();
@@ -676,7 +678,8 @@ public class Client {
 
 
     public static void removeClient() {
-        boolean check = false;
+        
+    	boolean check = false;
         int[] clients = currentRoom.getClients();
         for(int j=2; j <= currentRoom.getNClients();j++) {
 
@@ -689,9 +692,11 @@ public class Client {
             else {
                 currentRoom.removeClient(j);
                 removeClientInformation(j);
-               
+                Message message = new Message(MessageType.PEER_DISCONNECTED, clients[j]);
+                sendAll(message);           
             }
         }
+        
         Client.confirmMsg.add(0);
     }
     

@@ -42,7 +42,9 @@ public enum MessageType {
     TIMER_UP,
 
     READY_TO_START,
-    PASS_OWNERSHIP;
+    PASS_OWNERSHIP,
+    
+    PEER_DISCONNECTED;
 
 
     @Override
@@ -146,6 +148,9 @@ public enum MessageType {
                 
             case PASS_OWNERSHIP:
                 return "PASS_OWNERSHIP";
+                
+            case PEER_DISCONNECTED:
+                return "PEER_DISCONNECTED";
 
             default:
                 return "FAIL";
@@ -253,6 +258,8 @@ public enum MessageType {
                 
             case "PASS_OWNERSHIP":
                 return PASS_OWNERSHIP;
+            case "PEER_DISCONNECTED":
+                return PEER_DISCONNECTED;
 
             default:
                 throw new InvalidMessage(type);
