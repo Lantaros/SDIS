@@ -51,9 +51,7 @@ public class JoinLobby extends JPanel {
 		listModel = new DefaultListModel<Room>();
 		listofIDs.setModel(listModel);
 		
-		//TODO Just TEmp
 		ArrayList<Room> rooms = Client.requestAvailableRooms();
-		System.out.println(rooms.toString());
 
 		//String[] items = { "A", "B", "C", "D" };
 		for (int i = 0; i < rooms.size(); i++) {
@@ -66,16 +64,11 @@ public class JoinLobby extends JPanel {
 		JButton btnJoinSelected = new JButton("Join Selected");
 		btnJoinSelected.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO Just TEmp
-				//String[] items2 = { "A", "B", "C", "D" };
-				//setRooms(items2);
+
                 int roomID = listofIDs.getSelectedValue().getRoomId();
                 System.out.println("Selected RoomID " + roomID);
                 Client.connectRoom(roomID);
-//				int index =  listofIDs.getSelectedIndex();
-//				String valueSelected = listModel.get(index);
-//				listModel.add(0, valueSelected);
-
+//
 				frame.setpanel(frame.waitingRoom);
 //
 

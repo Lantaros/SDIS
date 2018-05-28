@@ -32,9 +32,7 @@ public class SetWordRoom extends JPanel {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String wordToGuess = textField.getText();
-				//TODO do verify if theres more than one peer connected
-				//TODO display room creation error 
-				
+
 				Client.chooseWord(textField.getText());
 				
 				textField.setText("");

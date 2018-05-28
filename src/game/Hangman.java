@@ -150,6 +150,5 @@ public class Hangman {
         }
     }
 
-    //TODO::Colocar no Array!!!!!!
 
 }

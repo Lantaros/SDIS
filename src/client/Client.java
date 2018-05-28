@@ -134,8 +134,7 @@ public class Client {
         launcher = new Launcher();
         launcher.main(null);
 
-        //TODO::create the looby properly
-        
+
 
        try {
            synchronized (srvChannelLock){
@@ -239,16 +238,12 @@ public class Client {
     }
 
     public static void sendNextTurn(int peerID) {
-    	System.out.println("OI");
         Message msg = new Message(MessageType.TURN_CHECK, "yes");
-        System.out.println("OI2");
         try {
             peer[peerID].getOutputStream().write(msg.getBytes());
-            System.out.println("OI4");
         } catch(IOException e) {
             e.printStackTrace();
         }
-        System.out.println("OI3");
     }
 
     public static void handleMyTurn() {
@@ -391,7 +386,6 @@ public class Client {
     public static String sendLetter(String letter) {
         Hangman game = currentRoom.getGame();
         if(letter.length() == 1 && game.checkLetter(letter.charAt(0))) {
-            //TODO::protocolos
             Message letterToSend = new Message(MessageType.LETTER_TO_GUESS, letter);
             sendAll(letterToSend);
             int i = currentRoom.getNClients();
@@ -422,8 +416,7 @@ public class Client {
 
     public static String sendWord(String word) {
         Hangman game = currentRoom.getGame();
-        //TODO::protocolos
-        
+
         Message wordToSend = new Message(MessageType.WORD_TO_GUESS_PEER, word);
         sendAll(wordToSend);
         int i = currentRoom.getNClients();
