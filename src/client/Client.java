@@ -290,7 +290,9 @@ public class Client {
         GameThread gameThrea = new GameThread("next_turn");
         new Thread(gameThrea).start();
     }
-
+    public static void incrementErrors() {
+    	Launcher.getFrame().gamePanel.incrementNumberOfErrors();
+    }
     public static void guessWord() {
         Hangman game = Client.currentRoom.getGame();
         game.guessWord(newWord);
@@ -361,7 +363,7 @@ public class Client {
     }
 
     public static void setWordInGUI(String word) {
-        launcher.getFrame().gamePanel.setWordToGuess(word);
+        launcher.getFrame().gamePanel.setWordToGuess(word.trim());
     }
 
     public static String sendLetter(String letter) {
@@ -386,6 +388,7 @@ public class Client {
             return "ok";
         } else if(!game.checkLetter(letter.charAt(0))) {
             return "Ja foi tentado";
+            
         }
         else {
             return "Must Be 1 Word";        
