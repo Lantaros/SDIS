@@ -48,14 +48,12 @@ class ListenerPeer implements Runnable {
                     break;
 
                 case WORD_CHECK:
-                    Client.confirmWord++;
+                    Client.confirmWordMsg.add(this.serverPeerID);
                     
                     break;
 
                case WORD_GO:
                     if(Client.currentRoom.getOwner()) {
-                        //ListenerPeer2 listPeer2 = new ListenerPeer2(this.id);
-                        //new Thread(listPeer2).start();
                         Client.guessWord();                            
                     }
                   break;
@@ -110,7 +108,7 @@ class ListenerPeer implements Runnable {
 					Client.sendNextTurn(this.peerID);
 					break;
 				case TURN_CHECK:
-					Client.confirmTurn++;
+					Client.confirmTurnMsg.add(this.serverPeerID);
 					break;
 				case TURN_GO:
 					Client.handleMyTurn();
